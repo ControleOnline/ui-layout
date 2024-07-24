@@ -148,10 +148,10 @@
 <script>
 import Menu from "@controleonline/ui-common/src/components/Common/Menu";
 import MyCompanies from "@controleonline/ui-common/src/components/Common/MyCompanies";
-import Notifications from "@controleonline/quasar-legacy-ui/ui-common/src/components/Common/Notifications.vue";
+import Notifications from "@controleonline/ui-legacy/ui-common/src/components/Common/Notifications.vue";
 import DarkMode from "@controleonline/ui-layout/src/components/DarkMode/darkModeToggle.vue";
-import Language from "@controleonline/quasar-legacy-ui/ui-common/src/components/Language/languageToogle.vue";
-import acl from "@controleonline/quasar-legacy-ui/ui-common/src/utils/acl";
+import Language from "@controleonline/ui-legacy/ui-common/src/components/Language/languageToogle.vue";
+import acl from "@controleonline/ui-legacy/ui-common/src/utils/acl";
 import md5 from "md5";
 import { LocalStorage } from "quasar";
 import { mapActions, mapGetters } from "vuex";
