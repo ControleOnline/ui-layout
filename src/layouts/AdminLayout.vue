@@ -100,12 +100,12 @@
         <div class="q-pt-md q-px-sm column">
           <q-list padding>
             <q-item v-if="isSimple() == false" v-ripple clickable class="GNL__drawer-item"
-              @click="leftDrawerOpen != leftDrawerOpen" :to="{ name: 'HomeIndex' }">
+              @click="leftDrawerOpen != leftDrawerOpen" :to="{ name: 'DashboardIndex' }">
               <q-item-section avatar>
                 <q-icon name="home" />
               </q-item-section>
               <q-item-section>
-                {{ $t("menu.home") }}
+                {{ $t("menu.dashboard") }}
               </q-item-section>
             </q-item>
             <q-separator inset class="q-my-sm" />
