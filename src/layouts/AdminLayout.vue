@@ -4,25 +4,53 @@
       <q-spinner color="primary" class="q-uploader__spinner" />
     </div>
   </div>
-  <q-layout v-else-if="isSuperAdmin && !disabled" view="lHh Lpr fff" class="bg-image">
+  <q-layout
+    v-else-if="isSuperAdmin && !disabled"
+    view="lHh Lpr fff"
+    class="bg-image"
+  >
     <q-header elevated height-hint="64">
       <q-toolbar class="GPL__toolbar" style="height: 64px">
-        <q-btn flat dense round @click="leftDrawerOpen = !leftDrawerOpen" aria-label="Menu" icon="menu"
-          class="q-mx-md menu-button" />
+        <q-btn
+          flat
+          dense
+          round
+          @click="leftDrawerOpen = !leftDrawerOpen"
+          aria-label="Menu"
+          icon="menu"
+          class="q-mx-md menu-button"
+        />
         <div class="q-gutter-sm items-center row logo-container">
-          <router-link v-if="this.$q.screen.gt.sm && myCompany && myCompany.logo" v-bind:to="'/'" tag="a">
-            <img :src="'//' + myCompany.logo.domain + myCompany.logo.url" class="current-logo" />
+          <router-link
+            v-if="this.$q.screen.gt.sm && myCompany && myCompany.logo"
+            v-bind:to="'/'"
+            tag="a"
+          >
+            <img
+              :src="'//' + myCompany.logo.domain + myCompany.logo.url"
+              class="current-logo"
+            />
           </router-link>
-          <img v-else-if="myCompany && myCompany.logo" :src="'//' + myCompany.logo.domain + myCompany.logo.url"
-            class="current-logo" />
+          <img
+            v-else-if="myCompany && myCompany.logo"
+            :src="'//' + myCompany.logo.domain + myCompany.logo.url"
+            class="current-logo"
+          />
         </div>
-        <div class="q-gutter-sm row items-center no-wrap current-logo-container">
+        <div
+          class="q-gutter-sm row items-center no-wrap current-logo-container"
+        >
           <q-toolbar class="">
             <MyCompanies />
           </q-toolbar>
         </div>
         <div v-if="this.$q.screen.gt.sm" class="q-gutter-sm items-center row">
-          <q-item v-ripple :style="'color:' + ($route.meta.color || 'var(--q-color-secondary)')">
+          <q-item
+            v-ripple
+            :style="
+              'color:' + ($route.meta.color || 'var(--q-color-secondary)')
+            "
+          >
             <q-item-section avatar v-if="$route.meta.icon">
               <q-icon class="item-icon" :name="$route.meta.icon" />
             </q-item-section>
@@ -33,7 +61,9 @@
             </q-item-section>
           </q-item>
         </div>
-        <div class="q-gutter-sm row items-center no-wrap current-user-container">
+        <div
+          class="q-gutter-sm row items-center no-wrap current-user-container"
+        >
           <Notifications />
           <!-- DarkMode -->
           <q-btn icon="account_circle" flat round>
@@ -59,6 +89,14 @@
                         <q-item-label>{{ $t("menu.mycompany") }}</q-item-label>
                       </q-item-section>
                     </q-item>
+                    <q-item :to="{ name: 'MenuIndex' }" exact>
+                      <q-item-section avatar>
+                        <q-icon name="business" />
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-item-label>{{ $t("menu.configs") }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
                   </q-list>
                 </div>
 
@@ -75,7 +113,13 @@
                     {{ user.realname || "John Doe" }}
                   </div>
 
-                  <q-btn v-close-popup color="primary" label="Sair" size="sm" @click="onLogout" />
+                  <q-btn
+                    v-close-popup
+                    color="primary"
+                    label="Sair"
+                    size="sm"
+                    @click="onLogout"
+                  />
                 </div>
               </div>
             </q-menu>
@@ -90,8 +134,13 @@
           <q-toolbar-title class="text-center">
             <q-avatar size="100px" class="vertical-middle menu-avatar">
               <router-link v-bind:to="'/'" tag="a" class="primary">
-                <img v-if="defaultCompany.logo" :src="'//' + defaultCompany.logo.domain + defaultCompany.logo.url"
-                  class="q-pa-sm  main-logo" />
+                <img
+                  v-if="defaultCompany.logo"
+                  :src="
+                    '//' + defaultCompany.logo.domain + defaultCompany.logo.url
+                  "
+                  class="q-pa-sm main-logo"
+                />
               </router-link>
             </q-avatar>
           </q-toolbar-title>
@@ -99,8 +148,14 @@
 
         <div class="q-pt-md q-px-sm column">
           <q-list padding>
-            <q-item v-if="isSimple() == false" v-ripple clickable class="GNL__drawer-item"
-              @click="leftDrawerOpen != leftDrawerOpen" :to="{ name: 'DashboardIndex' }">
+            <q-item
+              v-if="isSimple() == false"
+              v-ripple
+              clickable
+              class="GNL__drawer-item"
+              @click="leftDrawerOpen != leftDrawerOpen"
+              :to="{ name: 'DashboardIndex' }"
+            >
               <q-item-section avatar>
                 <q-icon name="home" />
               </q-item-section>
@@ -109,8 +164,12 @@
               </q-item-section>
             </q-item>
             <q-separator inset class="q-my-sm" />
-            <Menu v-if="isSimple() != true" :context="'super_admin'" :people="this.user.people"
-              @clickmenu="onClickmenu" />
+            <Menu
+              v-if="isSimple() != true"
+              :context="'super_admin'"
+              :people="this.user.people"
+              @clickmenu="onClickmenu"
+            />
           </q-list>
         </div>
         <div class="q-pt-xl q-px-sm column pull-button">
@@ -181,7 +240,6 @@ export default {
     };
   },
 
-
   created() {
     this.discoveryMyCompanyies();
     if (this.defaultCompany) {
@@ -212,28 +270,25 @@ export default {
     isSuperAdmin() {
       return this.myCompany
         ? Object.values(this.myCompany.permission).indexOf("super") != -1 ||
-        Object.values(this.myCompany.permission).indexOf("franchisee") != -1
+            Object.values(this.myCompany.permission).indexOf("franchisee") != -1
         : false;
     },
-
   },
 
   watch: {
     isLoading(isLoading) {
-      if (isLoading)
-        this.$q.loading.show();
-      else
-        this.$q.loading.hide();
+      if (isLoading) this.$q.loading.show();
+      else this.$q.loading.hide();
     },
     defaultCompany(data) {
-      this.verifyPermissions()
+      this.verifyPermissions();
       this.pageLoading = false;
     },
   },
 
   methods: {
     ...mapActions({
-      getCompanies: 'people/myCompanies',
+      getCompanies: "people/myCompanies",
     }),
     onClickmenu() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
@@ -252,14 +307,14 @@ export default {
       this.defaultCompany?.permissions?.forEach((item) => {
         if (this.permissions.indexOf(item) === -1) {
           this.permissions.push(item);
-          if (item.indexOf("franchisee") !== -1 ||
+          if (
+            item.indexOf("franchisee") !== -1 ||
             item.indexOf("salesman") !== -1 ||
             item.indexOf("super") !== -1 ||
             item.indexOf("admin") !== -1
           ) {
             this.isAdmin = true;
           }
-
         }
       });
     },
@@ -269,7 +324,11 @@ export default {
         let user_disabled = true;
         this.companies.forEach((company) => {
           user_disabled = !company.user.enabled;
-          if (company.enabled && company.user.employee_enabled && !user_disabled) {
+          if (
+            company.enabled &&
+            company.user.employee_enabled &&
+            !user_disabled
+          ) {
             if (!this.myCompany)
               this.$store.dispatch("people/currentCompany", company);
             disabled = false;
@@ -285,7 +344,7 @@ export default {
     },
     discoveryMyCompanyies() {
       this.getCompanies().then((response) => {
-        this.setMyCompanies(response.data)
+        this.setMyCompanies(response.data);
       });
     },
     onLogout() {
