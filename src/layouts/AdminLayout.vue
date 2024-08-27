@@ -167,7 +167,7 @@
             <Menu
               v-if="isSimple() != true"
               :context="'super_admin'"
-              :people="this.user.people"
+              :people="this.user"
               @clickmenu="onClickmenu"
             />
           </q-list>
