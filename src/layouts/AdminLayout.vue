@@ -56,7 +56,7 @@
             </q-item-section>
             <q-item-section no-wrap>
               <q-item-label class="module-tittle">{{
-                $t("route." + this.$route.name)
+                $tt("route", "title", this.$route.name)
               }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -97,20 +97,21 @@
                         <q-item-label>{{ $t("menu.configs") }}</q-item-label>
                       </q-item-section>
                     </q-item>
+                    <div class="text-body2 text-center"><DarkMode /></div>
                   </q-list>
                 </div>
-
                 <q-separator vertical inset class="q-mx-lg" />
-
                 <div class="column items-stretch justify-between">
                   <div class="text-center">
                     <q-avatar size="64px">
                       <q-img :src="user.avatar || gravatar" />
                     </q-avatar>
                   </div>
-
                   <div class="text-body2 text-center">
                     {{ user.realname || "John Doe" }}
+                  </div>
+                  <div class="text-body2 text-center">
+                    <Language />
                   </div>
 
                   <q-btn
@@ -172,10 +173,6 @@
             />
           </q-list>
         </div>
-        <div class="q-pt-xl q-px-sm column pull-button">
-          <DarkMode />
-          <Language />
-        </div>
       </q-scroll-area>
     </q-drawer>
     <q-page-container class="GPL__page-container">
@@ -187,7 +184,7 @@
               <q-icon :name="$route.meta.icon" />
             </q-item-section>
             <q-item-section no-wrap>
-              {{ $t("route." + this.$route.name) }}
+              {{ $tt("route", "title", this.$route.name) }}
             </q-item-section>
           </q-item>
         </div>
