@@ -67,18 +67,22 @@
           <Notifications />
           <!-- DarkMode -->
           <q-btn icon="account_circle" flat round>
-            <q-tooltip>{{ $t("menu.myacount") }}</q-tooltip>
+            <q-tooltip>{{ $tt("menu", "configs", "myAccount") }}</q-tooltip>
             <q-menu>
               <div class="row no-wrap q-pa-md">
                 <div class="column">
-                  <div class="text-h6 q-mb-md">{{ $t("menu.myacount") }}</div>
+                  <div class="text-h6 q-mb-md text-center">
+                    {{ $tt("menu", "configs", "myAccount") }}
+                  </div>
                   <q-list>
                     <q-item :to="{ name: 'UserProfile' }" exact>
                       <q-item-section avatar>
                         <q-icon name="face" />
                       </q-item-section>
                       <q-item-section side>
-                        <q-item-label>{{ $t("menu.myprofile") }}</q-item-label>
+                        <q-item-label>{{
+                          $tt("menu", "configs", "myProfile")
+                        }}</q-item-label>
                       </q-item-section>
                     </q-item>
                     <q-item :to="{ name: 'CompanyIndex' }" exact>
@@ -86,7 +90,9 @@
                         <q-icon name="business" />
                       </q-item-section>
                       <q-item-section side>
-                        <q-item-label>{{ $t("menu.mycompany") }}</q-item-label>
+                        <q-item-label>{{
+                          $tt("menu", "configs", "myCompany")
+                        }}</q-item-label>
                       </q-item-section>
                     </q-item>
                     <q-item :to="{ name: 'MenuIndex' }" exact>
@@ -94,10 +100,22 @@
                         <q-icon name="business" />
                       </q-item-section>
                       <q-item-section side>
-                        <q-item-label>{{ $t("menu.configs") }}</q-item-label>
+                        <q-item-label>{{
+                          $tt("menu", "configs", "configs")
+                        }}</q-item-label>
                       </q-item-section>
                     </q-item>
-                    <div class="text-body2 text-center"><DarkMode /></div>
+                    <q-item :to="{ name: 'MenuIndex' }" exact>
+                      <q-item-section avatar>
+                        <DarkMode />
+                      </q-item-section>
+                      <q-item-section side>
+                        <q-item-label>{{
+                          $tt("menu", "configs", "darkMode")
+                        }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                    <div class="text-body2 text-center"></div>
                   </q-list>
                 </div>
                 <q-separator vertical inset class="q-mx-lg" />
@@ -117,7 +135,7 @@
                   <q-btn
                     v-close-popup
                     color="primary"
-                    label="Sair"
+                    :label="$tt('menu', 'configs', 'Logout')"
                     size="sm"
                     @click="onLogout"
                   />
