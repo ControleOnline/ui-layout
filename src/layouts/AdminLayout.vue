@@ -64,8 +64,8 @@
         <div
           class="q-gutter-sm row items-center no-wrap current-user-container"
         >
+          <Language />
           <Notifications />
-          <!-- DarkMode -->
           <q-btn icon="account_circle" flat round>
             <q-tooltip>{{ $tt("menu", "configs", "myAccount") }}</q-tooltip>
             <q-menu>
@@ -105,16 +105,6 @@
                         }}</q-item-label>
                       </q-item-section>
                     </q-item>
-                    <q-item :to="{ name: 'MenuIndex' }" exact>
-                      <q-item-section avatar>
-                        <DarkMode />
-                      </q-item-section>
-                      <q-item-section side>
-                        <q-item-label>{{
-                          $tt("menu", "configs", "darkMode")
-                        }}</q-item-label>
-                      </q-item-section>
-                    </q-item>
                     <div class="text-body2 text-center"></div>
                   </q-list>
                 </div>
@@ -129,7 +119,7 @@
                     {{ user.realname || "John Doe" }}
                   </div>
                   <div class="text-body2 text-center">
-                    <Language />
+                    <DarkMode />
                   </div>
 
                   <q-btn
