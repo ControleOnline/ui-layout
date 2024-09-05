@@ -298,10 +298,7 @@ export default {
     isSimple() {
       return this.defaultCompany.domainType === "simple";
     },
-    setMyCompanies(data) {
-      this.companies = data;
-      this.discoveryIfEnabled();
-    },
+
     verifyPermissions() {
       let user = this.$copyObject(this.user);
       this.companies.forEach((company) => {
@@ -323,8 +320,7 @@ export default {
           }
         });
       });
-
-      this.pageLoading = false;
+      this.discoveryIfEnabled();
     },
     discoveryIfEnabled() {
       if (this.companies) {
@@ -349,12 +345,16 @@ export default {
         });
         this.disabled = user_disabled || disabled;
       }
+      this.pageLoading = false;
     },
     discoveryMyCompanyies() {
-      this.getCompanies().then((response) => {
-        this.setMyCompanies(response.data);
-        this.verifyPermissions();
-      });
+      this.getCompanies()
+        .then((response) => {
+          this.companies = response.data;
+        })
+        .finally(() => {
+          this.verifyPermissions();
+        });
     },
     onLogout() {
       this.$store.dispatch("auth/logOut");
