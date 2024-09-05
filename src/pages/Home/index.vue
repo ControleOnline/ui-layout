@@ -30,7 +30,11 @@
               </q-avatar>
             </q-card-section>
             <q-card-section class="q-pa-md">
-              <div class="text-center larger-text text-weight-medium text-white">{{ $t(item.label) }}</div>
+              <div
+                class="text-center larger-text text-weight-medium text-white"
+              >
+                {{ $tt("menu", "menu", item.label) }}
+              </div>
             </q-card-section>
           </q-card>
         </div>
