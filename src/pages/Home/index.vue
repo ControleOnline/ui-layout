@@ -4,7 +4,7 @@
       :content-inset-level="0.3"
       class="home-menu"
       :icon="mItem.icon"
-      :label="mItem.label"
+      :label="$tt('menu', 'menu', mItem.label)"
       v-for="(mItem, mIndex) in menus"
       :key="mItem.id"
       default-opened
