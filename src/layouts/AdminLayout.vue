@@ -237,6 +237,7 @@ export default {
 
   data() {
     return {
+      companies: [],
       notifications: {
         count: 0,
       },
@@ -250,10 +251,6 @@ export default {
 
   created() {
     this.discoveryMyCompanyies();
-    if (this.defaultCompany) {
-      this.pageLoading = false;
-      this.verifyPermissions();
-    }
   },
 
   computed: {
@@ -285,7 +282,6 @@ export default {
     },
     defaultCompany(data) {
       this.verifyPermissions();
-      this.pageLoading = false;
     },
   },
 
@@ -308,23 +304,27 @@ export default {
     },
     verifyPermissions() {
       let user = this.$copyObject(this.user);
-      this.defaultCompany?.permissions?.forEach((item) => {
-        if (this.permissions.indexOf(item) === -1) {
-          this.permissions.push(item);
-          if (
-            item.indexOf("franchisee") !== -1 ||
-            item.indexOf("salesman") !== -1 ||
-            item.indexOf("super") !== -1 ||
-            item.indexOf("admin") !== -1
-          ) {
-            user.isAdmin = true;
+      this.companies.forEach((company) => {
+        company?.permission?.forEach((item) => {
+          if (this.permissions.indexOf(item) === -1) {
+            this.permissions.push(item);
+            if (
+              item.indexOf("franchisee") !== -1 ||
+              item.indexOf("salesman") !== -1 ||
+              item.indexOf("super") !== -1 ||
+              item.indexOf("admin") !== -1
+            ) {
+              user.isAdmin = true;
+            }
+            if (item.indexOf("super") !== -1) {
+              user.isSuperAdmin = true;
+            }
+            this.$store.commit("auth/LOGIN_SET_USER", user);
           }
-          if (item.indexOf("super") !== -1) {
-            user.isSuperAdmin = true;
-          }
-          this.$store.commit("auth/LOGIN_SET_USER", user);
-        }
+        });
       });
+
+      this.pageLoading = false;
     },
     discoveryIfEnabled() {
       if (this.companies) {
@@ -353,6 +353,7 @@ export default {
     discoveryMyCompanyies() {
       this.getCompanies().then((response) => {
         this.setMyCompanies(response.data);
+        this.verifyPermissions();
       });
     },
     onLogout() {
