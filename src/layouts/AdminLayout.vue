@@ -5,7 +5,7 @@
     </div>
   </div>
   <q-layout
-    v-else-if="isSuperAdmin && !disabled"
+    v-else-if="user.isAdmin && !disabled"
     view="lHh Lpr fff"
     class="bg-image"
   >
@@ -95,9 +95,13 @@
                         }}</q-item-label>
                       </q-item-section>
                     </q-item>
-                    <q-item :to="{ name: 'MenuIndex' }" exact>
+                    <q-item
+                      v-if="user?.isSuperAdmin"
+                      :to="{ name: 'ConfigsIndex' }"
+                      exact
+                    >
                       <q-item-section avatar>
-                        <q-icon name="business" />
+                        <q-icon name="settings" />
                       </q-item-section>
                       <q-item-section side>
                         <q-item-label>{{
@@ -238,7 +242,6 @@ export default {
       },
       ACL: new acl(this.$route),
       disabled: false,
-      isAdmin: false,
       permissions: [],
       pageLoading: true,
       leftDrawerOpen: false, //this.$q.screen.gt.sm,
@@ -249,6 +252,7 @@ export default {
     this.discoveryMyCompanyies();
     if (this.defaultCompany) {
       this.pageLoading = false;
+      this.verifyPermissions();
     }
   },
 
@@ -271,12 +275,6 @@ export default {
         return "";
       }
       return `https://www.gravatar.com/avatar/${md5(this.user.email)}?s=400`;
-    },
-    isSuperAdmin() {
-      return this.myCompany
-        ? Object.values(this.myCompany.permission).indexOf("super") != -1 ||
-            Object.values(this.myCompany.permission).indexOf("franchisee") != -1
-        : false;
     },
   },
 
@@ -309,6 +307,7 @@ export default {
       this.discoveryIfEnabled();
     },
     verifyPermissions() {
+      let user = this.$copyObject(this.user);
       this.defaultCompany?.permissions?.forEach((item) => {
         if (this.permissions.indexOf(item) === -1) {
           this.permissions.push(item);
@@ -318,8 +317,12 @@ export default {
             item.indexOf("super") !== -1 ||
             item.indexOf("admin") !== -1
           ) {
-            this.isAdmin = true;
+            user.isAdmin = true;
           }
+          if (item.indexOf("super") !== -1) {
+            user.isSuperAdmin = true;
+          }
+          this.$store.commit("auth/LOGIN_SET_USER", user);
         }
       });
     },
