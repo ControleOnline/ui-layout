@@ -19,9 +19,7 @@
             class="icon-card"
             @click="click(item)"
             :style="{
-              backgroundColor: getCardBackground(
-                mIndex.toString() + index.toString()
-              ),
+              backgroundColor: item.color,
             }"
           >
             <q-card-section class="q-pa-md">
@@ -71,17 +69,6 @@ export default {
     click(route) {
       this.$emit("clickmenu", route);
       this.$router.push({ name: route.route });
-    },
-    getCardBackground(index) {
-      const colors = [
-        "#ee3e4f", // Vermelho Carmim
-        "#43c4a6", // Verde Água
-        "#00d2c1", // Turquesa
-        "#6058cc", // Roxo Lavanda
-        "#1975ec", // Azul Real
-        "#2a5780", // Azul Escuro
-      ];
-      return colors[parseInt(index) % colors.length];
     },
   },
 };

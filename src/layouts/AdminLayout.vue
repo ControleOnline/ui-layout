@@ -47,13 +47,21 @@
         <div v-if="this.$q.screen.gt.sm" class="q-gutter-sm items-center row">
           <q-item
             v-ripple
-            :style="
-              'color:' + ($route.meta.color || 'var(--q-color-secondary)')
-            "
+
+        :style="{
+          'font-size': '28px',
+          'font-weight': '500',
+          color: route.color || 'var(--secondary)'
+        }"
+
           >
-            <q-item-section avatar v-if="$route.meta.icon">
-              <q-icon class="item-icon" :name="$route.meta.icon" />
-            </q-item-section>
+          <q-item-section
+            avatar
+            v-if="route"
+            :style="{ color: route.color || 'var(--secondary)' }"
+          >
+            <q-icon :name="route.icon" size="36px" />
+          </q-item-section>
             <q-item-section no-wrap>
               <q-item-label class="module-tittle">{{
                 $tt("route", "title", this.$route.name)
@@ -61,6 +69,7 @@
             </q-item-section>
           </q-item>
         </div>
+
         <div
           class="q-gutter-sm row items-center no-wrap current-user-container"
         >
@@ -189,18 +198,35 @@
     </q-drawer>
     <q-page-container class="GPL__page-container">
       <q-scroll-observer horizontal @scroll="onScroll"></q-scroll-observer>
-      <div>
-        <div v-if="!this.$q.screen.gt.sm">
-          <q-item v-ripple>
-            <q-item-section avatar v-if="$route.meta.icon">
-              <q-icon :name="$route.meta.icon" />
-            </q-item-section>
-            <q-item-section no-wrap>
-              {{ $tt("route", "title", this.$route.name) }}
-            </q-item-section>
-          </q-item>
-        </div>
+      <div
+        v-if="!this.$q.screen.gt.sm && menus && route"
+        class="title-page"
+        :style="{
+          'font-size': '28px',
+          'font-weight': '500',
+          color: route.color || 'var(--secondary)'
+        }"
+      >
+        <q-item v-ripple>
+          <q-item-section
+            avatar
+            v-if="route"
+            :style="{ color: route.color || 'var(--secondary)' }"
+          >
+            <q-icon :name="route.icon" size="36px" />
+          </q-item-section>
+          <q-item-section no-wrap>
+            {{ $tt("route", "title", this.$route.name) }}
+          </q-item-section>
+        </q-item>
+        <!--
+        <q-separator
+          inset
+          :style="{ height: '2px', 'background-color': route.color }"
+        />
+        -->
       </div>
+
       <router-view />
     </q-page-container>
   </q-layout>
@@ -246,11 +272,15 @@ export default {
       permissions: [],
       pageLoading: true,
       leftDrawerOpen: false, //this.$q.screen.gt.sm,
+      route: {
+        color: "var(--secondary)",
+      },
     };
   },
 
   created() {
     this.discoveryMyCompanyies();
+    this.getRouteFromMenu(this.$route.name);
   },
 
   computed: {
@@ -259,7 +289,9 @@ export default {
       isLoading: "people/isLoading",
       myCompany: "people/currentCompany",
     }),
-
+    menus() {
+      return this.$store.getters["theme/menus"];
+    },
     user() {
       let user = this.$store.getters["auth/user"] || {};
       return user;
@@ -283,6 +315,15 @@ export default {
     defaultCompany(data) {
       this.verifyPermissions();
     },
+    menus() {
+      this.getRouteFromMenu(this.$route.name);
+    },
+    $route() {
+      this.route = {
+        color: "var(--header-primary)",
+      };
+      this.getRouteFromMenu(this.$route.name);
+    },
   },
 
   methods: {
@@ -298,7 +339,18 @@ export default {
     isSimple() {
       return this.defaultCompany.domainType === "simple";
     },
-
+    getRouteFromMenu(routeName) {
+      if (!Array.isArray(this.menus)) return;
+      this.menus.forEach((category) => {
+        if (Array.isArray(category.menus)) {
+          const foundMenu = category.menus.find((m) => m.route === routeName);
+          if (foundMenu) {
+            this.route = foundMenu;
+            return;
+          }
+        }
+      });
+    },
     verifyPermissions() {
       let user = this.$copyObject(this.user);
       this.companies.forEach((company) => {
