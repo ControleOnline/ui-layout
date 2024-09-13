@@ -47,21 +47,19 @@
         <div v-if="this.$q.screen.gt.sm" class="q-gutter-sm items-center row">
           <q-item
             v-ripple
-
-        :style="{
-          'font-size': '28px',
-          'font-weight': '500',
-          color: route.color || 'var(--secondary)'
-        }"
-
+            :style="{
+              'font-size': '28px',
+              'font-weight': '500',
+              color: route.color || 'var(--secondary)',
+            }"
           >
-          <q-item-section
-            avatar
-            v-if="route"
-            :style="{ color: route.color || 'var(--secondary)' }"
-          >
-            <q-icon :name="route.icon" size="36px" />
-          </q-item-section>
+            <q-item-section
+              avatar
+              v-if="route"
+              :style="{ color: route.color || 'var(--secondary)' }"
+            >
+              <q-icon :name="route.icon" size="36px" />
+            </q-item-section>
             <q-item-section no-wrap>
               <q-item-label class="module-tittle">{{
                 $tt("route", "title", this.$route.name)
@@ -204,7 +202,7 @@
         :style="{
           'font-size': '28px',
           'font-weight': '500',
-          color: route.color || 'var(--secondary)'
+          color: route.color || 'var(--secondary)',
         }"
       >
         <q-item v-ripple>
@@ -329,6 +327,7 @@ export default {
   methods: {
     ...mapActions({
       getCompanies: "people/myCompanies",
+      getRoute: "routes/getItems",
     }),
     onClickmenu() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
@@ -350,6 +349,11 @@ export default {
           }
         }
       });
+
+      if (!this.route.name)
+        this.getRoute({ route: routeName }).then((result) => {
+          if (result?.lenght > 0) this.route = result[0];
+        });
     },
     verifyPermissions() {
       let user = this.$copyObject(this.user);
