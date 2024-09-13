@@ -345,6 +345,7 @@ export default {
           const foundMenu = category.menus.find((m) => m.route === routeName);
           if (foundMenu) {
             this.route = foundMenu;
+            this.$store.dispatch("configs/currentModule", this.route.module);
             return;
           }
         }
@@ -352,7 +353,10 @@ export default {
 
       if (!this.route.name)
         this.getRoute({ route: routeName }).then((result) => {
-          if (result?.lenght > 0) this.route = result[0];
+          if (result?.lenght > 0) {
+            this.route = result[0];
+            this.$store.dispatch("configs/currentModule", this.route.module.replace(/\D/g, ''));
+          }
         });
     },
     verifyPermissions() {
