@@ -21,7 +21,6 @@ export default {
 
     setColors() {
       let url = this.$entrypoint + "/themes-colors.css";
-      console.log(url);
       document.head.innerHTML += `<link rel="stylesheet" href="${url}">`;
     },
 
