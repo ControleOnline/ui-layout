@@ -11,7 +11,7 @@
     >
       <div class="row q-col-gutter-md">
         <div
-          class="q-pa-md col-6 col-md-2 col-lg-2 col-xl-2 d-flex justify-center"
+          class="q-pa-md col-4 col-md-2 col-lg-2 col-xl-2 d-flex justify-center"
           v-for="(item, index) in mItem.menus"
           :key="index"
         >
@@ -24,12 +24,21 @@
           >
             <q-card-section class="q-pa-md">
               <q-avatar class="big-icon">
-                <q-icon :name="item.icon" color="white" size="50px" />
+                <q-icon
+                  :name="item.icon"
+                  color="white"
+                  :size="this.$q.screen.gt.sm ? '50px' : '30px'"
+                />
               </q-avatar>
             </q-card-section>
             <q-card-section class="q-pa-md">
               <div
                 class="text-center larger-text text-weight-medium text-white"
+                :style="
+                  this.$q.screen.gt.sm
+                    ? { 'font-size': '18px' }
+                    : { 'font-size': '14px' }
+                "
               >
                 {{ $tt("menu", "menu", item.label) }}
               </div>
