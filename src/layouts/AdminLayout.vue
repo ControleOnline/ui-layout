@@ -71,7 +71,6 @@
         <div
           class="q-gutter-sm row items-center no-wrap current-user-container"
         >
-          <Language />
           <Notifications />
           <q-btn icon="account_circle" flat round>
             <q-tooltip>{{ $tt("menu", "configs", "myAccount") }}</q-tooltip>
@@ -116,6 +115,19 @@
                         }}</q-item-label>
                       </q-item-section>
                     </q-item>
+                    <q-item
+                      v-if="user?.isSuperAdmin"
+                      :to="{ name: 'ConfigsIndex' }"
+                      exact
+                    >
+                      <q-item-section avatar>
+                        <q-icon name="settings" />
+                      </q-item-section>
+                      <q-item-section side>
+                        <Language />
+                      </q-item-section>
+                    </q-item>
+
                     <div class="text-body2 text-center"></div>
                   </q-list>
                 </div>
@@ -355,7 +367,10 @@ export default {
         this.getRoute({ route: routeName }).then((result) => {
           if (result?.lenght > 0) {
             this.route = result[0];
-            this.$store.dispatch("configs/currentModule", this.route.module.replace(/\D/g, ''));
+            this.$store.dispatch(
+              "configs/currentModule",
+              this.route.module.replace(/\D/g, "")
+            );
           }
         });
     },
