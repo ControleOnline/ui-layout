@@ -44,6 +44,7 @@
             <MyCompanies />
           </q-toolbar>
         </div>
+        <!--
         <div v-if="this.$q.screen.gt.sm" class="q-gutter-sm items-center row">
           <q-item
             v-ripple
@@ -67,7 +68,7 @@
             </q-item-section>
           </q-item>
         </div>
-
+      -->
         <div
           class="q-gutter-sm row items-center no-wrap current-user-container"
         >
@@ -208,8 +209,13 @@
     </q-drawer>
     <q-page-container class="GPL__page-container">
       <q-scroll-observer horizontal @scroll="onScroll"></q-scroll-observer>
+
+      <div class="company-title">
+        {{ myCompany.alias }}
+      </div>
+
       <div
-        v-if="!this.$q.screen.gt.sm && menus && route"
+        v-if="menus && route"
         class="title-page"
         :style="{
           'font-size': '28px',
@@ -440,6 +446,11 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+.company-title
+  position: absolute
+  top: 80px
+  left: 50%
+  transform: translate(-50%, -50%)
 .pageloader
   position: relative
   text-align: center
