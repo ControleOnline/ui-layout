@@ -61,8 +61,6 @@ export default {
   display: block
   margin: auto
   margin-top: 3px
-  min-height: 50px
-  height: 50px
   max-height: 100%
   max-width: 140px
 .logo-container a
@@ -70,8 +68,6 @@ export default {
 .main-logo
   display: block
   margin-top: 3px
-  min-height: 50px
-  height: 50px
   max-width: 100%
   max-height: 100%
 .bg-image

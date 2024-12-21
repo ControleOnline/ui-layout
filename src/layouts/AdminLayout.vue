@@ -22,7 +22,7 @@
         />
         <div class="q-gutter-sm items-center row logo-container">
           <router-link
-            v-if="this.$q.screen.gt.sm && myCompany && myCompany.logo"
+            v-if="myCompany && myCompany.logo"
             v-bind:to="'/'"
             tag="a"
           >
@@ -31,11 +31,6 @@
               class="current-logo"
             />
           </router-link>
-          <img
-            v-else-if="myCompany && myCompany.logo"
-            :src="'//' + myCompany.logo.domain + myCompany.logo.url"
-            class="current-logo"
-          />
         </div>
         <div
           class="q-gutter-sm row items-center no-wrap current-logo-container"
@@ -116,13 +111,15 @@
                         }}</q-item-label>
                       </q-item-section>
                     </q-item>
-                    <q-item
-                      v-if="user?.isSuperAdmin"
-                      :to="{ name: 'ConfigsIndex' }"
-                      exact
-                    >
+                    <q-item exact>
                       <q-item-section avatar>
-                        <q-icon name="settings" />
+                        <router-link
+                          v-if="user?.isSuperAdmin"
+                          :to="{ name: 'TranslateIndex' }"
+                        >
+                          <q-icon name="g_translate" />
+                        </router-link>
+                        <q-icon v-else name="g_translate" />
                       </q-item-section>
                       <q-item-section side>
                         <Language />
@@ -447,10 +444,12 @@ export default {
 
 <style lang="sass" scoped>
 .company-title
-  position: absolute
-  top: 80px
+  position: fixed
+  top: 55px
   left: 50%
   transform: translate(-50%, -50%)
+  color: white
+  z-index: 999999
 .pageloader
   position: relative
   text-align: center
@@ -461,8 +460,6 @@ export default {
   display: block
   margin: auto
   margin-top: 3px
-  min-height: 50px
-  height: 50px
   max-height: 100%
   max-width: 140px
 .logo-container a
@@ -470,8 +467,6 @@ export default {
 .main-logo
   display: block
   margin-top: 3px
-  min-height: 50px
-  height: 50px
   max-width: 100%
   max-height: 100%
 .bg-image
