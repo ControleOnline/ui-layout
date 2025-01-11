@@ -243,11 +243,16 @@
       <router-view />
     </q-page-container>
   </q-layout>
-  <div v-else class="row">
+  <div v-else-if="companies.length > 0" class="row">
     <div class="col-12 pageloader">
       <MyCompanies />
       <span>Você não tem permissão para acessar este aplicativo</span><br />
       <q-btn color="primary" label="Sair" size="sm" @click="onLogout" />
+    </div>
+  </div>
+  <div v-else class="row">
+    <div class="col-12 pageloader">
+     <Company />
     </div>
   </div>
 </template>
@@ -262,7 +267,7 @@ import acl from "@controleonline/ui-legacy/ui-common/src/utils/acl";
 import md5 from "md5";
 import { LocalStorage } from "quasar";
 import { mapActions, mapGetters } from "vuex";
-
+import Company from "@controleonline/ui-common/src/components/Common/Company.vue";
 export default {
   name: "AdminLayout",
 
@@ -272,6 +277,7 @@ export default {
     DarkMode,
     Language,
     Notifications,
+    Company
   },
 
   data() {
