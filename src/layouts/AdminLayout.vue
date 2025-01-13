@@ -252,7 +252,7 @@
   </div>
   <div v-else class="row">
     <div class="col-12 pageloader">
-     <Company />
+      <Company @saved="companyCreated" />
     </div>
   </div>
 </template>
@@ -277,7 +277,7 @@ export default {
     DarkMode,
     Language,
     Notifications,
-    Company
+    Company,
   },
 
   data() {
@@ -298,8 +298,7 @@ export default {
   },
 
   created() {
-    this.discoveryMyCompanyies();
-    this.getRouteFromMenu(this.$route.name);
+    this.init();
   },
 
   computed: {
@@ -352,6 +351,13 @@ export default {
     }),
     onClickmenu() {
       this.leftDrawerOpen = !this.leftDrawerOpen;
+    },
+    companyCreated() {
+      this.init();
+    },
+    init() {
+      this.discoveryMyCompanyies();
+      this.getRouteFromMenu(this.$route.name);
     },
     onScroll(info) {
       if (info.position > 0) this.leftDrawerOpen = false;
