@@ -37,6 +37,9 @@
         >
           <q-toolbar class="">
             <MyCompanies />
+            <div class="company-title" v-if="this.$q.screen.gt.sm">
+              {{ myCompany.alias }}
+            </div>
           </q-toolbar>
         </div>
         <!--
@@ -207,10 +210,7 @@
     <q-page-container class="GPL__page-container">
       <q-scroll-observer horizontal @scroll="onScroll"></q-scroll-observer>
 
-      <div class="company-title">
-        {{ myCompany.alias }}
-      </div>
-
+      <!--
       <div
         v-if="menus && route"
         class="title-page"
@@ -229,16 +229,12 @@
             <q-icon :name="route.icon" size="36px" />
           </q-item-section>
           <q-item-section no-wrap>
-            {{ $tt("route", "title", this.$route.name) }}
+         d   {{ $tt("route", "title", this.$route.name) }}d
           </q-item-section>
         </q-item>
-        <!--
-        <q-separator
-          inset
-          :style="{ height: '2px', 'background-color': route.color }"
-        />
-        -->
+
       </div>
+    -->
 
       <router-view />
     </q-page-container>
@@ -456,12 +452,7 @@ export default {
 
 <style lang="sass" scoped>
 .company-title
-  position: fixed
-  top: 55px
-  left: 50%
-  transform: translate(-50%, -50%)
-  color: white
-  z-index: 999999
+  margin-left: 20px
 .pageloader
   position: relative
   text-align: center
