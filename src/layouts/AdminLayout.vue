@@ -136,7 +136,13 @@
                 <div class="column items-stretch justify-between">
                   <div class="text-center">
                     <q-avatar size="64px">
-                      <q-img :src="user.avatar || gravatar" />
+                      <q-img
+                        :src="
+                          user.avatar
+                            ? user.avatar.domain + user.avatar.url
+                            : gravatar
+                        "
+                      />
                     </q-avatar>
                   </div>
                   <div class="text-body2 text-center">
