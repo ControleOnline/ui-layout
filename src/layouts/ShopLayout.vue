@@ -23,12 +23,14 @@
           <q-menu>
             <q-list style="min-width: 100px">
               <q-item clickable v-close-popup>
-                <q-item-section v-if="this.$auth.isLogged" @click="$auth.logout()"
+                <q-item-section
+                  v-if="this.$auth.isLogged"
+                  @click="this.$auth.logout()"
                   >Deslogar</q-item-section
                 >
                 <q-item-section
                   v-else
-                  @click="$auth.toLogin()"
+                  @click="this.$auth.toLogin()"
                   :to="{
                     name: 'LoginIndex',
                   }"
@@ -82,7 +84,6 @@ export default {
       defaultCompany: "people/defaultCompany",
       isLoading: "people/isLoading",
     }),
-
   },
   data() {
     return {};
@@ -98,7 +99,6 @@ export default {
         );
       }
     },
-
   },
 };
 </script>
