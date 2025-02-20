@@ -31,9 +31,7 @@
                 <q-item-section
                   v-else
                   @click="this.$auth.toLogin()"
-                  :to="{
-                    name: 'LoginIndex',
-                  }"
+  
                   >Iniciar sessão</q-item-section
                 >
               </q-item>
