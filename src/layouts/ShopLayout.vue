@@ -23,11 +23,12 @@
           <q-menu>
             <q-list style="min-width: 100px">
               <q-item clickable v-close-popup>
-                <q-item-section v-if="isLogged" @click="logout"
+                <q-item-section v-if="this.$auth.isLogged" @click="$auth.logout()"
                   >Deslogar</q-item-section
                 >
                 <q-item-section
                   v-else
+                  @click="$auth.toLogin()"
                   :to="{
                     name: 'LoginIndex',
                   }"
@@ -81,12 +82,7 @@ export default {
       defaultCompany: "people/defaultCompany",
       isLoading: "people/isLoading",
     }),
-    isLogged() {
-      return (
-        this.$store.getters["auth/user"] !== null &&
-        this.$store.getters["auth/user"].api_key
-      );
-    },
+
   },
   data() {
     return {};
@@ -102,9 +98,7 @@ export default {
         );
       }
     },
-    logout() {
-      this.$store.dispatch("auth/logOut");
-    },
+
   },
 };
 </script>

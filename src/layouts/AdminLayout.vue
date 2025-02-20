@@ -206,7 +206,7 @@
             <Menu
               v-if="isSimple() != true"
               :context="'super_admin'"
-              :people="this.user"
+              :people="this.$auth.user"
               @clickmenu="onClickmenu"
             />
           </q-list>
@@ -312,18 +312,15 @@ export default {
     menus() {
       return this.$store.getters["theme/menus"];
     },
-    user() {
-      let user = this.$store.getters["auth/user"] || {};
-      return user;
-    },
+
     style() {
       return "background: #182840";
     },
     gravatar() {
-      if (this.user.email === undefined) {
+      if (this.$auth.user.email === undefined) {
         return "";
       }
-      return `https://www.gravatar.com/avatar/${md5(this.user.email)}?s=400`;
+      return `https://www.gravatar.com/avatar/${md5(this.$auth.user.email)}?s=400`;
     },
   },
 
@@ -392,7 +389,7 @@ export default {
         });
     },
     verifyPermissions() {
-      let user = this.$copyObject(this.user);
+      let user = this.$copyObject(this.$auth.user);
       this.companies.forEach((company) => {
         company?.permission?.forEach((item) => {
           if (this.permissions.indexOf(item) === -1) {
@@ -449,8 +446,7 @@ export default {
         });
     },
     onLogout() {
-      this.$store.dispatch("auth/logOut");
-      this.$router.push("/login");
+      this.$auth.logout();
     },
   },
 };
