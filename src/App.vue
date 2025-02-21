@@ -1,5 +1,5 @@
 <template>
-  <div id="q-app">
+  <div>
     <Analytics />
     <ThemeConfig />
     <Translate />
@@ -85,7 +85,11 @@ export default {
 }
 
 #q-app {
-  width: calc(100% / var(--zoom-level)) !important;
-  height: calc(100% / var(--zoom-level)) !important;
+  width: calc(100vw / var(--zoom-level)) !important;
+  height: calc(100vh / var(--zoom-level)) !important;
+  overflow: auto;
+}
+body {
+  overflow: hidden;
 }
 </style>
