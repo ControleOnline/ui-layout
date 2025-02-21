@@ -408,7 +408,7 @@ export default {
             if (item.indexOf("super") !== -1) {
               user.isSuperAdmin = true;
             }
-            this.$store.commit("auth/LOGIN_SET_USER", user);
+            this.$auth.persist(user);
           }
         });
       });
