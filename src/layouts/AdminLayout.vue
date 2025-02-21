@@ -5,7 +5,7 @@
     </div>
   </div>
   <q-layout
-    v-else-if="user.isAdmin && !disabled"
+    v-else-if="this.$auth.user.isAdmin && !disabled"
     view="lHh Lpr fff"
     class="bg-image"
   >
@@ -138,15 +138,16 @@
                     <q-avatar size="64px">
                       <q-img
                         :src="
-                          user.avatar
-                            ? user.avatar.domain + user.avatar.url
+                          this.$auth.user.avatar
+                            ? this.$auth.user.avatar.domain +
+                              this.$auth.user.avatar.url
                             : gravatar
                         "
                       />
                     </q-avatar>
                   </div>
                   <div class="text-body2 text-center">
-                    {{ user.realname || "John Doe" }}
+                    {{ this.$auth.user.realname || "John Doe" }}
                   </div>
                   <div class="text-body2 text-center">
                     <DarkMode />
@@ -320,7 +321,9 @@ export default {
       if (this.$auth.user.email === undefined) {
         return "";
       }
-      return `https://www.gravatar.com/avatar/${md5(this.$auth.user.email)}?s=400`;
+      return `https://www.gravatar.com/avatar/${md5(
+        this.$auth.user.email
+      )}?s=400`;
     },
   },
 
@@ -389,6 +392,7 @@ export default {
         });
     },
     verifyPermissions() {
+      console.log(this.$auth)
       let user = this.$copyObject(this.$auth.user);
       this.companies.forEach((company) => {
         company?.permission?.forEach((item) => {

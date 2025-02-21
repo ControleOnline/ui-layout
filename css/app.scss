@@ -1,0 +1,59 @@
+// app global css in SCSS form
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+  font-family: "Poppins", sans-serif;
+}
+
+.bg-image {
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  -webkit-transition: background opacity 3s ease-in-out;
+  -moz-transition: background opacity 3s ease-in-out;
+  -o-transition: background opacity 3s ease-in-out;
+  transition: background opacity 3s ease-in-out;
+}
+
+main > .q-card {
+  box-shadow: none !important;
+}
+
+/* Title of pages */
+.module-tittle {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.logo-container {
+  width: 100vw;
+  position: absolute;
+}
+
+.current-logo-container {
+  margin-top: -10px !important;
+}
+
+.current-user-container {
+  position: absolute;
+  right: 10px;
+}
+
+.menu-button {
+  z-index: 1000000;
+}
+
+.fullscreen {
+  max-width: unset;
+  max-height: unset;
+}
+.sticky-bottom {
+  bottom: 0;
+  position: sticky;
+  z-index: 1;
+}
+.sticky-top {
+  top: 0;
+  position: sticky;
+  z-index: 1;
+}

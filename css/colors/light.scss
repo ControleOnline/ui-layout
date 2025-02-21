@@ -1,0 +1,30 @@
+.body--light {
+  .default-table .q-table tbody tr:nth-child(even),
+  .default-table .q-table tbody tr:nth-child(even) td:first-child,
+  .default-table .q-table tbody tr:nth-child(even) td:last-child {
+    background-color: var(--bg-even-light);
+  }
+  .default-table .q-table tbody tr:nth-child(odd),
+  .default-table .q-table tbody tr:nth-child(odd) td:first-child,
+  .default-table .q-table tbody tr:nth-child(odd) td:last-child {
+    background-color: var(--bg-odd-light);
+  }
+
+  header {
+    background-color: var(--bg-headers-light) !important;
+    color: var(--text-headers-light) !important;
+  }
+  .q-drawer-container > aside {
+    background-color: var(--bg-menu-light) !important;
+    color: var(--text-menu-light) !important;
+  }
+  .q-drawer-container .q-item__section--side {
+    color: var(--text-menu-light) !important;
+  }
+  aside .menu-avatar {
+    background-color: var(--bg-menu-avatar-light);
+  }
+  .q-layout__shadow:after {
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.24), 0 0px 10px rgba(0, 0, 0, 0.2) !important;
+  }
+}

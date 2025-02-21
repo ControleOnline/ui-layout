@@ -1,0 +1,31 @@
+.text-disabled {
+  color: #babaca;
+}
+.btn-positive {
+  background: var(--btn-positive);
+  color: var(--text-positive);
+}
+.btn-danger {
+  background: var(--q-btn-negative);
+  color: var(--text-negative);
+}
+.btn-primary {
+  background: var(--btn-primary);
+  color: var(--text-primary);
+}
+.loading-primary {
+  color: var(--primary);
+}
+
+.default-table .q-table thead,
+.default-table .q-table thead th {
+  background-color: var(--secondary) !important;
+  color: var(--text-secondary);
+}
+
+.bg {
+  background-color: var(--bg-light);
+}
+.q-dark .bg {
+  background-color: var(--bg-dark);
+}
