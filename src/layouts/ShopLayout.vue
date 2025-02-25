@@ -1,11 +1,19 @@
 <template>
   <q-layout view="lHh lpr lFf" class="bg-image">
-    <q-header elevated class="shadow-2 q-pa-sm">
+    <q-header class="q-pa-sm">
       <q-toolbar>
-        <q-btn flat round dense icon="menu" class="q-mr-sm" />
         <q-toolbar-title>
-          <!-- Aqui vai a logomarca do cliente -->
-          Controle Online
+          <div class="q-gutter-sm items-center row logo-shop">
+            <router-link v-bind:to="'/'" tag="a" class="primary">
+              <img
+                v-if="defaultCompany.logo"
+                :src="
+                  '//' + defaultCompany.logo.domain + defaultCompany.logo.url
+                "
+                class="q-pa-sm shop-logo"
+              />
+            </router-link>
+          </div>
         </q-toolbar-title>
 
         <q-space />
@@ -28,10 +36,7 @@
                   @click="this.$auth.logout()"
                   >Deslogar</q-item-section
                 >
-                <q-item-section
-                  v-else
-                  @click="this.$auth.toLogin()"
-  
+                <q-item-section v-else @click="this.$auth.toLogin()"
                   >Iniciar sessão</q-item-section
                 >
               </q-item>
@@ -63,7 +68,7 @@
         </q-btn>
       </q-toolbar>
 
-      <q-toolbar> Aqui vai as categorias do menu </q-toolbar>
+      <q-toolbar> <Menu /></q-toolbar>
     </q-header>
     <q-page-container>
       <router-view />
@@ -74,9 +79,11 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 
+import Menu from "@controleonline/ui-shop/src/components/menu/Menu.vue";
+
 export default {
   name: "ShopLayout",
-  components: {},
+  components: { Menu },
   computed: {
     ...mapGetters({
       defaultCompany: "people/defaultCompany",
@@ -100,3 +107,9 @@ export default {
   },
 };
 </script>
+<style>
+.shop-logo {
+  height: 80px;
+  width: auto;
+}
+</style>
