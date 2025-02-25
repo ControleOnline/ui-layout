@@ -71,7 +71,7 @@
       <q-toolbar> <Menu /></q-toolbar>
     </q-header>
     <q-page-container>
-      <router-view />
+      <router-view :key="key" />
     </q-page-container>
   </q-layout>
 </template>
@@ -91,7 +91,15 @@ export default {
     }),
   },
   data() {
-    return {};
+    return { key: 0 };
+  },
+  watch: {
+    $route: {
+      handler: function (current, preview) {
+        this.key++;
+      },
+      deep: true,
+    },
   },
   methods: {
     style() {

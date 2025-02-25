@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="bg-image k" :style="style()">
     <q-page-container>
-      <router-view />
+      <router-view :key="key" />
     </q-page-container>
   </q-layout>
 </template>
@@ -9,42 +9,47 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 
-
-
 export default {
   name: "MainLayout",
   components: {},
 
   methods: {
-    ...mapActions({
-    }),
+    ...mapActions({}),
 
     style() {
       if (this.defaultCompany && this.defaultCompany.theme.background) {
-        return "min-height: 125vh;background-image: url('//" + this.defaultCompany.theme.background.domain + this.defaultCompany.theme.background.url + "')";
+        return (
+          "min-height: 125vh;background-image: url('//" +
+          this.defaultCompany.theme.background.domain +
+          this.defaultCompany.theme.background.url +
+          "')"
+        );
       }
     },
   },
 
-  mounted() {
-
-  },
+  mounted() {},
   computed: {
     ...mapGetters({
       defaultCompany: "people/defaultCompany",
       isLoading: "people/isLoading",
-    })
+    }),
   },
   watch: {
+    $route: {
+      handler: function (current, preview) {
+        this.key++;
+      },
+      deep: true,
+    },
     isLoading(isLoading) {
-      if (isLoading)
-        this.$q.loading.show();
-      else
-        this.$q.loading.hide();
+      if (isLoading) this.$q.loading.show();
+      else this.$q.loading.hide();
     },
   },
   data() {
     return {
+      key: 0,
     };
   },
 };
