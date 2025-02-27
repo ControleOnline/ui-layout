@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh lpr lFf" class="bg-image">
-    <q-header class="q-pa-sm">
+    <q-header class="q-pa-none q-ma-none">
       <q-toolbar>
         <q-toolbar-title>
           <div class="q-gutter-sm items-center row logo-shop">
@@ -18,10 +18,16 @@
 
         <q-space />
 
-        <q-input dark dense standout class="q-ml-md" style="min-width: 30%">
+        <q-input
+          dense
+          class="q-ml-md"
+          v-model="searchTerm"
+          style="min-width: 30%"
+          @keyup.enter="searchMethod"
+        >
           <template v-slot:append>
-            <q-icon name="search" />
-            <q-icon class="cursor-pointer" />
+            <q-icon name="search" color="black" @click="searchMethod" />
+            <q-icon class="cursor-pointer" @click="searchMethod" />
           </template>
         </q-input>
 
@@ -68,7 +74,7 @@
         </q-btn>
       </q-toolbar>
 
-      <q-toolbar> <Menu /></q-toolbar>
+      <q-toolbar class="q-pa-none q-ma-none"> <Menu /></q-toolbar>
     </q-header>
     <q-page-container>
       <router-view :key="key" />
@@ -91,7 +97,11 @@ export default {
     }),
   },
   data() {
-    return { key: 0 };
+    return { searchTerm: "", key: 0 };
+  },
+  created() {
+    let search = decodeURIComponent(this.$route.params.q);
+    if (search != "undefined") this.searchTerm = search;
   },
   watch: {
     $route: {
@@ -102,15 +112,16 @@ export default {
     },
   },
   methods: {
-    style() {
-      if (this.defaultCompany && this.defaultCompany.background) {
-        return (
-          "min-height: 125vh;background-image: url('//" +
-          this.defaultCompany.theme.background.domain +
-          this.defaultCompany.theme.background.url +
-          "')"
-        );
-      }
+    searchMethod() {
+      if (this.searchTerm == "")
+        this.$router.push({
+          name: "HomeIndex",
+        });
+      else
+        this.$router.push({
+          name: "ShopSearch",
+          params: { q: this.searchTerm },
+        });
     },
   },
 };
