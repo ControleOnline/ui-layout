@@ -1,81 +1,8 @@
 <template>
   <q-layout view="lHh lpr lFf" class="bg-image">
-    <q-header class="q-pa-none q-ma-none">
-      <q-toolbar>
-        <q-toolbar-title>
-          <div class="q-gutter-sm items-center row logo-shop">
-            <router-link v-bind:to="'/'" tag="a" class="primary">
-              <img
-                v-if="defaultCompany.logo"
-                :src="
-                  '//' + defaultCompany.logo.domain + defaultCompany.logo.url
-                "
-                class="q-pa-sm shop-logo"
-              />
-            </router-link>
-          </div>
-        </q-toolbar-title>
+    <Header />
 
-        <q-space />
-
-        <q-input
-          dense
-          class="q-ml-md"
-          v-model="searchTerm"
-          style="min-width: 30%"
-          @keyup.enter="searchMethod"
-        >
-          <template v-slot:append>
-            <q-icon name="search" color="black" @click="searchMethod" />
-            <q-icon class="cursor-pointer" @click="searchMethod" />
-          </template>
-        </q-input>
-
-        <q-space />
-
-        <q-btn size="14px" label="Minha conta" icon="person" no-caps flat stack>
-          <q-menu>
-            <q-list style="min-width: 100px">
-              <q-item clickable v-close-popup>
-                <q-item-section
-                  v-if="this.$auth.isLogged"
-                  @click="this.$auth.logout()"
-                  >Deslogar</q-item-section
-                >
-                <q-item-section v-else @click="this.$auth.toLogin()"
-                  >Iniciar sessão</q-item-section
-                >
-              </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section>Meus Pedidos</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
-        <!--
-            Para este button precisa criar o contador de itens adicionados no carrinho
-            e na sessão itens do carrinho precisa listar os itens adicionados ao carrinho
-          -->
-        <q-btn
-          size="14px"
-          label="Meu carrinho"
-          icon="pershopping_cartson"
-          no-caps
-          flat
-          stack
-        >
-          <q-menu>
-            <q-list style="min-width: 100px">
-              <q-item clickable v-close-popup to="/cart">
-                <q-item-section>Itens do carrinho</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
-      </q-toolbar>
-
-      <q-toolbar class="q-pa-none q-ma-none"> <Menu /></q-toolbar>
-    </q-header>
+    <q-toolbar class="tool-bar q-pa-none q-ma-none"> <Menu /></q-toolbar>
     <q-page-container>
       <router-view :key="key" />
     </q-page-container>
@@ -84,12 +11,13 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import Header from "@controleonline/ui-layout/src/components/Header.vue";
 
 import Menu from "@controleonline/ui-shop/src/components/menu/Menu.vue";
 
 export default {
   name: "ShopLayout",
-  components: { Menu },
+  components: { Menu, Header },
   computed: {
     ...mapGetters({
       defaultCompany: "people/defaultCompany",
@@ -127,8 +55,7 @@ export default {
 };
 </script>
 <style>
-.shop-logo {
-  height: 80px;
-  width: auto;
+.tool-bar {
+  margin-top: 65px;
 }
 </style>

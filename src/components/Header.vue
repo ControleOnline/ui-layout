@@ -2,7 +2,7 @@
   <q-header elevated height-hint="64">
     <q-toolbar class="GPL__toolbar" style="height: 64px">
       <q-btn
-        v-if="defaultCompany.domainType == 'ERP'"
+        v-if="$appType == 'ERP'"
         flat
         dense
         round
@@ -13,11 +13,7 @@
       />
       <div class="q-gutter-sm items-center row logo-container">
         <router-link
-          v-if="
-            defaultCompany.domainType == 'SHOP' &&
-            defaultCompany &&
-            defaultCompany.logo
-          "
+          v-if="$appType == 'SHOP' && defaultCompany && defaultCompany.logo"
           v-bind:to="'/'"
           tag="a"
         >
@@ -140,11 +136,7 @@
     </q-toolbar>
   </q-header>
 
-  <q-drawer
-    v-if="defaultCompany.domainType == 'ERP'"
-    v-model="leftDrawerOpen"
-    :width="270"
-  >
+  <q-drawer v-if="$appType == 'ERP'" v-model="leftDrawerOpen" :width="270">
     <q-scroll-area class="fit">
       <q-toolbar class="q-pa-md">
         <q-toolbar-title class="text-center">
@@ -165,7 +157,6 @@
       <div class="q-pt-md q-px-sm column">
         <q-list padding>
           <q-item
-            v-if="isSimple() == false"
             v-ripple
             clickable
             class="GNL__drawer-item"
@@ -181,7 +172,6 @@
           </q-item>
           <q-separator inset class="q-my-sm" />
           <Menu
-            v-if="isSimple() != true"
             :context="'super_admin'"
             :people="this.$auth.user"
             @clickmenu="onClickmenu"
@@ -282,7 +272,6 @@ export default {
 
   methods: {
     ...mapActions({
-      getCompanies: "people/myCompanies",
       getRoute: "routes/getItems",
     }),
     onScroll(info) {
@@ -293,9 +282,6 @@ export default {
     },
     init() {
       this.getRouteFromMenu(this.$route.name);
-    },
-    isSimple() {
-      return this.defaultCompany.domainType === "simple";
     },
     getRouteFromMenu(routeName) {
       if (!Array.isArray(this.menus)) return;
