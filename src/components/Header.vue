@@ -14,7 +14,7 @@
 
       <div
         v-if="$appType == 'ERP'"
-        class="q-gutter-sm items-center row logo-container"
+        class="q-gutter-sm items-center row current-logo-container"
       >
         <router-link v-if="myCompany && myCompany.logo" v-bind:to="'/'" tag="a">
           <img
@@ -27,14 +27,14 @@
       <div class="q-gutter-sm items-center no-wrap full-width">
         <q-toolbar class="full-width">
           <router-link
-            class="current-logo-container"
+            class="main-logo-container"
             v-if="$appType == 'SHOP' && defaultCompany && defaultCompany.logo"
             v-bind:to="'/'"
             tag="a"
           >
             <img
               :src="'//' + defaultCompany.logo.domain + defaultCompany.logo.url"
-              class="current-logo"
+              class="main-logo"
             />
           </router-link>
           <MyCompanies />
@@ -42,7 +42,7 @@
             {{ myCompany?.alias }}
           </div>
           <div
-            v-if="$appType == 'SHOP'"
+            v-if="$appType == 'SHOP' && this.$q.screen.gt.xs"
             class="search q-gutter-sm items-center row"
           >
             <q-input
@@ -354,24 +354,25 @@ export default {
 <style lang="sass" scoped>
 .company-title
   margin-left: 20px
-.logo-container
-  width: 100%
-.current-logo
+.main-logo-container
+  padding-right: 20px
+.current-logo, .main-logo
   display: block
   margin: auto
   margin-top: 3px
   max-height: 100%
   max-width: 140px
-.logo-container a
+.current-logo-container a
   margin: auto
 .main-logo
   display: block
   margin-top: 3px
-  max-width: 100%
-  max-height: 100%
+.current-logo-container
+  width: 100vw
+  position: absolute
 .search
   position: absolute
-  width: 500px
+  width: 400px
   left: 50%
-  margin-left: -250px
+  margin-left: -200px
 </style>
