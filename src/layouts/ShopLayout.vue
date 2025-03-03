@@ -1,8 +1,9 @@
 <template>
   <q-layout view="lHh lpr lFf" class="bg-image">
     <Header />
-
-    <q-toolbar class="tool-bar q-pa-none q-ma-none"> <Menu /></q-toolbar>
+    <q-toolbar class="tool-bar q-pa-none q-ma-none">
+      <Menu />
+    </q-toolbar>
     <q-page-container>
       <router-view :key="key" />
     </q-page-container>
@@ -25,11 +26,9 @@ export default {
     }),
   },
   data() {
-    return {  key: 0 };
+    return { key: 0 };
   },
-  created() {
-
-  },
+  created() {},
   watch: {
     $route: {
       handler: function (current, preview) {
@@ -38,12 +37,10 @@ export default {
       deep: true,
     },
   },
-  methods: {
-
-  },
+  methods: {},
 };
 </script>
-<style>
+<style scoped>
 .tool-bar {
   margin-top: 65px;
 }
