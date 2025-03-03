@@ -15,14 +15,16 @@ export default {
 
   methods: {
     ...mapActions({}),
-
     style() {
       if (this.defaultCompany && this.defaultCompany.theme.background) {
         return (
-          "min-height: 125vh;background-image: url('//" +
+          "min-height: 125vh;"
+          +
+          this.$route.name === "LoginIndex" ?
+          "background-image: url('//" +
           this.defaultCompany.theme.background.domain +
           this.defaultCompany.theme.background.url +
-          "')"
+          "')":""
         );
       }
     },

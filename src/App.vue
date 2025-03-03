@@ -1,10 +1,8 @@
 <template>
-  <div>
-    <Analytics />
-    <ThemeConfig />
-    <Translate />
-    <router-view v-if="defaultCompany" />
-  </div>
+  <Analytics />
+  <ThemeConfig />
+  <Translate />
+  <router-view v-if="defaultCompany" />
 </template>
 <script>
 import Analytics from "@controleonline/ui-common/src/components/Common/Analytics";
@@ -88,6 +86,5 @@ export default {
   width: calc(100vw / var(--zoom-level)) !important;
   height: calc(100vh / var(--zoom-level)) !important;
   overflow: auto;
-  padding-bottom: 20px !important;
 }
 </style>
