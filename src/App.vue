@@ -89,7 +89,10 @@ export default {
   height: calc(100vh / var(--zoom-level)) !important;
   overflow: auto;
 }
+html,
 body {
   overflow: hidden;
+  width: 100vw;
+  height: 100vh;
 }
 </style>
