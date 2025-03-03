@@ -88,5 +88,6 @@ export default {
   width: calc(100vw / var(--zoom-level)) !important;
   height: calc(100vh / var(--zoom-level)) !important;
   overflow: auto;
+  padding-bottom: 20px !important;
 }
 </style>
