@@ -37,14 +37,10 @@
               class="current-logo"
             />
           </router-link>
-          <MyCompanies v-if="$appType == 'ERP'" />
-          <div
-            class="company-title"
-            v-if="$appType == 'ERP' && this.$q.screen.gt.sm"
-          >
+          <MyCompanies />
+          <div class="company-title" v-if="this.$q.screen.gt.sm">
             {{ myCompany?.alias }}
           </div>
-
           <div
             v-if="$appType == 'SHOP'"
             class="search q-gutter-sm items-center row"
