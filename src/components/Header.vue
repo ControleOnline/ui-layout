@@ -11,17 +11,11 @@
         icon="menu"
         class="q-mx-md menu-button"
       />
-      <div class="q-gutter-sm items-center row logo-container">
-        <router-link
-          v-if="$appType == 'SHOP' && defaultCompany && defaultCompany.logo"
-          v-bind:to="'/'"
-          tag="a"
-        >
-          <img
-            :src="'//' + defaultCompany.logo.domain + defaultCompany.logo.url"
-            class="current-logo"
-          />
-        </router-link>
+
+      <div
+        v-if="$appType == 'ERP'"
+        class="q-gutter-sm items-center row logo-container"
+      >
         <router-link v-if="myCompany && myCompany.logo" v-bind:to="'/'" tag="a">
           <img
             :src="'//' + myCompany.logo.domain + myCompany.logo.url"
@@ -29,11 +23,45 @@
           />
         </router-link>
       </div>
-      <div class="q-gutter-sm row items-center no-wrap current-logo-container">
-        <q-toolbar class="">
-          <MyCompanies />
-          <div class="company-title" v-if="this.$q.screen.gt.sm">
+
+      <div class="q-gutter-sm items-center no-wrap full-width">
+        <q-toolbar class="full-width">
+          <router-link
+            class="current-logo-container"
+            v-if="$appType == 'SHOP' && defaultCompany && defaultCompany.logo"
+            v-bind:to="'/'"
+            tag="a"
+          >
+            <img
+              :src="'//' + defaultCompany.logo.domain + defaultCompany.logo.url"
+              class="current-logo"
+            />
+          </router-link>
+          <MyCompanies v-if="$appType == 'ERP'" />
+          <div
+            class="company-title"
+            v-if="$appType == 'ERP' && this.$q.screen.gt.sm"
+          >
             {{ myCompany?.alias }}
+          </div>
+
+          <div
+            v-if="$appType == 'SHOP'"
+            class="search q-gutter-sm items-center row"
+          >
+            <q-input
+              v-if="$appType == 'SHOP'"
+              dense
+              class="full-width q-ml-md"
+              v-model="searchTerm"
+              style="min-width: 30%"
+              @keyup.enter="searchMethod"
+            >
+              <template v-slot:append>
+                <q-icon name="search" color="black" @click="searchMethod" />
+                <q-icon class="cursor-pointer" @click="searchMethod" />
+              </template>
+            </q-input>
           </div>
         </q-toolbar>
       </div>
@@ -212,7 +240,7 @@ export default {
       notifications: {
         count: 0,
       },
-
+      searchTerm: "",
       disabled: false,
 
       pageLoading: true,
@@ -281,6 +309,8 @@ export default {
       this.leftDrawerOpen = !this.leftDrawerOpen;
     },
     init() {
+      let search = decodeURIComponent(this.$route.params.q);
+      if (search != "undefined") this.searchTerm = search;
       this.getRouteFromMenu(this.$route.name);
     },
     getRouteFromMenu(routeName) {
@@ -307,7 +337,17 @@ export default {
           }
         });
     },
-
+    searchMethod() {
+      if (this.searchTerm == "")
+        this.$router.push({
+          name: "HomeIndex",
+        });
+      else
+        this.$router.push({
+          name: "ShopSearch",
+          params: { q: this.searchTerm },
+        });
+    },
     onLogout() {
       this.$auth.logout();
     },
@@ -333,4 +373,9 @@ export default {
   margin-top: 3px
   max-width: 100%
   max-height: 100%
+.search
+  position: absolute
+  width: 500px
+  left: 50%
+  margin-left: -250px
 </style>

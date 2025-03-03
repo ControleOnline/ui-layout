@@ -25,11 +25,10 @@ export default {
     }),
   },
   data() {
-    return { searchTerm: "", key: 0 };
+    return {  key: 0 };
   },
   created() {
-    let search = decodeURIComponent(this.$route.params.q);
-    if (search != "undefined") this.searchTerm = search;
+
   },
   watch: {
     $route: {
@@ -40,17 +39,7 @@ export default {
     },
   },
   methods: {
-    searchMethod() {
-      if (this.searchTerm == "")
-        this.$router.push({
-          name: "HomeIndex",
-        });
-      else
-        this.$router.push({
-          name: "ShopSearch",
-          params: { q: this.searchTerm },
-        });
-    },
+
   },
 };
 </script>
