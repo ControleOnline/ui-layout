@@ -48,3 +48,10 @@ main > .q-card {
   position: sticky;
   z-index: 1;
 }
+
+html,
+body {
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
