@@ -60,17 +60,6 @@ export default {
     },
   },
   created() {},
-  watch: {
-    /* 
-    isLoading(isLoading) {
-      if (isLoading) this.$q.loading.show();
-      else this.$q.loading.hide();
-    },
-    */
-    isAdmin(isAdmin) {
-      console.log("isAdmin", isAdmin);
-    },
-  },
 
   methods: {
     ...mapActions({}),
