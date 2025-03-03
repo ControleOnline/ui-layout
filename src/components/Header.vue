@@ -33,7 +33,7 @@
         <q-toolbar class="">
           <MyCompanies />
           <div class="company-title" v-if="this.$q.screen.gt.sm">
-            {{ myCompany.alias }}
+            {{ myCompany?.alias }}
           </div>
         </q-toolbar>
       </div>
