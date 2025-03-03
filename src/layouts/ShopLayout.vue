@@ -1,10 +1,10 @@
 <template>
   <q-layout view="lHh lpr lFf" class="bg-image">
     <Header />
-    <q-toolbar class="tool-bar q-pa-none q-ma-none">
-      <Menu />
-    </q-toolbar>
     <q-page-container>
+      <q-toolbar class="tool-bar q-pa-none q-ma-none">
+        <Menu />
+      </q-toolbar>
       <router-view :key="key" />
     </q-page-container>
   </q-layout>
@@ -40,8 +40,3 @@ export default {
   methods: {},
 };
 </script>
-<style scoped>
-.tool-bar {
-  margin-top: 65px;
-}
-</style>

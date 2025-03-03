@@ -1,6 +1,6 @@
 <template>
-  <q-header elevated height-hint="64">
-    <q-toolbar class="GPL__toolbar" style="height: 64px">
+  <q-header elevated :height-hint="header.height">
+    <q-toolbar class="GPL__toolbar" :style="{ height: header.height + 'px' }">
       <q-btn
         v-if="$appType == 'ERP'"
         flat
@@ -11,7 +11,6 @@
         icon="menu"
         class="q-mx-md menu-button"
       />
-
       <div
         v-if="$appType == 'ERP'"
         class="q-gutter-sm items-center row current-logo-container"
@@ -238,7 +237,7 @@ export default {
       },
       searchTerm: "",
       disabled: false,
-
+      header: { height: this.$q.screen.lt.sm ? 64 : 110 },
       pageLoading: true,
       leftDrawerOpen: false, //this.$q.screen.gt.sm,
       route: {
