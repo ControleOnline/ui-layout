@@ -256,10 +256,8 @@ export default {
       isLoading: "people/isLoading",
       myCompany: "people/currentCompany",
       companies: "people/companies",
+      menus: "theme/menus",
     }),
-    menus() {
-      return this.$store.getters["theme/menus"];
-    },
 
     style() {
       return "background: #182840";

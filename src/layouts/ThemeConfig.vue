@@ -1,15 +1,12 @@
-
 <script>
 import { mapActions, mapGetters } from "vuex";
-
 
 export default {
   name: "ThemeConfig",
   components: {},
   methods: {
     setTheme() {
-      if (!this.defaultCompany || this.themeLoaded)
-        return;
+      if (!this.defaultCompany || this.themeLoaded) return;
 
       this.setTitle();
       this.setColors();
@@ -41,19 +38,17 @@ export default {
   watch: {
     defaultCompany() {
       this.setTheme();
-    }
+    },
   },
   computed: {
     ...mapGetters({
       defaultCompany: "people/defaultCompany",
+      colors: "theme/colors",
     }),
-    colors() {
-      return this.$store.state.theme.colors;
-    }
   },
   data() {
     return {
-      themeLoaded: false
+      themeLoaded: false,
     };
   },
 };

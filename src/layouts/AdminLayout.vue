@@ -48,16 +48,10 @@ export default {
   computed: {
     ...mapGetters({
       companies: "people/companies",
+      isLoading: "acl/isLoading",
+      isAdmin: "acl/isAdmin",
+      disabled: "acl/disabled",
     }),
-    isLoading() {
-      return this.$store.getters["acl/isLoading"];
-    },
-    isAdmin() {
-      return this.$store.getters["acl/isAdmin"];
-    },
-    disabled() {
-      return this.$store.getters["acl/disabled"];
-    },
   },
   created() {},
 

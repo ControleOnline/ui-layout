@@ -61,10 +61,8 @@ export default {
   computed: {
     ...mapGetters({
       myCompany: "people/currentCompany",
+      menus: "theme/menus",
     }),
-    menus() {
-      return this.$copyObject(this.$store.getters["theme/menus"]);
-    },
   },
   created() {},
   methods: {
