@@ -26,7 +26,7 @@ export default {
     style() {
       if (this.defaultCompany && this.defaultCompany.theme.background) {
         let style = {
-          "min-height": "calc(100vw / var(--zoom-level))",
+          "min-height": "calc(100vh / var(--zoom-level))",
         };
         if (this.$route.name === "LoginIndex")
           style["background-image"] =
