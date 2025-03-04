@@ -71,7 +71,7 @@ export default {
     this.setIcon();
     this.setIndexRoute();
     this.peopleDefaultCompany();
-    this.setZoom();
+    //this.setZoom();
   },
   computed: {
     ...mapGetters({
@@ -87,6 +87,7 @@ export default {
 };
 </script>
 <style>
+/*
 #q-app,
 .q-menu.q-position-engine {
   transform: scale(var(--zoom-level)) !important;
@@ -98,4 +99,11 @@ export default {
   height: calc(100vh / var(--zoom-level)) !important;
   overflow: auto;
 }
+html,
+body {
+  overflow: hidden;
+  width: 100vw;
+  height: calc(100vh / var(--zoom-level)) !important;
+}
+*/
 </style>

@@ -48,10 +48,3 @@ main > .q-card {
   position: sticky;
   z-index: 1;
 }
-
-html,
-body {
-  overflow: hidden;
-  width: 100vw;
-  height: calc(100vh / var(--zoom-level)) !important;
-}
