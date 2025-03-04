@@ -294,6 +294,7 @@ export default {
   methods: {
     ...mapActions({
       getRoute: "routes/getItems",
+      setCurrentModule: "configs/currentModule",
     }),
     onScroll(info) {
       if (info.position > 0) this.leftDrawerOpen = false;
@@ -313,7 +314,7 @@ export default {
           const foundMenu = category.menus.find((m) => m.route === routeName);
           if (foundMenu) {
             this.route = foundMenu;
-            this.$store.dispatch("configs/currentModule", this.route.module);
+            this.setCurrentModule(this.route.module);
             return;
           }
         }
@@ -323,10 +324,7 @@ export default {
         this.getRoute({ route: routeName }).then((result) => {
           if (result?.lenght > 0) {
             this.route = result[0];
-            this.$store.dispatch(
-              "configs/currentModule",
-              this.route.module.replace(/\D/g, "")
-            );
+            this.setCurrentModule(this.route.module.replace(/\D/g, ""));
           }
         });
     },

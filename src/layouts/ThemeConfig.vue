@@ -5,6 +5,9 @@ export default {
   name: "ThemeConfig",
   components: {},
   methods: {
+    ...mapActions({
+      setThemeColors: "theme/SET_COLORS",
+    }),
     setTheme() {
       if (!this.defaultCompany || this.themeLoaded) return;
 
@@ -24,7 +27,7 @@ export default {
     /*
     setColors() {
       const themeColors = this.defaultCompany?.theme?.colors || {};
-      this.$store.commit('theme' + '/SET_COLORS', themeColors);
+      this.setThemeColors(themeColors);
       Object.keys(this.colors).forEach(key => {
         document.documentElement.style.setProperty(`--${key}`, this.colors[key]);
       });
