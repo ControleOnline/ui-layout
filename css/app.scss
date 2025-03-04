@@ -38,10 +38,6 @@ main > .q-card {
   max-width: unset;
   max-height: unset;
 }
-.sticky-bottom.fixed,
-.sticky-top.fixed {
-  position: fixed;
-}
 .sticky-bottom {
   bottom: 0;
   position: sticky;
