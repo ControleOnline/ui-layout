@@ -82,7 +82,7 @@ export default {
   transform-origin: top left;
 }
 
-#q-app {
+#q-app{
   width: calc(100vw / var(--zoom-level)) !important;
   height: calc(100vh / var(--zoom-level)) !important;
   overflow: auto;
