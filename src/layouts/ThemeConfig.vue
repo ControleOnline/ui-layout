@@ -6,7 +6,7 @@ export default {
   components: {},
   methods: {
     ...mapActions({
-      setThemeColors: "theme/SET_COLORS",
+      setThemeColors: "theme/setColors",
     }),
     setTheme() {
       if (!this.defaultCompany || this.themeLoaded) return;
