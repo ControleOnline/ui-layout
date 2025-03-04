@@ -11,6 +11,7 @@ import Translate from "@controleonline/ui-common/src/components/Common/Translate
 import { mapActions, mapGetters } from "vuex";
 import Config from "@controleonline/ui-common/src/utils/config";
 import { APP_ENV } from "@controleonline/../../config/env.js";
+import Acl from "@controleonline/ui-common/src/utils/acl.js";
 
 export default {
   components: {
@@ -60,8 +61,12 @@ export default {
       link.href = process.env.API_ENTRYPOINT + "/files/1/download";
       document.head.appendChild(link);
     },
+    checkLogin() {
+      if (this.isLoggedIn) this.$auth = new Acl(this.$store, this.$router);
+    },
   },
   created() {
+    this.checkLogin();
     this.getDarkMode();
     this.setIcon();
     this.setIndexRoute();
@@ -71,7 +76,13 @@ export default {
   computed: {
     ...mapGetters({
       defaultCompany: "people/defaultCompany",
+      isLoggedIn: "auth/isLoggedIn",
     }),
+  },
+  watch: {
+    isLoggedIn() {
+      this.checkLogin();
+    },
   },
 };
 </script>
@@ -82,7 +93,7 @@ export default {
   transform-origin: top left;
 }
 
-#q-app{
+#q-app {
   width: calc(100vw / var(--zoom-level)) !important;
   height: calc(100vh / var(--zoom-level)) !important;
   overflow: auto;

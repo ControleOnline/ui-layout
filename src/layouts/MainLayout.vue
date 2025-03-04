@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf" class="bg-image k" :style="style()">
+  <q-layout view="lHh Lpr lFf" class="bg-image" :style="style">
     <q-page-container>
       <router-view :key="key" />
     </q-page-container>
@@ -15,19 +15,6 @@ export default {
 
   methods: {
     ...mapActions({}),
-    style() {
-      if (this.defaultCompany && this.defaultCompany.theme.background) {
-        return (
-          "min-height: 125vh;"
-          +
-          this.$route.name === "LoginIndex" ?
-          "background-image: url('//" +
-          this.defaultCompany.theme.background.domain +
-          this.defaultCompany.theme.background.url +
-          "')":""
-        );
-      }
-    },
   },
 
   mounted() {},
@@ -36,6 +23,20 @@ export default {
       defaultCompany: "people/defaultCompany",
       isLoading: "people/isLoading",
     }),
+    style() {
+      if (this.defaultCompany && this.defaultCompany.theme.background) {
+        let style = {
+          "min-height": "125vh",
+        };
+        if (this.$route.name === "LoginIndex")
+          style["background-image"] =
+            "url('//" +
+            this.defaultCompany.theme.background.domain +
+            this.defaultCompany.theme.background.url +
+            "')";
+        return style;
+      }
+    },
   },
   watch: {
     $route: {
