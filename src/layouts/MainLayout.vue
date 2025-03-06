@@ -3,15 +3,19 @@
     <q-page-container>
       <router-view :key="key" />
     </q-page-container>
+    <bottomCart />
   </q-layout>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import bottomCart from "@controleonline/ui-orders/src/components/cart/bottomCart";
 
 export default {
   name: "MainLayout",
-  components: {},
+  components: {
+    bottomCart,
+  },
 
   methods: {
     ...mapActions({}),
