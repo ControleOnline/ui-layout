@@ -3,7 +3,7 @@
     <q-page-container>
       <router-view :key="key" />
     </q-page-container>
-    <bottomCart />
+    <bottomCart :show="false"/>
   </q-layout>
 </template>
 
