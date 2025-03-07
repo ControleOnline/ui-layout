@@ -137,20 +137,33 @@
                     />
                   </q-avatar>
                 </div>
-                <div class="text-body2 text-center">
+                <div
+                  class="text-body2 text-center"
+                  v-if="this.$auth.isLogged()"
+                >
                   {{ this.$auth.user.realname || "John Doe" }}
                 </div>
                 <div class="text-body2 text-center">
                   <DarkMode />
                 </div>
-
-                <q-btn
-                  v-close-popup
-                  color="primary"
-                  :label="$tt('menu', 'configs', 'Logout')"
-                  size="sm"
-                  @click="onLogout"
-                />
+                <div class="text-body2 text-center">
+                  <q-btn
+                    v-if="this.$auth.isLogged()"
+                    v-close-popup
+                    color="primary"
+                    :label="$tt('menu', 'configs', 'Logout')"
+                    size="sm"
+                    @click="onLogout"
+                  />
+                  <q-btn
+                    v-else
+                    v-close-popup
+                    color="primary"
+                    :label="$tt('menu', 'configs', 'Login')"
+                    size="sm"
+                    @click="this.$auth.toLogin"
+                  />
+                </div>
               </div>
             </div>
           </q-menu>
