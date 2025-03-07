@@ -71,7 +71,11 @@
                   {{ $tt("menu", "configs", "myAccount") }}
                 </div>
                 <q-list>
-                  <q-item :to="{ name: 'UserProfile' }" exact>
+                  <q-item
+                    v-if="this.$auth.isLogged()"
+                    :to="{ name: 'UserProfile' }"
+                    exact
+                  >
                     <q-item-section avatar>
                       <q-icon name="face" />
                     </q-item-section>
@@ -81,7 +85,11 @@
                       }}</q-item-label>
                     </q-item-section>
                   </q-item>
-                  <q-item :to="{ name: 'CompanyIndex' }" exact>
+                  <q-item
+                    v-if="this.$auth.isLogged()"
+                    :to="{ name: 'CompanyIndex' }"
+                    exact
+                  >
                     <q-item-section avatar>
                       <q-icon name="business" />
                     </q-item-section>
@@ -156,7 +164,7 @@
                     @click="onLogout"
                   />
                   <q-btn
-                    v-else
+                    v-if="!this.$auth.isLogged()"
                     v-close-popup
                     color="primary"
                     :label="$tt('menu', 'configs', 'Login')"
