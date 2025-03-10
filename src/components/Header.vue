@@ -101,7 +101,7 @@
                   </q-item>
                   <q-item
                     v-if="$appType == 'SHOP' && this.$auth.isLogged()"
-                    :to="{ name: 'PurchasingOrderIndex' }"
+                    :to="{ name: 'ClientOrdersIndex' }"
                     exact
                   >
                     <q-item-section avatar>
