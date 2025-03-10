@@ -86,7 +86,7 @@
                     </q-item-section>
                   </q-item>
                   <q-item
-                    v-if="this.$auth.isLogged()"
+                    v-if="$appType != 'SHOP' && this.$auth.isLogged()"
                     :to="{ name: 'CompanyIndex' }"
                     exact
                   >
@@ -96,6 +96,20 @@
                     <q-item-section side>
                       <q-item-label>{{
                         $tt("menu", "configs", "myCompany")
+                      }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                  <q-item
+                    v-if="$appType == 'SHOP' && this.$auth.isLogged()"
+                    :to="{ name: 'PurchasingOrderIndex' }"
+                    exact
+                  >
+                    <q-item-section avatar>
+                      <q-icon name="orders" />
+                    </q-item-section>
+                    <q-item-section side>
+                      <q-item-label>{{
+                        $tt("menu", "configs", "myOrders")
                       }}</q-item-label>
                     </q-item-section>
                   </q-item>
@@ -149,7 +163,7 @@
                   class="text-body2 text-center"
                   v-if="this.$auth.isLogged()"
                 >
-                  {{ this.$auth.user.realname || "John Doe" }}
+                  {{ this.$auth.user.realname }}
                 </div>
                 <div class="text-body2 text-center">
                   <DarkMode />
