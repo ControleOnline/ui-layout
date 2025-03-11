@@ -29,10 +29,10 @@
 </template>
 
 <script>
-import Header from "@controleonline/ui-layout/src/components/Header.vue";
-import MyCompanies from "@controleonline/ui-common/src/components/Common/MyCompanies";
+import Header from "@controleonline/ui-layout/src/vue/components/Header.vue";
+import MyCompanies from "@controleonline/ui-common/src/vue/components/Common/MyCompanies";
 import { mapActions, mapGetters } from "vuex";
-import Company from "@controleonline/ui-common/src/components/Common/Company.vue";
+import Company from "@controleonline/ui-common/src/vue/components/Common/Company.vue";
 export default {
   name: "AdminLayout",
 

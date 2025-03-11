@@ -5,9 +5,9 @@
   <router-view v-if="defaultCompany" />
 </template>
 <script>
-import Analytics from "@controleonline/ui-common/src/components/Common/Analytics";
-import ThemeConfig from "@controleonline/ui-layout/src/layouts/ThemeConfig";
-import Translate from "@controleonline/ui-common/src/components/Common/Translate";
+import Analytics from "@controleonline/ui-common/src/vue/components/Common/Analytics";
+import ThemeConfig from "@controleonline/ui-layout/src/vue/layouts/ThemeConfig";
+import Translate from "@controleonline/ui-common/src/vue/components/Common/Translate";
 import { mapActions, mapGetters } from "vuex";
 import Config from "@controleonline/ui-common/src/utils/config";
 import { APP_ENV } from "@controleonline/../../config/env.js";

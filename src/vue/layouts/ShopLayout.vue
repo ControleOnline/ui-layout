@@ -13,9 +13,9 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import Header from "@controleonline/ui-layout/src/components/Header.vue";
-import Menu from "@controleonline/ui-shop/src/components/menu/Menu.vue";
-import bottomCart from "@controleonline/ui-orders/src/components/cart/bottomCart";
+import Header from "@controleonline/ui-layout/src/vue/components/Header.vue";
+import Menu from "@controleonline/ui-shop/src/vue/components/menu/Menu.vue";
+import bottomCart from "@controleonline/ui-orders/src/vue/components/cart/bottomCart";
 
 export default {
   name: "ShopLayout",

@@ -9,7 +9,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import bottomCart from "@controleonline/ui-orders/src/components/cart/bottomCart";
+import bottomCart from "@controleonline/ui-orders/src/vue/components/cart/bottomCart";
 
 export default {
   name: "MainLayout",

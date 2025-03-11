@@ -242,16 +242,16 @@
 </template>
 
 <script>
-import Menu from "@controleonline/ui-common/src/components/Common/Menu";
-import Header from "@controleonline/ui-layout/src/components/Header.vue";
-import MyCompanies from "@controleonline/ui-common/src/components/Common/MyCompanies";
-import Notifications from "@controleonline/ui-common/src/components/Common/Notifications.vue";
-import DarkMode from "@controleonline/ui-layout/src/components/DarkMode/darkModeToggle.vue";
-import Language from "@controleonline/ui-common/src/components/Language/languageToogle.vue";
+import Menu from "@controleonline/ui-common/src/vue/components/Common/Menu";
+import Header from "@controleonline/ui-layout/src/vue/components/Header.vue";
+import MyCompanies from "@controleonline/ui-common/src/vue/components/Common/MyCompanies";
+import Notifications from "@controleonline/ui-common/src/vue/components/Common/Notifications.vue";
+import DarkMode from "@controleonline/ui-layout/src/vue/components/DarkMode/darkModeToggle.vue";
+import Language from "@controleonline/ui-common/src/vue/components/Language/languageToogle.vue";
 import md5 from "md5";
 import { LocalStorage } from "quasar";
 import { mapActions, mapGetters } from "vuex";
-import Company from "@controleonline/ui-common/src/components/Common/Company.vue";
+import Company from "@controleonline/ui-common/src/vue/components/Common/Company.vue";
 export default {
   name: "AdminLayout",
 
