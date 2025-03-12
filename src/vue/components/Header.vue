@@ -249,7 +249,6 @@ import Notifications from "@controleonline/ui-common/src/vue/components/Common/N
 import DarkMode from "@controleonline/ui-layout/src/vue/components/DarkMode/darkModeToggle.vue";
 import Language from "@controleonline/ui-common/src/vue/components/Language/languageToogle.vue";
 import md5 from "md5";
-import { LocalStorage } from "quasar";
 import { mapActions, mapGetters } from "vuex";
 import Company from "@controleonline/ui-common/src/vue/components/Common/Company.vue";
 export default {
