@@ -12,7 +12,8 @@ import { mapActions, mapGetters } from "vuex";
 import Config from "@controleonline/ui-common/src/utils/config";
 import { APP_ENV } from "@controleonline/../../config/env.js";
 import Acl from "@controleonline/ui-common/src/utils/acl.js";
-
+import { localStorage } from 'quasar';
+window.localStorage = localStorage;
 export default {
   components: {
     Analytics,
