@@ -11,7 +11,7 @@
     >
       <div class="row q-col-gutter-md">
         <div
-          class="q-pa-md col-4 col-md-2 col-lg-2 col-xl-2 d-flex justify-center"
+          class="q-pa-md col-4 col-md-2 col-lg-2 col-xl-3 d-flex justify-center"
           v-for="(item, index) in mItem.menus"
           :key="index"
         >
