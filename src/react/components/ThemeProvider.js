@@ -4,7 +4,19 @@ const ThemeContext = createContext();
 
 export const ThemeProvider = ({children}) => {
   const {getters, actions} = getStore('theme');
-  const {colors} = getters;
+  const {colors, menus} = getters;
+
+  useEffect(() => {
+    const fetchMenus = async () => {
+      const response = await api.fetch('menus-people', {
+        params: {myCompany: 8},
+      });
+
+      actions.setMenus(response);
+    };
+
+    fetchMenus();
+  }, []);
 
   useEffect(() => {
     const fetchColors = async () => {
@@ -29,7 +41,9 @@ export const ThemeProvider = ({children}) => {
   }, []);
 
   return (
-    <ThemeContext.Provider value={{colors}}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={{colors, menus}}>
+      {children}
+    </ThemeContext.Provider>
   );
 };
 
