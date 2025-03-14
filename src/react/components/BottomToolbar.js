@@ -5,7 +5,6 @@ import {useNavigationState} from '@react-navigation/native';
 import {useTheme} from '@controleonline/ui-layout/src/react/components/ThemeProvider';
 
 const BottomToolbar = ({navigation}) => {
-  // Estado para rastrear a aba ativa
   const state = useNavigationState(state => state);
   const activeTab = state.routes[state.index]?.name || 'HomePage';
   const {colors} = useTheme();
