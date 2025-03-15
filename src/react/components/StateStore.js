@@ -1,13 +1,13 @@
 import React from 'react';
 import globalStyles from '@controleonline/ui-shop/src/react/styles/global';
-import {useTheme} from '@controleonline/ui-layout/src/react/components/ThemeProvider';
 import {StyleSheet, View, Text, ActivityIndicator} from 'react-native';
 import {getStore} from '@store';
 
 const StateStore = ({store}) => {
   const {getters} = getStore(store);
   const {item, items, isLoading, error} = getters;
-  const {colors} = useTheme();
+  const {getters: themeGetters} = getStore('theme');
+  const {colors} = themeGetters;
 
   const styles = StyleSheet.create({
     container: {

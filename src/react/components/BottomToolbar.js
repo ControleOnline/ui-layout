@@ -2,12 +2,13 @@ import React, {useState} from 'react';
 import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {useNavigationState} from '@react-navigation/native';
-import {useTheme} from '@controleonline/ui-layout/src/react/components/ThemeProvider';
+import {getStore} from '@store';
 
 const BottomToolbar = ({navigation}) => {
   const state = useNavigationState(state => state);
   const activeTab = state.routes[state.index]?.name || 'HomePage';
-  const {colors} = useTheme();
+  const {getters} = getStore('theme');
+  const {colors} = getters;
 
   const styles = StyleSheet.create({
     toolbar: {
