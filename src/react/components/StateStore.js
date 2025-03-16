@@ -5,40 +5,42 @@ import {getStore} from '@store';
 
 const StateStore = ({store}) => {
   const {getters} = getStore(store);
-  const {item, items, isLoading, error} = getters;
+  const {item, items, isLoading, isSaving, error} = getters;
   const {getters: themeGetters} = getStore('theme');
   const {colors} = themeGetters;
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 10,
-      backgroundColor: '#fff',
-    },
-  });
+  const renderError = () => {
+    if (Array.isArray(error)) return error.join(', ');
+    if (typeof error === 'object') return JSON.stringify(error, null, 2);
+    return error;
+  };
 
-  if (isLoading)
+  if (isLoading || isSaving)
     return (
-      <View style={styles.container}>
-        <View style={[styles.content, globalStyles.loadingContainer]}>
+      <View style={globalStyles.container}>
+        <View
+          style={[globalStyles.content, globalStyles.loadingContainer]}>
           <ActivityIndicator size="large" color={colors['primary']} />
         </View>
       </View>
     );
+
   if (error)
     return (
-      <View style={styles.container}>
-        <View style={[styles.content, globalStyles.loadingContainer]}>
-          <Text style={styles.errorText}>{error}</Text>
+      <View style={globalStyles.container}>
+        <View
+          style={[globalStyles.content, globalStyles.loadingContainer]}>
+          <Text style={globalStyles.errorText}>{renderError()}</Text>
         </View>
       </View>
     );
 
-  if (!item && (!items || items.length == 0))
+  if (!item && (!items || items.length === 0))
     return (
-      <View style={styles.container}>
-        <View style={[styles.content, globalStyles.loadingContainer]}>
-          <Text style={styles.errorText}>Não encontrado</Text>
+      <View style={globalStyles.container}>
+        <View
+          style={[globalStyles.content, globalStyles.loadingContainer]}>
+          <Text style={globalStyles.errorText}>Não encontrado</Text>
         </View>
       </View>
     );
