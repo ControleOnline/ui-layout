@@ -26,11 +26,13 @@ const StateStore = ({store}) => {
       </View>
     );
   if (error)
-    <View style={styles.container}>
-      <View style={[styles.content, globalStyles.loadingContainer]}>
-        <Text style={styles.errorText}>{error}</Text>
+    return (
+      <View style={styles.container}>
+        <View style={[styles.content, globalStyles.loadingContainer]}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
       </View>
-    </View>;
+    );
 
   if (!item && (!items || items.length == 0))
     return (
