@@ -1,13 +1,20 @@
 import React from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import globalStyles from '@controleonline/ui-shop/src/react/styles/global';
-import {StyleSheet, View, Text, ActivityIndicator} from 'react-native';
 import {getStore} from '@store';
 
 const StateStore = ({store}) => {
-  const {getters} = getStore(store);
+  const {getters, actions} = getStore(store);
   const {item, items, isLoading, isSaving, error} = getters;
   const {getters: themeGetters} = getStore('theme');
   const {colors} = themeGetters;
+  const styles = globalStyles();
 
   const renderError = () => {
     if (Array.isArray(error)) return error.join(', ');
@@ -17,9 +24,8 @@ const StateStore = ({store}) => {
 
   if (isLoading || isSaving)
     return (
-      <View style={globalStyles.container}>
-        <View
-          style={[globalStyles.content, globalStyles.loadingContainer]}>
+      <View style={styles.state.container}>
+        <View style={[styles.state.content, styles.state.loadingContainer]}>
           <ActivityIndicator size="large" color={colors['primary']} />
         </View>
       </View>
@@ -27,23 +33,28 @@ const StateStore = ({store}) => {
 
   if (error)
     return (
-      <View style={globalStyles.container}>
-        <View
-          style={[globalStyles.content, globalStyles.loadingContainer]}>
-          <Text style={globalStyles.errorText}>{renderError()}</Text>
+      <View style={styles.state.container}>
+        <View style={[styles.state.content, styles.state.errorContainer]}>
+          <Text style={styles.state.errorText}>{renderError()}</Text>
+          <TouchableOpacity
+            style={styles.state.button}
+            onPress={() => actions.setError(null)}>
+            <Text style={styles.state.buttonText}>OK</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
 
   if (!item && (!items || items.length === 0))
     return (
-      <View style={globalStyles.container}>
-        <View
-          style={[globalStyles.content, globalStyles.loadingContainer]}>
-          <Text style={globalStyles.errorText}>Não encontrado</Text>
+      <View style={styles.state.container}>
+        <View style={[styles.state.content, styles.state.loadingContainer]}>
+          <Text style={styles.state.errorText}>Não encontrado</Text>
         </View>
       </View>
     );
+
+  return null;
 };
 
 export default StateStore;
