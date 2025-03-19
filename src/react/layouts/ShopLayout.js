@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import {View, StyleSheet, ActivityIndicator, Text} from 'react-native';
 import BottomToolbar from '../components/BottomToolbar';
 

@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import {useNavigationState} from '@react-navigation/native';
 import {getStore} from '@store';
@@ -7,11 +8,19 @@ import {getStore} from '@store';
 const BottomToolbar = ({navigation}) => {
   const state = useNavigationState(state => state);
   const activeTab = state.routes[state.index]?.name || 'HomePage';
-  const {getters} = getStore('theme');
-  const {colors} = getters;
-
+  const {getters: configsGetters, actions: configActions} = getStore('configs');
   const {getters: peopleGetters} = getStore('people');
+  const {getters} = getStore('theme');
+  const {item: config} = configsGetters;
+  const {colors} = getters;
   const {currentCompany} = peopleGetters;
+  const [pdvType, setPdvType] = useState(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (config) setPdvType(config['pdv-type'] || 'full');
+    }, [config]),
+  );
 
   const styles = StyleSheet.create({
     toolbar: {
@@ -41,27 +50,52 @@ const BottomToolbar = ({navigation}) => {
 
   return (
     <View style={styles.toolbar}>
-      <TouchableOpacity
-        style={styles.button}
-        disabled={
-          !currentCompany || Object.entries(currentCompany).length === 0
-        }
-        onPress={() => {
-          navigation.navigate('HomePage');
-        }}>
-        <Icon
-          name="home"
-          size={15}
-          color={activeTab === 'HomePage' ? '#007AFF' : '#666'}
-        />
-        <Text
-          style={[
-            styles.buttonText,
-            activeTab === 'HomePage' && styles.activeText,
-          ]}>
-          Home
-        </Text>
-      </TouchableOpacity>
+      {config && pdvType && pdvType == 'full' ? (
+        <TouchableOpacity
+          style={styles.button}
+          disabled={
+            !currentCompany || Object.entries(currentCompany).length === 0
+          }
+          onPress={() => {
+            navigation.navigate('HomePage');
+          }}>
+          <Icon
+            name="home"
+            size={15}
+            color={activeTab === 'HomePage' ? '#007AFF' : '#666'}
+          />
+          <Text
+            style={[
+              styles.buttonText,
+              activeTab === 'HomePage' && styles.activeText,
+            ]}>
+            Home
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={styles.button}
+          disabled={
+            !currentCompany || Object.entries(currentCompany).length === 0
+          }
+          onPress={() => {
+            navigation.navigate('CashRegisterIndex');
+          }}>
+          <Icon
+            name="home"
+            size={15}
+            color={activeTab === 'CashRegisterIndex' ? '#007AFF' : '#666'}
+          />
+          <Text
+            style={[
+              styles.buttonText,
+              activeTab === 'CashRegisterIndex' && styles.activeText,
+            ]}>
+            Caixa
+          </Text>
+        </TouchableOpacity>
+      )}
+
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
