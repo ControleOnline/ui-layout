@@ -10,6 +10,9 @@ const BottomToolbar = ({navigation}) => {
   const {getters} = getStore('theme');
   const {colors} = getters;
 
+  const {getters: peopleGetters} = getStore('people');
+  const {currentCompany} = peopleGetters;
+
   const styles = StyleSheet.create({
     toolbar: {
       flexDirection: 'row',
@@ -40,6 +43,9 @@ const BottomToolbar = ({navigation}) => {
     <View style={styles.toolbar}>
       <TouchableOpacity
         style={styles.button}
+        disabled={
+          !currentCompany || Object.entries(currentCompany).length === 0
+        }
         onPress={() => {
           navigation.navigate('HomePage');
         }}>
@@ -60,7 +66,10 @@ const BottomToolbar = ({navigation}) => {
         style={styles.button}
         onPress={() => {
           navigation.navigate('SalesOrderIndex');
-        }}>
+        }}
+        disabled={
+          !currentCompany || Object.entries(currentCompany).length === 0
+        }>
         <Icon
           name="shopping-bag"
           size={15}
@@ -78,7 +87,10 @@ const BottomToolbar = ({navigation}) => {
         style={styles.button}
         onPress={() => {
           navigation.navigate('ProfilePage');
-        }}>
+        }}
+        disabled={
+          !currentCompany || Object.entries(currentCompany).length === 0
+        }>
         <Icon
           name="user"
           size={15}
@@ -96,7 +108,10 @@ const BottomToolbar = ({navigation}) => {
         style={styles.button}
         onPress={() => {
           navigation.navigate('SettingsPage');
-        }}>
+        }}
+        disabled={
+          !currentCompany || Object.entries(currentCompany).length === 0
+        }>
         <Icon
           name="settings"
           size={15}
