@@ -9,6 +9,9 @@ const BottomToolbar = ({navigation}) => {
   const state = useNavigationState(state => state);
   const activeTab = state.routes[state.index]?.name || 'HomePage';
   const {getters: configsGetters, actions: configActions} = getStore('configs');
+  const currentPageName =
+    navigation.getState().routes[navigation.getState().index].name;
+  const {actions: authActions} = getStore('auth');
   const {getters: peopleGetters} = getStore('people');
   const {getters} = getStore('theme');
   const {item: config} = configsGetters;
@@ -18,7 +21,17 @@ const BottomToolbar = ({navigation}) => {
 
   useFocusEffect(
     useCallback(() => {
-      if (config) setPdvType(config['pdv-type'] || 'full');
+      if (config && Object.entries(config).length > 0)
+        setPdvType(config['pdv-type'] || 'full');
+      else if (
+        config != undefined && config !== false &&
+        authActions.isLogged() &&
+        currentPageName != 'SettingsPage'
+      )
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'SettingsPage'}],
+        });
     }, [config]),
   );
 
