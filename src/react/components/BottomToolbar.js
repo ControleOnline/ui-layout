@@ -18,13 +18,20 @@ const BottomToolbar = ({navigation}) => {
   const {colors} = getters;
   const {currentCompany} = peopleGetters;
   const [pdvType, setPdvType] = useState(null);
+  const device = JSON.parse(localStorage.getItem('device') || '{}');
 
   useFocusEffect(
     useCallback(() => {
-      if (config && Object.entries(config).length > 0)
+      if (
+        config &&
+        Object.entries(config).length > 0 &&
+        device &&
+        config['config-version'] == device.buildNumber
+      )
         setPdvType(config['pdv-type'] || 'full');
       else if (
-        config != undefined && config !== false &&
+        config != undefined &&
+        config !== false &&
         authActions.isLogged() &&
         currentPageName != 'SettingsPage'
       )
@@ -32,7 +39,7 @@ const BottomToolbar = ({navigation}) => {
           index: 0,
           routes: [{name: 'SettingsPage'}],
         });
-    }, [config]),
+    }, [config, device]),
   );
 
   const styles = StyleSheet.create({
