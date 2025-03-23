@@ -42,6 +42,24 @@ const BottomToolbar = ({navigation}) => {
     }, [config, device]),
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      if (
+        config != undefined &&
+        config !== false &&
+        (config['cash-wallet-closed-id'] == undefined ||
+          config['cash-wallet-closed-id'] > 0) &&
+        authActions.isLogged() &&
+        currentPageName != 'CloseCachRegister' &&
+        currentPageName != 'SettingsPage'
+      )
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'CloseCachRegister'}],
+        });
+    }, [config, device]),
+  );
+
   const styles = StyleSheet.create({
     toolbar: {
       flexDirection: 'row',
