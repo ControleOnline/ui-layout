@@ -8,7 +8,7 @@ import {getStore} from '@store';
 const BottomToolbar = ({navigation}) => {
   const state = useNavigationState(state => state);
   const activeTab = state.routes[state.index]?.name || 'HomePage';
-  const {getters: configsGetters, actions: configActions} = getStore('configs');
+  const {getters: configsGetters} = getStore('configs');
   const currentPageName =
     navigation.getState().routes[navigation.getState().index].name;
   const {actions: authActions} = getStore('auth');
