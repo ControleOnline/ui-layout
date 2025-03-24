@@ -41,8 +41,7 @@ const BottomToolbar = ({navigation}) => {
   useFocusEffect(
     useCallback(() => {
       if (
-        config != undefined &&
-        config !== false &&
+        config &&
         (config['cash-wallet-closed-id'] == undefined ||
           config['cash-wallet-closed-id'] > 0) &&
         authActions.isLogged() &&
