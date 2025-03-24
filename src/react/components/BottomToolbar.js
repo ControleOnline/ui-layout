@@ -26,19 +26,15 @@ const BottomToolbar = ({navigation}) => {
         config &&
         Object.entries(config).length > 0 &&
         device &&
-        config['config-version'] == device.buildNumber
+        authActions.isLogged()
       )
-        setPdvType(config['pdv-type'] || 'full');
-      else if (
-        config != undefined &&
-        config !== false &&
-        authActions.isLogged() &&
-        currentPageName != 'SettingsPage'
-      )
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'SettingsPage'}],
-        });
+        if (config['config-version'] == device.buildNumber)
+          setPdvType(config['pdv-type'] || 'full');
+        else
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'SettingsPage'}],
+          });
     }, [config, device]),
   );
 
