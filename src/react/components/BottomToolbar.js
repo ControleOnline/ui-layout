@@ -26,7 +26,8 @@ const BottomToolbar = ({navigation}) => {
         config &&
         Object.entries(config).length > 0 &&
         device &&
-        authActions.isLogged()
+        authActions.isLogged() &&
+        currentPageName != 'SettingsPage'
       )
         if (config['config-version'] == device.buildNumber)
           setPdvType(config['pdv-type'] || 'full');
