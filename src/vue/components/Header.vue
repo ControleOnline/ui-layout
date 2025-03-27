@@ -72,7 +72,7 @@
                 </div>
                 <q-list>
                   <q-item
-                    v-if="this.$auth.isLogged()"
+                    v-if="this.isLogged"
                     :to="{ name: 'UserProfile' }"
                     exact
                   >
@@ -86,7 +86,7 @@
                     </q-item-section>
                   </q-item>
                   <q-item
-                    v-if="$appType != 'SHOP' && this.$auth.isLogged()"
+                    v-if="$appType != 'SHOP' && this.isLogged"
                     :to="{ name: 'CompanyIndex' }"
                     exact
                   >
@@ -100,7 +100,7 @@
                     </q-item-section>
                   </q-item>
                   <q-item
-                    v-if="$appType == 'SHOP' && this.$auth.isLogged()"
+                    v-if="$appType == 'SHOP' && this.isLogged"
                     :to="{ name: 'ClientOrdersIndex' }"
                     exact
                   >
@@ -151,9 +151,9 @@
                   <q-avatar size="64px">
                     <q-img
                       :src="
-                        this.$auth.user.avatar
-                          ? this.$auth.user.avatar.domain +
-                            this.$auth.user.avatar.url
+                        this.user.avatar
+                          ? this.user.avatar.domain +
+                            this.user.avatar.url
                           : gravatar
                       "
                     />
@@ -161,16 +161,16 @@
                 </div>
                 <div
                   class="text-body2 text-center"
-                  v-if="this.$auth.isLogged()"
+                  v-if="this.isLogged"
                 >
-                  {{ this.$auth.user.realname }}
+                  {{ this.user.realname }}
                 </div>
                 <div class="text-body2 text-center">
                   <DarkMode />
                 </div>
                 <div class="text-body2 text-center">
                   <q-btn
-                    v-if="this.$auth.isLogged()"
+                    v-if="this.isLogged"
                     v-close-popup
                     color="primary"
                     :label="$tt('menu', 'configs', 'Logout')"
@@ -178,12 +178,21 @@
                     @click="onLogout"
                   />
                   <q-btn
-                    v-if="!this.$auth.isLogged()"
+                    v-if="!this.isLogged"
                     v-close-popup
                     color="primary"
                     :label="$tt('menu', 'configs', 'Login')"
                     size="sm"
-                    @click="this.$auth.toLogin"
+                    @click="
+                      () => {
+                        this.$router.push({
+                          name: 'LoginIndex',
+                          query: {
+                            redirect: this.$router.currentRoute.value.fullPath,
+                          },
+                        });
+                      }
+                    "
                   />
                 </div>
               </div>
@@ -231,7 +240,7 @@
           <q-separator inset class="q-my-sm" />
           <Menu
             :context="'super_admin'"
-            :people="this.$auth.user"
+            :people="this.user"
             @clickmenu="onClickmenu"
           />
         </q-list>
@@ -291,17 +300,19 @@ export default {
       myCompany: "people/currentCompany",
       companies: "people/companies",
       menus: "theme/menus",
+      user: "auth/user",
+      isLogged:"auth/isLogged"
     }),
 
     style() {
       return "background: #182840";
     },
     gravatar() {
-      if (this.$auth.user.email === undefined) {
+      if (this.user.email === undefined) {
         return "";
       }
       return `https://www.gravatar.com/avatar/${md5(
-        this.$auth.user.email
+        this.user.email
       )}?s=400`;
     },
   },
@@ -312,7 +323,7 @@ export default {
       else this.$q.loading.hide();
     },
     defaultCompany(data) {
-      this.verifyPermissions();
+      //this.verifyPermissions();
     },
     menus() {
       this.getRouteFromMenu(this.$route.name);
@@ -329,6 +340,7 @@ export default {
     ...mapActions({
       getRoute: "routes/getItems",
       setCurrentModule: "configs/currentModule",
+      logOut: "auth/logOut"
     }),
     onScroll(info) {
       if (info.position > 0) this.leftDrawerOpen = false;
@@ -374,7 +386,7 @@ export default {
         });
     },
     onLogout() {
-      this.$auth.logout();
+      this.logOut();
     },
   },
 };

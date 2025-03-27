@@ -51,14 +51,26 @@ export default {
       isLoading: "acl/isLoading",
       isAdmin: "acl/isAdmin",
       disabled: "acl/disabled",
+      isLogged: "auth/isLogged",
     }),
   },
   created() {},
 
   methods: {
-    ...mapActions({}),
+    ...mapActions({
+      logOut: "auth/logOut",
+    }),
     onLogout() {
-      this.$auth.logout();
+      this.logOut();
+    },
+  },
+  watch: {
+    isLogged() {
+      if (!this.isLogged)
+        this.$router.push({
+          name: "LoginIndex",
+          query: { redirect: this.$router.currentRoute.value.fullPath },
+        });
     },
   },
 };

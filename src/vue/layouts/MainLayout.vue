@@ -28,15 +28,15 @@ export default {
       isLoading: "people/isLoading",
     }),
     style() {
-      if (this.defaultCompany && this.defaultCompany.theme.background) {
+      if (this.defaultCompany && this.defaultCompany?.theme?.background) {
         let style = {
           "min-height": "calc(100vh / var(--zoom-level))",
         };
         if (this.$route.name === "LoginIndex")
           style["background-image"] =
             "url('//" +
-            this.defaultCompany.theme.background.domain +
-            this.defaultCompany.theme.background.url +
+            this.defaultCompany?.theme?.background.domain +
+            this.defaultCompany?.theme?.background.url +
             "')";
         return style;
       }

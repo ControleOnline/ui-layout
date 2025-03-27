@@ -11,7 +11,7 @@ import Translate from "@controleonline/ui-common/src/vue/components/Common/Trans
 import { mapActions, mapGetters } from "vuex";
 import Config from "@controleonline/ui-common/src/utils/config";
 import { APP_ENV } from "@controleonline/../../config/env.js";
-import Acl from "@controleonline/ui-common/src/utils/acl.js";
+import Acl from "@controleonline/ui-common/src/vue/utils/acl.js";
 export default {
   components: {
     Analytics,
@@ -61,7 +61,7 @@ export default {
       document.head.appendChild(link);
     },
     checkLogin() {
-      if (this.isLoggedIn) this.$auth = new Acl(this.$store, this.$router);
+      if (this.isLogged) new Acl(this.$store, this.$router);
     },
   },
   created() {
@@ -75,11 +75,11 @@ export default {
   computed: {
     ...mapGetters({
       defaultCompany: "people/defaultCompany",
-      isLoggedIn: "auth/isLoggedIn",
+      isLogged: "auth/isLogged",
     }),
   },
   watch: {
-    isLoggedIn() {
+    isLogged() {
       this.checkLogin();
     },
   },
