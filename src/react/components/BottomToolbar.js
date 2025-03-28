@@ -11,13 +11,14 @@ const BottomToolbar = ({navigation}) => {
   const {getters: configsGetters} = getStore('configs');
   const currentPageName =
     navigation.getState().routes[navigation.getState().index].name;
-  const {actions: authActions} = getStore('auth');
+  const {getters: authGetters, actions: authActions} = getStore('auth');
   const {getters: peopleGetters} = getStore('people');
   const {getters} = getStore('theme');
   const {item: config} = configsGetters;
+  const {isLogged} = authGetters;
   const {colors} = getters;
   const {currentCompany} = peopleGetters;
-  const [pdvType, setPdvType] = useState(null);
+  const [posType, setPosType] = useState(null);
   const device = JSON.parse(localStorage.getItem('device') || '{}');
 
   useFocusEffect(
@@ -26,17 +27,17 @@ const BottomToolbar = ({navigation}) => {
         config &&
         Object.entries(config).length > 0 &&
         device &&
-        authActions.isLogged() &&
+        isLogged &&
         currentPageName != 'SettingsPage'
       )
         if (config['config-version'] == device.buildNumber)
-          setPdvType(config['pdv-type'] || 'full');
+          setPosType(config['pos-type'] || 'full');
         else
           navigation.reset({
             index: 0,
             routes: [{name: 'SettingsPage'}],
           });
-    }, [config, device]),
+    }, [config, device, isLogged]),
   );
 
   useFocusEffect(
@@ -45,7 +46,7 @@ const BottomToolbar = ({navigation}) => {
         config &&
         (config['cash-wallet-closed-id'] == undefined ||
           config['cash-wallet-closed-id'] > 0) &&
-        authActions.isLogged() &&
+        isLogged &&
         currentPageName != 'CloseCachRegister' &&
         currentPageName != 'SettingsPage'
       )
@@ -53,7 +54,7 @@ const BottomToolbar = ({navigation}) => {
           index: 0,
           routes: [{name: 'CloseCachRegister'}],
         });
-    }, [config, device]),
+    }, [config, device, isLogged]),
   );
 
   const styles = StyleSheet.create({
@@ -84,7 +85,7 @@ const BottomToolbar = ({navigation}) => {
 
   return (
     <View style={styles.toolbar}>
-      {config && pdvType && pdvType == 'full' ? (
+      {config && posType && posType == 'full' ? (
         <TouchableOpacity
           style={styles.button}
           disabled={
