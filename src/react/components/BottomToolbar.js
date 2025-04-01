@@ -25,7 +25,7 @@ const BottomToolbar = ({navigation}) => {
     useCallback(() => {
       if (
         device &&
-        device.configs &&
+        device?.configs &&
         Object.entries(device.configs).length > 0 &&
         localDevice &&
         isLogged &&
@@ -45,6 +45,8 @@ const BottomToolbar = ({navigation}) => {
     useCallback(() => {
       if (
         device &&
+        device?.configs &&
+        Object.entries(device.configs).length > 0 &&
         (device.configs['cash-wallet-closed-id'] == undefined ||
           device.configs['cash-wallet-closed-id'] > 0) &&
         isLogged &&
@@ -86,7 +88,10 @@ const BottomToolbar = ({navigation}) => {
 
   return (
     <View style={styles.toolbar}>
-      {device.configs && posType && posType == 'full' ? (
+      {device?.configs &&
+      Object.entries(device.configs).length > 0 &&
+      posType &&
+      posType == 'full' ? (
         <TouchableOpacity
           style={styles.button}
           disabled={
