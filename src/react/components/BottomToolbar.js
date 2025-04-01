@@ -8,44 +8,45 @@ import {getStore} from '@store';
 const BottomToolbar = ({navigation}) => {
   const state = useNavigationState(state => state);
   const activeTab = state.routes[state.index]?.name || 'HomePage';
-  const {getters: configsGetters} = getStore('configs');
   const currentPageName =
     navigation.getState().routes[navigation.getState().index].name;
+  const {getters: deviceGetters, actions: deviceActions} = getStore('device');
+  const {item: device} = deviceGetters;
   const {getters: authGetters, actions: authActions} = getStore('auth');
   const {getters: peopleGetters} = getStore('people');
   const {getters} = getStore('theme');
-  const {item: config} = configsGetters;
   const {isLogged} = authGetters;
   const {colors} = getters;
   const {currentCompany} = peopleGetters;
   const [posType, setPosType] = useState(null);
-  const device = JSON.parse(localStorage.getItem('device') || '{}');
+  const localDevice = JSON.parse(localStorage.getItem('device') || '{}');
 
   useFocusEffect(
     useCallback(() => {
       if (
-        config &&
-        Object.entries(config).length > 0 &&
         device &&
+        device.configs &&
+        Object.entries(device.configs).length > 0 &&
+        localDevice &&
         isLogged &&
         currentPageName != 'SettingsPage'
       )
-        if (config['config-version'] == device.buildNumber)
-          setPosType(config['pos-type'] || 'full');
+        if (device.configs['config-version'] == localDevice.buildNumber)
+          setPosType(device.configs['pos-type'] || 'full');
         else
           navigation.reset({
             index: 0,
             routes: [{name: 'SettingsPage'}],
           });
-    }, [config, device, isLogged]),
+    }, [device, localDevice, isLogged]),
   );
 
   useFocusEffect(
     useCallback(() => {
       if (
-        config &&
-        (config['cash-wallet-closed-id'] == undefined ||
-          config['cash-wallet-closed-id'] > 0) &&
+        device &&
+        (device.configs['cash-wallet-closed-id'] == undefined ||
+          device.configs['cash-wallet-closed-id'] > 0) &&
         isLogged &&
         currentPageName != 'CloseCachRegister' &&
         currentPageName != 'SettingsPage'
@@ -54,7 +55,7 @@ const BottomToolbar = ({navigation}) => {
           index: 0,
           routes: [{name: 'CloseCachRegister'}],
         });
-    }, [config, device, isLogged]),
+    }, [device, localDevice, isLogged]),
   );
 
   const styles = StyleSheet.create({
@@ -85,7 +86,7 @@ const BottomToolbar = ({navigation}) => {
 
   return (
     <View style={styles.toolbar}>
-      {config && posType && posType == 'full' ? (
+      {device.configs && posType && posType == 'full' ? (
         <TouchableOpacity
           style={styles.button}
           disabled={
