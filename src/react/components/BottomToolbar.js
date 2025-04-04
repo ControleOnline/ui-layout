@@ -10,8 +10,8 @@ const BottomToolbar = ({navigation}) => {
   const activeTab = state.routes[state.index]?.name || 'HomePage';
   const currentPageName =
     navigation.getState().routes[navigation.getState().index].name;
-  const {getters: deviceGetters, actions: deviceActions} = getStore('device');
-  const {item: device} = deviceGetters;
+  const {getters: deviceConfigGetters} = getStore('device_config');
+  const {item: device} = deviceConfigGetters;
   const {getters: authGetters, actions: authActions} = getStore('auth');
   const {getters: peopleGetters} = getStore('people');
   const {getters} = getStore('theme');
@@ -23,15 +23,13 @@ const BottomToolbar = ({navigation}) => {
 
   useFocusEffect(
     useCallback(() => {
-      if (
-        device &&
-        device?.configs &&
-        Object.entries(device.configs).length > 0 &&
-        localDevice &&
-        isLogged &&
-        currentPageName != 'SettingsPage'
-      )
-        if (device.configs['config-version'] == localDevice.buildNumber)
+      if (localDevice && isLogged && currentPageName != 'SettingsPage')
+        if (
+          device &&
+          device?.configs &&
+          Object.entries(device.configs).length > 0 &&
+          device.configs['config-version'] == localDevice.buildNumber
+        )
           setPosType(device.configs['pos-type'] || 'full');
         else
           navigation.reset({
