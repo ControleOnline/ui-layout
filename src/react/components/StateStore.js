@@ -37,9 +37,9 @@ const StateStore = ({store}) => {
         <View style={[styles.state.content, styles.state.errorContainer]}>
           <Text style={styles.state.errorText}>{renderError()}</Text>
           <TouchableOpacity
-            style={styles.state.button}
+            style={styles.button}
             onPress={() => actions.setError(null)}>
-            <Text style={styles.state.buttonText}>OK</Text>
+            <Text style={styles.buttonText}>OK</Text>
           </TouchableOpacity>
         </View>
       </View>
