@@ -86,10 +86,7 @@ const BottomToolbar = ({navigation}) => {
 
   return (
     <View style={styles.toolbar}>
-      {device?.configs &&
-      Object.entries(device.configs).length > 0 &&
-      posType &&
-      posType == 'full' ? (
+      {device?.configs && Object.entries(device.configs).length > 0 && (
         <TouchableOpacity
           style={styles.button}
           disabled={
@@ -109,28 +106,6 @@ const BottomToolbar = ({navigation}) => {
               activeTab === 'HomePage' && styles.activeText,
             ]}>
             Home
-          </Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          style={styles.button}
-          disabled={
-            !currentCompany || Object.entries(currentCompany).length === 0
-          }
-          onPress={() => {
-            navigation.navigate('CashRegisterIndex');
-          }}>
-          <Icon
-            name="home"
-            size={15}
-            color={activeTab === 'CashRegisterIndex' ? '#007AFF' : '#666'}
-          />
-          <Text
-            style={[
-              styles.buttonText,
-              activeTab === 'CashRegisterIndex' && styles.activeText,
-            ]}>
-            Caixa
           </Text>
         </TouchableOpacity>
       )}
