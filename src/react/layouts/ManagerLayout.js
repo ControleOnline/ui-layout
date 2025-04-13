@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, StyleSheet, ActivityIndicator, Text} from 'react-native';
-import BottomToolbar from '@controleonline/ui-shop/src/react/components/BottomToolbar';
+import BottomToolbar from '@controleonline/ui-manager/src/react/components/BottomToolbar';
 
-const ShopLayout = ({children, navigation, route}) => {
+const ManagerLayout = ({children, navigation, route}) => {
   return (
     <View style={styles.container}>
       <View style={[styles.content]}>{children}</View>
@@ -16,4 +16,4 @@ const styles = StyleSheet.create({
   content: {flex: 1},
 });
 
-export default ShopLayout;
+export default ManagerLayout;
