@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import globalStyles from '@controleonline/ui-shop/src/react/styles/global';
+import globalStyles from '@controleonline/ui-layout/src/react/styles/global';
 import {getStore} from '@store';
 
 const StateStore = ({store}) => {
