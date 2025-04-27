@@ -45,15 +45,6 @@ const StateStore = ({store}) => {
       </View>
     );
 
-  if (!item || (items && items.length === 0))
-    return (
-      <View style={styles.state.container}>
-        <View style={[styles.state.content, styles.state.loadingContainer]}>
-          <Text style={styles.state.errorText}>Não encontrado</Text>
-        </View>
-      </View>
-    );
-
   return null;
 };
 
