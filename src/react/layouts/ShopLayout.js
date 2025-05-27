@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, ActivityIndicator, Text} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import BottomToolbar from '@controleonline/ui-shop/src/react/components/BottomToolbar';
 
 const ShopLayout = ({children, navigation, route}) => {
