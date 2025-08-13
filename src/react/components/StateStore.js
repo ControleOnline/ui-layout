@@ -1,37 +1,40 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import {View, Text, ActivityIndicator, TouchableOpacity} from 'react-native';
 import globalStyles from '@controleonline/ui-layout/src/react/styles/global';
-import {getStore} from '@store';
+import {useStores} from '@store';
 
 const StateStore = ({store}) => {
-  const {getters, actions} = getStore(store);
-  const {item, items, isLoading, isSaving, error} = getters;
-  const {getters: themeGetters} = getStore('theme');
+  const genericStore = useStores(state => state[store]);
+  const getters = genericStore.getters;
+  const actions = genericStore.actions;
+
+  const {isLoading, isSaving, error} = getters;
+  const themeStore = useStores(state => state.theme);
+  const themeGetters = themeStore.getters;
   const {colors} = themeGetters;
   const styles = globalStyles();
 
   const renderError = () => {
-    if (Array.isArray(error)) return error.join(', ');
-    if (typeof error === 'object') return JSON.stringify(error, null, 2);
+    if (Array.isArray(error)) {
+      return error.join(', ');
+    }
+    if (typeof error === 'object') {
+      return JSON.stringify(error, null, 2);
+    }
     return error;
   };
 
-  if (isLoading || isSaving)
+  if (isLoading || isSaving) {
     return (
       <View style={styles.state.container}>
         <View style={[styles.state.content, styles.state.loadingContainer]}>
-          <ActivityIndicator size="large" color={colors['primary']} />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </View>
     );
+  }
 
-  if (error)
+  if (error) {
     return (
       <View style={styles.state.container}>
         <View style={[styles.state.content, styles.state.errorContainer]}>
@@ -44,6 +47,7 @@ const StateStore = ({store}) => {
         </View>
       </View>
     );
+  }
 
   return null;
 };

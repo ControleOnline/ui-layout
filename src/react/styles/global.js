@@ -1,10 +1,11 @@
 const {StyleSheet} = require('react-native');
 import {getStore} from '@store';
 
-export default css = () => {
+export default function globalStyles() {
   const {getters} = getStore('theme');
   const {colors} = getters;
-  const globalStyles = StyleSheet.create({
+
+  return StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#f4f4f4',
@@ -23,9 +24,7 @@ export default css = () => {
       marginHorizontal: 5,
       flex: 1,
       color: '#fff',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: colors['primary'],
+      backgroundColor: colors.primary,
       flexDirection: 'row',
     },
     btnText: {
@@ -34,7 +33,7 @@ export default css = () => {
       fontWeight: 'bold',
     },
     primary: {
-      backgroundColor: colors['primary'],
+      backgroundColor: colors.primary,
       color: '#000000',
     },
     state: {
@@ -51,5 +50,4 @@ export default css = () => {
       },
     },
   });
-  return globalStyles;
-};
+}
