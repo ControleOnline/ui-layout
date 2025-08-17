@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  StyleSheet,
   View,
   Text,
   ActivityIndicator,
@@ -11,7 +10,7 @@ import {getStore} from '@store';
 
 const StateStore = ({store}) => {
   const {getters, actions} = getStore(store);
-  const {item, items, isLoading, isSaving, error} = getters;
+  const { isLoading, isSaving, error} = getters;
   const {getters: themeGetters} = getStore('theme');
   const {colors} = themeGetters;
   const styles = globalStyles();
