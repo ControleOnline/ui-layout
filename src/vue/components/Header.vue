@@ -73,7 +73,10 @@
                 <q-list>
                   <q-item
                     v-if="this.isLogged"
-                    :to="{ name: 'UserProfile' }"
+                    :to="{
+                      name:
+                        $appType == 'SHOP' ? 'ClientProfile' : 'UserProfile',
+                    }"
                     exact
                   >
                     <q-item-section avatar>
@@ -152,17 +155,13 @@
                     <q-img
                       :src="
                         this.user.avatar
-                          ? this.user.avatar.domain +
-                            this.user.avatar.url
+                          ? this.user.avatar.domain + this.user.avatar.url
                           : gravatar
                       "
                     />
                   </q-avatar>
                 </div>
-                <div
-                  class="text-body2 text-center"
-                  v-if="this.isLogged"
-                >
+                <div class="text-body2 text-center" v-if="this.isLogged">
                   {{ this.user.realname }}
                 </div>
                 <div class="text-body2 text-center">
@@ -301,7 +300,7 @@ export default {
       companies: "people/companies",
       menus: "theme/menus",
       user: "auth/user",
-      isLogged:"auth/isLogged"
+      isLogged: "auth/isLogged",
     }),
 
     style() {
@@ -311,9 +310,7 @@ export default {
       if (this.user.email === undefined) {
         return "";
       }
-      return `https://www.gravatar.com/avatar/${md5(
-        this.user.email
-      )}?s=400`;
+      return `https://www.gravatar.com/avatar/${md5(this.user.email)}?s=400`;
     },
   },
 
@@ -340,7 +337,7 @@ export default {
     ...mapActions({
       getRoute: "routes/getItems",
       setCurrentModule: "configs/currentModule",
-      logOut: "auth/logOut"
+      logOut: "auth/logOut",
     }),
     onScroll(info) {
       if (info.position > 0) this.leftDrawerOpen = false;
