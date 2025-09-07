@@ -17,11 +17,16 @@
   color: var(--primary);
 }
 
+
 .default-table .q-table thead,
 .default-table .q-table thead th {
+  font-weight: bold;
+  /**
   background-color: var(--secondary) !important;
   color: var(--text-secondary);
+  */
 }
+
 
 .bg {
   background-color: var(--bg-light);
