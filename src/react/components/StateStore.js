@@ -6,12 +6,13 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import globalStyles from '@controleonline/ui-layout/src/react/styles/global';
-import {getStore} from '@store';
+import {useStores} from '@store';
 
 const StateStore = ({store}) => {
   const {getters, actions} = getStore(store);
   const { isLoading, isSaving, error} = getters;
-  const {getters: themeGetters} = getStore('theme');
+  const themeStore = useStores(state => state.theme);
+  const themeGetters = themeStore.getters;
   const {colors} = themeGetters;
   const styles = globalStyles();
 
