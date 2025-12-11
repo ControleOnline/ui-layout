@@ -1,16 +1,13 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import {View, Text, ActivityIndicator, TouchableOpacity} from 'react-native';
 import globalStyles from '@controleonline/ui-layout/src/react/styles/global';
 import {useStores} from '@store';
 
 const StateStore = ({store}) => {
-  const {getters, actions} = getStore(store);
-  const { isLoading, isSaving, error} = getters;
+  const currentStore = useStores(state => state[store]);
+  getters = currentStore.getters;
+  actions = currentStore.actions;
+  const {isLoading, isSaving, error} = getters;
   const themeStore = useStores(state => state.theme);
   const themeGetters = themeStore.getters;
   const {colors} = themeGetters;
