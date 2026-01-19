@@ -1,14 +1,14 @@
 import React from 'react';
 import {View, Text, ActivityIndicator, TouchableOpacity} from 'react-native';
 import globalStyles from '@controleonline/ui-layout/src/react/styles/global';
-import {useStores} from '@store';
+import {useStore} from '@store';
 
 const StateStore = ({store}) => {
-  const currentStore = useStores(state => state[store]);
+  const currentStore = useStore(store);
   getters = currentStore.getters;
   actions = currentStore.actions;
   const {isLoading, isSaving, error} = getters;
-  const themeStore = useStores(state => state.theme);
+  const themeStore = useStore('theme');
   const themeGetters = themeStore.getters;
   const {colors} = themeGetters;
   const styles = globalStyles();
