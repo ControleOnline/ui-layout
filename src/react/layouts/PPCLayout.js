@@ -1,9 +1,9 @@
 import React from 'react';
 import {View, StyleSheet} from 'react-native';
-import BottomToolbar from '@controleonline/ui-crm/src/react/components/BottomToolbar';
+import BottomToolbar from '@controleonline/ui-ppc/src/react/components/BottomToolbar';
 import CompanyFilter from '@controleonline/ui-manager/src/react/components/CompanyFilter';
 
-const CrmLayout = ({children, navigation}) => {
+const PPCLayout = ({children, navigation}) => {
   return (
     <View style={styles.container}>
       <CompanyFilter />
@@ -24,4 +24,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CrmLayout;
+export default PPCLayout;
