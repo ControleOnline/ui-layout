@@ -10,70 +10,15 @@ import { PaperProvider } from 'react-native-paper';
 import { MessageProvider } from '@controleonline/ui-common/src/react/components/MessageService';
 import TouchFeedbackProvider from '@controleonline/ui-common/src/react/components/TouchFeedbackProvider';
 
-const createLocalStorageSync = async () => {
-  let store = {};
 
-  try {
-    const keys = await AsyncStorage.getAllKeys();
-    const pairs = await AsyncStorage.multiGet(keys);
-    pairs.forEach(([key, value]) => {
-      store[key] = value;
-    });
-  } catch (error) {
-    console.error('Erro ao carregar dados do AsyncStorage:', error);
-  }
-
-  return {
-    getItem: key => {
-      let value = store[key];
-      const cleanString =
-        typeof value === 'string' && value.startsWith('__q_objt|')
-          ? value.substring('__q_objt|'.length)
-          : value;
-
-      return cleanString;
-    },
-    setItem: (key, value) => {
-      store[key] = value;
-      AsyncStorage.setItem(key, value).catch(error =>
-        console.error('Erro ao salvar no AsyncStorage:', error),
-      );
-    },
-    removeItem: key => {
-      delete store[key];
-      AsyncStorage.removeItem(key).catch(error =>
-        console.error('Erro ao remover do AsyncStorage:', error),
-      );
-    },
-    clear: () => {
-      store = {};
-      AsyncStorage.clear().catch(error =>
-        console.error('Erro ao limpar o AsyncStorage:', error),
-      );
-    },
-  };
-};
 
 export default function App() {
-  const [storageReady, setStorageReady] = useState(false);
   const [navigationReady, setNavigationReady] = useState(false);
 
   useEffect(() => {
-    createLocalStorageSync().then(localStorageSync => {
-      window.localStorage = localStorageSync;
-      window.api = api;
-      setStorageReady(true);
-    });
+    global.api = api;
   }, []);
-  if (!storageReady) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#1B5587" />
-        <Text style={{ marginTop: 10 }}>Carregando...</Text>
-      </View>
-    );
-  }
-
+  
   return (
     <PaperProvider>
       <TouchFeedbackProvider>
