@@ -4,13 +4,13 @@ import globalStyles from '@controleonline/ui-layout/src/react/styles/global';
 import {useStore} from '@store';
 
 const StateStore = ({store}) => {
-  const currentStore = useStore(store);
-  getters = currentStore.getters;
-  actions = currentStore.actions;
-  const {isLoading, isSaving, error} = getters;
-  const themeStore = useStore('theme');
-  const themeGetters = themeStore.getters;
-  const {colors} = themeGetters;
+  const currentStore = useStore(store) || {};
+  const getters = currentStore?.getters || {};
+  const actions = currentStore?.actions || {};
+  const {isLoading = false, isSaving = false, error = null} = getters;
+  const themeStore = useStore('theme') || {};
+  const themeGetters = themeStore?.getters || {};
+  const {colors = {primary: '#000'}} = themeGetters;
   const styles = globalStyles();
 
   const renderError = () => {
