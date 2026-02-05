@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { StatusBar, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import Routes from '@controleonline/../../src/routers';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '@controleonline/ui-common/src/api';
 import { DefaultProvider } from '@controleonline/ui-common/src/react/components/DefaultProvider';
 import CheckLogin from '@controleonline/ui-login/src/react/components/CheckLogin';
@@ -15,7 +14,7 @@ import { VideoView, useVideoPlayer } from 'expo-video';
 const MOSTRAR_ICONE = false;
 let MOSTRAR_VIDEO = true;
 
-// ✅ Splash video definido ANTES do hook
+// Splash video definido ANTES do hook
 let splashVideo = null;
 
 if (MOSTRAR_VIDEO) {
@@ -30,29 +29,34 @@ if (MOSTRAR_VIDEO) {
 export default function App() {
   const [navigationReady, setNavigationReady] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
-  const [playerReady, setPlayerReady] = useState(false);
 
   const player = useVideoPlayer(
     showSplash && MOSTRAR_VIDEO ? splashVideo : null,
     player => {
-      if (player) {
-        player.loop = false;
-        player.play();
-        setPlayerReady(true);
-      }
+      if (!player) return;
+
+      player.loop = false;
+      player.play();
+
+      // ✅ sai do splash EXATAMENTE quando o vídeo termina
+      const sub = player.addListener('ended', () => {
+        setShowSplash(false);
+      });
+
+      return () => {
+        sub?.remove?.();
+      };
     }
   );
 
   useEffect(() => {
     global.api = api;
-  }, []);
 
-  useEffect(() => {
-    if (playerReady || !MOSTRAR_VIDEO) {
-      const timer = setTimeout(() => setShowSplash(false), 3000);
-      return () => clearTimeout(timer);
+    // ✅ se não houver vídeo, sai imediatamente
+    if (!MOSTRAR_VIDEO) {
+      setShowSplash(false);
     }
-  }, [playerReady]);
+  }, []);
 
   if (showSplash) {
     return (
@@ -63,7 +67,7 @@ export default function App() {
           </View>
         )}
 
-        {MOSTRAR_VIDEO && playerReady && (
+        {MOSTRAR_VIDEO && (
           <VideoView
             player={player}
             allowsFullscreen={false}
