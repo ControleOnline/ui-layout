@@ -12,9 +12,20 @@ import TouchFeedbackProvider from '@controleonline/ui-common/src/react/component
 import { VideoView, useVideoPlayer } from 'expo-video';
 
 // Variáveis de controle
-// ALEMAC // TODO // o mostrar ícone ainda não obedece
-const MOSTRAR_ICONE = false;  // true = mostra ícone, false = esconde
-const MOSTRAR_VIDEO = true;   // true = mostra vídeo, false = esconde
+const MOSTRAR_ICONE = false;
+let MOSTRAR_VIDEO = true;
+
+// ✅ Splash video definido ANTES do hook
+let splashVideo = null;
+
+if (MOSTRAR_VIDEO) {
+  try {
+    splashVideo = require('@controleonline/../../src/assets/splash-video.mp4');
+  } catch (e) {
+    splashVideo = null;
+    MOSTRAR_VIDEO = false;
+  }
+}
 
 export default function App() {
   const [navigationReady, setNavigationReady] = useState(false);
@@ -22,7 +33,7 @@ export default function App() {
   const [playerReady, setPlayerReady] = useState(false);
 
   const player = useVideoPlayer(
-    showSplash && MOSTRAR_VIDEO ? require('@controleonline/../../src/assets/splash-video.mp4') : null,
+    showSplash && MOSTRAR_VIDEO ? splashVideo : null,
     player => {
       if (player) {
         player.loop = false;
@@ -48,9 +59,10 @@ export default function App() {
       <View style={{ flex: 1, backgroundColor: '#000' }}>
         {MOSTRAR_ICONE && (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            {/* Aqui coloca o teu ícone/logo */}
+            {/* Ícone/logo */}
           </View>
         )}
+
         {MOSTRAR_VIDEO && playerReady && (
           <VideoView
             player={player}
@@ -69,8 +81,8 @@ export default function App() {
           <DefaultProvider>
             <NavigationContainer onReady={() => setNavigationReady(true)}>
               <StatusBar
-                barStyle={'light-content'}
-                backgroundColor={'#1B5587'}
+                barStyle="light-content"
+                backgroundColor="#1B5587"
               />
               {navigationReady && <CheckLogin />}
               <Routes />
