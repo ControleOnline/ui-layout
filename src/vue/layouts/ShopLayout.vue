@@ -18,7 +18,7 @@ import Menu from "@controleonline/ui-shop/src/vue/components/menu/Menu.vue";
 import bottomCart from "@controleonline/ui-orders/src/vue/components/cart/bottomCart";
 
 export default {
-  name: "ShopLayout",
+  name: "DefaultLayout",
   components: {
     bottomCart,
     Menu,
