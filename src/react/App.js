@@ -1,70 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { StatusBar, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import Routes from '@controleonline/../../src/routers';
-import { api } from '@controleonline/ui-common/src/api';
-import { DefaultProvider } from '@controleonline/ui-common/src/react/components/DefaultProvider';
-import CheckLogin from '@controleonline/ui-login/src/react/components/CheckLogin';
-import { PaperProvider } from 'react-native-paper';
-import { MessageProvider } from '@controleonline/ui-common/src/react/components/MessageService';
-import TouchFeedbackProvider from '@controleonline/ui-common/src/react/components/TouchFeedbackProvider';
-import { VideoView, useVideoPlayer } from 'expo-video';
+import React, { useState, useEffect } from 'react'
+import { StatusBar, View, Platform } from 'react-native'
+import { NavigationContainer } from '@react-navigation/native'
+import Routes, { linking } from '@controleonline/../../src/routers'
+import { api } from '@controleonline/ui-common/src/api'
+import { DefaultProvider } from '@controleonline/ui-common/src/react/components/DefaultProvider'
+import CheckLogin from '@controleonline/ui-login/src/react/components/CheckLogin'
+import { PaperProvider } from 'react-native-paper'
+import { MessageProvider } from '@controleonline/ui-common/src/react/components/MessageService'
+import TouchFeedbackProvider from '@controleonline/ui-common/src/react/components/TouchFeedbackProvider'
+import { VideoView, useVideoPlayer } from 'expo-video'
 
-// Variáveis de controle
-const MOSTRAR_ICONE = false;
-let MOSTRAR_VIDEO = true;
+const MOSTRAR_ICONE = false
+let MOSTRAR_VIDEO = Platform.OS !== 'web'
 
-// Splash video definido ANTES do hook
-let splashVideo = null;
+let splashVideo = null
 
 if (MOSTRAR_VIDEO) {
   try {
-    splashVideo = require('@controleonline/../../src/assets/splash-video.mp4');
-  } catch (e) {
-    splashVideo = null;
-    MOSTRAR_VIDEO = false;
+    splashVideo = require('@controleonline/../../src/assets/splash-video.mp4')
+  } catch {
+    splashVideo = null
+    MOSTRAR_VIDEO = false
   }
 }
 
 export default function App() {
-  const [navigationReady, setNavigationReady] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
+  const [navigationReady, setNavigationReady] = useState(false)
+  const [showSplash, setShowSplash] = useState(true)
 
   const player = useVideoPlayer(
     showSplash && MOSTRAR_VIDEO ? splashVideo : null,
     player => {
-      if (!player) return;
+      if (!player) return
 
-      player.loop = false;
-      player.play();
+      player.loop = false
+      player.play()
 
-      // ✅ sai do splash EXATAMENTE quando o vídeo termina
       const sub = player.addListener('ended', () => {
-        setShowSplash(false);
-      });
+        setShowSplash(false)
+      })
 
-      return () => {
-        sub?.remove?.();
-      };
+      return () => sub?.remove?.()
     }
-  );
+  )
 
   useEffect(() => {
-    global.api = api;
+    global.api = api
 
-    // ✅ se não houver vídeo, sai imediatamente
     if (!MOSTRAR_VIDEO) {
-      setShowSplash(false);
+      setShowSplash(false)
     }
-  }, []);
+  }, [])
 
   if (showSplash) {
     return (
       <View style={{ flex: 1, backgroundColor: '#000' }}>
         {MOSTRAR_ICONE && (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            {/* Ícone/logo */}
-          </View>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
         )}
 
         {MOSTRAR_VIDEO && (
@@ -75,7 +67,7 @@ export default function App() {
           />
         )}
       </View>
-    );
+    )
   }
 
   return (
@@ -83,11 +75,15 @@ export default function App() {
       <TouchFeedbackProvider>
         <MessageProvider>
           <DefaultProvider>
-            <NavigationContainer onReady={() => setNavigationReady(true)}>
+            <NavigationContainer
+              linking={linking}
+              onReady={() => setNavigationReady(true)}
+            >
               <StatusBar
                 barStyle="light-content"
                 backgroundColor="#1B5587"
               />
+
               {navigationReady && <CheckLogin />}
               <Routes />
             </NavigationContainer>
@@ -95,5 +91,5 @@ export default function App() {
         </MessageProvider>
       </TouchFeedbackProvider>
     </PaperProvider>
-  );
+  )
 }
