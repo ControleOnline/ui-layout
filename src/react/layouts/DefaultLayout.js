@@ -8,6 +8,7 @@ import CompanyFilter from '@controleonline/ui-manager/src/react/components/Compa
 import ShopToolbar from '@controleonline/ui-shop/src/react/components/ShopToolbar';
 import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
 
+
 import { env } from '@env';
 
 const DefaultLayout = ({ children, navigation }) => {
@@ -16,11 +17,12 @@ const DefaultLayout = ({ children, navigation }) => {
       <CompanyFilter />
       <View style={styles.content}>{children}</View>
 
-      {env.APP_ENV === 'CRM' && <BottomToolbar navigation={navigation} />}
-      {env.APP_ENV === 'PDV' && <BottomCart navigation={navigation} />}
-      {env.APP_ENV === 'MANAGER' && <ManagerToolbar navigation={navigation} />}
-      {env.APP_ENV === 'PPC' && <PPCToolbar navigation={navigation} />}
-      {env.APP_ENV === 'SHOP' && <ShopToolbar navigation={navigation} />}
+      {env.APP_TYPE === 'CRM' && <BottomToolbar navigation={navigation} />}
+      {env.APP_TYPE === 'PDV' && <BottomCart navigation={navigation} />}
+      {env.APP_TYPE === 'MANAGER' && <ManagerToolbar navigation={navigation} />}
+      {env.APP_TYPE === 'PPC' && <PPCToolbar navigation={navigation} />}
+      {env.APP_TYPE === 'SHOP' && <ShopToolbar navigation={navigation} />}
+    
     </View>
   );
 };
