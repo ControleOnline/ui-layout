@@ -18,10 +18,10 @@ const DefaultLayout = ({ children, navigation }) => {
       <View style={styles.content}>{children}</View>
 
       {env.APP_TYPE === 'CRM' && <BottomToolbar navigation={navigation} />}
-      {env.APP_TYPE === 'PDV' && <BottomCart navigation={navigation} />}
       {env.APP_TYPE === 'MANAGER' && <ManagerToolbar navigation={navigation} />}
+      {env.APP_TYPE === 'MENU' && <ShopToolbar navigation={navigation} />}
+      {env.APP_TYPE === 'POS' && <BottomCart navigation={navigation} />}
       {env.APP_TYPE === 'PPC' && <PPCToolbar navigation={navigation} />}
-      {env.APP_TYPE === 'SHOP' && <ShopToolbar navigation={navigation} />}
     
     </View>
   );
