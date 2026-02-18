@@ -11,12 +11,14 @@ import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
 
 import { env } from '@env';
 
-const DefaultLayout = ({ children, navigation, route }) => {
+const DefaultLayout = ({ children, navigation, options }) => {
+console.log(options);
+
   return (
     <View style={styles.container}>
-      {route.showCompanyFilter && <CompanyFilter />}
+      {options.showCompanyFilter && <CompanyFilter />}
       <View style={styles.content}>{children}</View>
-      {route.showToolbar && (
+      {options.showToolBar && (
         <>
           {env.APP_TYPE === 'CRM' && <BottomToolbar navigation={navigation} />}
           {env.APP_TYPE === 'MANAGER' && <ManagerToolbar navigation={navigation} />}
