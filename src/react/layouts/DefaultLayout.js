@@ -12,8 +12,6 @@ import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
 import { env } from '@env';
 
 const DefaultLayout = ({ children, navigation, route }) => {
-  console.log(route);
-
   return (
     <View style={styles.container}>
       {route.showCompanyFilter && <CompanyFilter />}
