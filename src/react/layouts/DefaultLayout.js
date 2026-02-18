@@ -12,7 +12,6 @@ import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
 import { env } from '@env';
 
 const DefaultLayout = ({ children, navigation, options }) => {
-console.log(options);
 
   return (
     <View style={styles.container}>
