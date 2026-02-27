@@ -19,14 +19,12 @@ const DefaultLayout = ({ children, navigation, options }) => {
     <View style={styles.container}>
       {options.showCompanyFilter && <CompanyFilter />}
       <View style={styles.content}>{children}</View>
+      {options?.showBottomCart && <BottomCart navigation={navigation} />}
       {showToolBar && (
         <>
           {env.APP_TYPE === 'CRM' && <BottomToolbar navigation={navigation} />}
           {env.APP_TYPE === 'MANAGER' && <ManagerToolbar navigation={navigation} />}
-          {(env.APP_TYPE === 'MENU' || env.APP_TYPE === 'DELIVERY') && (
-            <ShopToolbar navigation={navigation} />
-          )}
-          {env.APP_TYPE === 'POS' && <BottomCart navigation={navigation} />}
+          {env.APP_TYPE === 'POS' && <ShopToolbar navigation={navigation} />}
           {env.APP_TYPE === 'PPC' && <PPCToolbar navigation={navigation} />}
         </>
       )}
