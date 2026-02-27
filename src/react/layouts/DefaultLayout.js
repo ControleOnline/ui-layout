@@ -11,15 +11,15 @@ import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
 
 import { env } from '@env';
 
-const DefaultLayout = ({ children, navigation, route, options }) => {
+const DefaultLayout = ({ children, navigation, options }) => {
   const showToolBar =
     options?.showToolBar || options?.showBottomToolBar || options?.tabBarVisible;
 
   return (
     <View style={styles.container}>
-      {options.showCompanyFilter && env.APP_TYPE !== 'CRM' && <CompanyFilter />}
+      {options.showCompanyFilter && <CompanyFilter />}
       <View style={styles.content}>{children}</View>
-
+      {options?.showBottomCart && <BottomCart navigation={navigation} />}
       {showToolBar && (
         <>
           {env.APP_TYPE === 'CRM' && <BottomToolbar navigation={navigation} />}
@@ -27,21 +27,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
           {env.APP_TYPE === 'POS' && <ShopToolbar navigation={navigation} />}
           {env.APP_TYPE === 'PPC' && <PPCToolbar navigation={navigation} />}
         </>
-      )}
-      {options?.showBottomCart && <BottomCart navigation={navigation} />}
-      {env.APP_TYPE === 'CRM' ? (
-        <BottomToolbar
-          navigation={navigation}
-          currentRouteName={route?.name}
-        />
-      ) : (
-        showToolBar && (
-          <>
-            {env.APP_TYPE === 'MANAGER' && <ManagerToolbar navigation={navigation} />}
-            {env.APP_TYPE === 'POS' && <ShopToolbar navigation={navigation} />}
-            {env.APP_TYPE === 'PPC' && <PPCToolbar navigation={navigation} />}
-          </>
-        )
       )}
     </View>
   );
