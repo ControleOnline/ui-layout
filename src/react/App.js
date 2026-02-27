@@ -26,10 +26,12 @@ if (MOSTRAR_VIDEO) {
 
 export default function App() {
   const [navigationReady, setNavigationReady] = useState(false)
-  const [showSplash, setShowSplash] = useState(true)
+  const [bootstrapReady, setBootstrapReady] = useState(false)
+  const [videoEnded, setVideoEnded] = useState(!MOSTRAR_VIDEO)
+  const shouldShowSplash = !bootstrapReady || !videoEnded
 
   const player = useVideoPlayer(
-    showSplash && MOSTRAR_VIDEO ? splashVideo : null,
+    shouldShowSplash && MOSTRAR_VIDEO && !videoEnded ? splashVideo : null,
     player => {
       if (!player) return
 
@@ -37,7 +39,7 @@ export default function App() {
       player.play()
 
       const sub = player.addListener('ended', () => {
-        setShowSplash(false)
+        setVideoEnded(true)
       })
 
       return () => sub?.remove?.()
@@ -48,33 +50,15 @@ export default function App() {
     global.api = api
 
     if (!MOSTRAR_VIDEO) {
-      setShowSplash(false)
+      setVideoEnded(true)
     }
   }, [])
-
-  if (showSplash) {
-    return (
-      <View style={{ flex: 1, backgroundColor: '#000' }}>
-        {MOSTRAR_ICONE && (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
-        )}
-
-        {MOSTRAR_VIDEO && (
-          <VideoView
-            player={player}
-            allowsFullscreen={false}
-            style={{ flex: 1 }}
-          />
-        )}
-      </View>
-    )
-  }
 
   return (
     <PaperProvider>
       <TouchFeedbackProvider>
         <MessageProvider>
-          <DefaultProvider>
+          <DefaultProvider onBootstrapReady={() => setBootstrapReady(true)}>
             <NavigationContainer
               linking={linking}
               onReady={() => setNavigationReady(true)}
@@ -90,6 +74,29 @@ export default function App() {
           </DefaultProvider>
         </MessageProvider>
       </TouchFeedbackProvider>
+
+      {shouldShowSplash && (
+        <View style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+          backgroundColor: '#000',
+        }}>
+          {MOSTRAR_ICONE && (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
+          )}
+
+          {MOSTRAR_VIDEO && !videoEnded && (
+            <VideoView
+              player={player}
+              allowsFullscreen={false}
+              style={{ flex: 1 }}
+            />
+          )}
+        </View>
+      )}
     </PaperProvider>
   )
 }
