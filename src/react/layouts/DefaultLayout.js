@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BottomToolbar from '@controleonline/ui-crm/src/react/components/BottomToolbar';
 import BottomCart from '@controleonline/ui-orders/src/react/components/cart/BottomCart';
@@ -13,11 +14,20 @@ import { env } from '@env';
 
 const DefaultLayout = ({ children, navigation, options }) => {
   const showBottomToolBar = options?.showBottomToolBar;
+  const insets = useSafeAreaInsets();
+
+  // CRM toolbar is rendered as absolute overlay, so reserve space in content.
+  const bottomInsetCompensation =
+    showBottomToolBar && env.APP_TYPE === 'CRM'
+      ? 62 + Math.max(insets.bottom, 8)
+      : 0;
 
   return (
     <View style={styles.container}>
       {options?.showCompanyFilter && <CompanyFilter />}
-      <View style={styles.content}>{children}</View>
+      <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>
+        {children}
+      </View>
       {options?.showBottomCart && <BottomCart navigation={navigation} />}
       {showBottomToolBar && (
         <>
