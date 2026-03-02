@@ -7,8 +7,14 @@ import { DefaultProvider } from '@controleonline/ui-common/src/react/components/
 import CheckLogin from '@controleonline/ui-login/src/react/components/CheckLogin'
 import { PaperProvider } from 'react-native-paper'
 import { MessageProvider } from '@controleonline/ui-common/src/react/components/MessageService'
+import {
+  TOAST_EXTRA_INSETS,
+  TOAST_PROVIDER_KEYS,
+} from '@controleonline/ui-common/src/react/components/toastConfig'
 import TouchFeedbackProvider from '@controleonline/ui-common/src/react/components/TouchFeedbackProvider'
 import { VideoView, useVideoPlayer } from 'expo-video'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { toast, Toasts } from '@backpackapp-io/react-native-toast'
 
 const MOSTRAR_ICONE = false
 let MOSTRAR_VIDEO = Platform.OS !== 'web'
@@ -55,48 +61,55 @@ export default function App() {
   }, [])
 
   return (
-    <PaperProvider>
-      <TouchFeedbackProvider>
-        <MessageProvider>
-          <DefaultProvider onBootstrapReady={() => setBootstrapReady(true)}>
-            <NavigationContainer
-              linking={linking}
-              onReady={() => setNavigationReady(true)}
-            >
-              <StatusBar
-                barStyle="light-content"
-                backgroundColor="#1B5587"
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PaperProvider>
+        <TouchFeedbackProvider>
+          <MessageProvider>
+            <DefaultProvider onBootstrapReady={() => setBootstrapReady(true)}>
+              <NavigationContainer
+                linking={linking}
+                onReady={() => setNavigationReady(true)}
+              >
+                <StatusBar
+                  barStyle="light-content"
+                  backgroundColor="#1B5587"
+                />
+
+                {navigationReady && <CheckLogin />}
+                <Routes />
+                <Toasts
+                  providerKey={TOAST_PROVIDER_KEYS.ROOT}
+                  extraInsets={TOAST_EXTRA_INSETS}
+                  onToastPress={currentToast => toast.dismiss(currentToast.id)}
+                />
+              </NavigationContainer>
+            </DefaultProvider>
+          </MessageProvider>
+        </TouchFeedbackProvider>
+
+        {shouldShowSplash && (
+          <View style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            backgroundColor: '#000',
+          }}>
+            {MOSTRAR_ICONE && (
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
+            )}
+
+            {MOSTRAR_VIDEO && !videoEnded && (
+              <VideoView
+                player={player}
+                allowsFullscreen={false}
+                style={{ flex: 1 }}
               />
-
-              {navigationReady && <CheckLogin />}
-              <Routes />
-            </NavigationContainer>
-          </DefaultProvider>
-        </MessageProvider>
-      </TouchFeedbackProvider>
-
-      {shouldShowSplash && (
-        <View style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: 0,
-          backgroundColor: '#000',
-        }}>
-          {MOSTRAR_ICONE && (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
-          )}
-
-          {MOSTRAR_VIDEO && !videoEnded && (
-            <VideoView
-              player={player}
-              allowsFullscreen={false}
-              style={{ flex: 1 }}
-            />
-          )}
-        </View>
-      )}
-    </PaperProvider>
+            )}
+          </View>
+        )}
+      </PaperProvider>
+    </GestureHandlerRootView>
   )
 }
