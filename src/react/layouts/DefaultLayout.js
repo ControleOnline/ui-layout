@@ -4,11 +4,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BottomToolbar from '@controleonline/ui-crm/src/react/components/BottomToolbar';
 import BottomCart from '@controleonline/ui-orders/src/react/components/cart/BottomCart';
-import ManagerToolbar from '@controleonline/ui-manager/src/react/components/ManagerToolbar';
 import CompanyFilter from '@controleonline/ui-manager/src/react/components/CompanyFilter';
-import ShopToolbar from '@controleonline/ui-shop/src/react/components/ShopToolbar';
+import ManagerToolbar from '@controleonline/ui-manager/src/react/components/ManagerToolbar';
 import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
-
+import ShopToolbar from '@controleonline/ui-shop/src/react/components/ShopToolbar';
 
 import { env } from '@env';
 
