@@ -13,10 +13,16 @@ import { env } from '@env';
 
 const DefaultLayout = ({ children, navigation, options }) => {
   const showBottomToolBar = options?.showBottomToolBar;
+  const showBottomCart = options?.showBottomCart;
   const insets = useSafeAreaInsets();
 
   // CRM toolbar is rendered as absolute overlay, so reserve space in content.
   const bottomInsetCompensation =
+    showBottomToolBar
+      ? 62 + Math.max(insets.bottom, 8)
+      : 0;
+
+  const cartBottomOffset =
     showBottomToolBar
       ? 62 + Math.max(insets.bottom, 8)
       : 0;
@@ -27,7 +33,12 @@ const DefaultLayout = ({ children, navigation, options }) => {
       <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>
         {children}
       </View>
-      {options?.showBottomCart && <BottomCart navigation={navigation} />}
+      {showBottomCart && (
+        <BottomCart
+          navigation={navigation}
+          bottomOffset={cartBottomOffset}
+        />
+      )}
       {showBottomToolBar && (
         <>
           {env.APP_TYPE === 'CRM' && <BottomToolbar navigation={navigation} />}
