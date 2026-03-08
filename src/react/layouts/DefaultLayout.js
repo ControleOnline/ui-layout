@@ -29,7 +29,7 @@ const DefaultLayout = ({ children, navigation, options }) => {
 
   return (
     <View style={styles.container}>
-      {options?.showCompanyFilter && <CompanyFilter />}
+      {options?.showCompanyFilter && <CompanyFilter mode={options?.companyFilterMode}/>}
       <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>
         {children}
       </View>
