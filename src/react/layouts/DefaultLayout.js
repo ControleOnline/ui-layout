@@ -17,7 +17,7 @@ const DefaultLayout = ({ children, navigation, options }) => {
 
   // CRM toolbar is rendered as absolute overlay, so reserve space in content.
   const bottomInsetCompensation =
-    showBottomToolBar && env.APP_TYPE === 'CRM'
+    showBottomToolBar
       ? 62 + Math.max(insets.bottom, 8)
       : 0;
 
