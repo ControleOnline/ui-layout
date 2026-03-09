@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,6 +14,12 @@ import { env } from '@env';
 const DefaultLayout = ({ children, navigation, options }) => {
   const showBottomToolBar = options?.showBottomToolBar;
   const showBottomCart = options?.showBottomCart;
+  const showInlineCompanyFilter =
+    options?.showCompanyFilter && options?.companyFilterMode !== 'icon';
+  const showHeaderCompanyFilter =
+    options?.showCompanyFilter &&
+    options?.companyFilterMode === 'icon' &&
+    options?.headerShown !== false;
   const insets = useSafeAreaInsets();
 
   // CRM toolbar is rendered as absolute overlay, so reserve space in content.
@@ -27,9 +33,28 @@ const DefaultLayout = ({ children, navigation, options }) => {
       ? 62 + Math.max(insets.bottom, 8)
       : 0;
 
+  useLayoutEffect(() => {
+    if (!showHeaderCompanyFilter) return;
+
+    navigation.setOptions({
+      headerRightContainerStyle: styles.headerRightContainer,
+      headerRight: () => (
+        <CompanyFilter
+          navigation={navigation}
+          mode={options?.companyFilterMode}
+        />
+      ),
+    });
+  }, [navigation, options?.companyFilterMode, showHeaderCompanyFilter]);
+
   return (
     <View style={styles.container}>
-      {options?.showCompanyFilter && <CompanyFilter mode={options?.companyFilterMode}/>}
+      {showInlineCompanyFilter && (
+        <CompanyFilter
+          navigation={navigation}
+          mode={options?.companyFilterMode}
+        />
+      )}
       <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>
         {children}
       </View>
@@ -54,11 +79,19 @@ const DefaultLayout = ({ children, navigation, options }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
+    minHeight: 0,
+    minWidth: 0,
     backgroundColor: '#f8f9fa',
   },
   content: {
     flex: 1,
+    minHeight: 0,
+    minWidth: 0,
     backgroundColor: '#f8f9fa',
+  },
+  headerRightContainer: {
+    paddingRight: 16,
   },
 });
 
