@@ -8,6 +8,7 @@ import CompanyFilter from '@controleonline/ui-manager/src/react/components/Compa
 import ManagerToolbar from '@controleonline/ui-manager/src/react/components/ManagerToolbar';
 import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
 import ShopToolbar from '@controleonline/ui-shop/src/react/components/ShopToolbar';
+import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBottomDock';
 
 import { env } from '@env';
 
@@ -21,16 +22,31 @@ const DefaultLayout = ({ children, navigation, options }) => {
     options?.companyFilterMode === 'icon' &&
     options?.headerShown !== false;
   const insets = useSafeAreaInsets();
+  const navigationState = navigation?.getState?.();
+  const currentRouteName = navigationState?.routes?.[navigationState?.index]?.name;
+  const modernDockRouteNames = new Set([
+    'DisplayList',
+    'DisplayDetails',
+    'OrderDetails',
+    'OrderTools',
+    'AddProductScreen',
+  ]);
 
-  // CRM toolbar is rendered as absolute overlay, so reserve space in content.
+  const isModernDockEnabled =
+    showBottomToolBar &&
+    (env.APP_TYPE === 'MANAGER' || env.APP_TYPE === 'PPC') &&
+    modernDockRouteNames.has(currentRouteName);
+  const toolbarBaseHeight = isModernDockEnabled ? 86 : 62;
+
+  // Bottom bars are rendered as overlays, so reserve space in content.
   const bottomInsetCompensation =
     showBottomToolBar
-      ? 62 + Math.max(insets.bottom, 8)
+      ? toolbarBaseHeight + Math.max(insets.bottom, 8)
       : 0;
 
   const cartBottomOffset =
     showBottomToolBar
-      ? 62 + Math.max(insets.bottom, 8)
+      ? toolbarBaseHeight + Math.max(insets.bottom, 8)
       : 0;
 
   useLayoutEffect(() => {
@@ -67,9 +83,17 @@ const DefaultLayout = ({ children, navigation, options }) => {
       {showBottomToolBar && (
         <>
           {env.APP_TYPE === 'CRM' && <BottomToolbar navigation={navigation} />}
-          {env.APP_TYPE === 'MANAGER' && <ManagerToolbar navigation={navigation} />}
+          {env.APP_TYPE === 'MANAGER' && (
+            isModernDockEnabled
+              ? <AppBottomDock navigation={navigation} variant="manager" />
+              : <ManagerToolbar navigation={navigation} />
+          )}
           {env.APP_TYPE === 'POS' && <ShopToolbar navigation={navigation} />}
-          {env.APP_TYPE === 'PPC' && <PPCToolbar navigation={navigation} />}
+          {env.APP_TYPE === 'PPC' && (
+            isModernDockEnabled
+              ? <AppBottomDock navigation={navigation} variant="ppc" />
+              : <PPCToolbar navigation={navigation} />
+          )}
         </>
       )}
     </View>
