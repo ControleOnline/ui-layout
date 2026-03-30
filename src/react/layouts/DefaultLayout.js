@@ -64,7 +64,7 @@ const DefaultLayout = ({ children, navigation, options }) => {
   }, [navigation, options?.companyFilterMode, showHeaderCompanyFilter]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: options?.headerShown === false ? insets.top : 0 }]}>
       {showInlineCompanyFilter && (
         <CompanyFilter
           navigation={navigation}
