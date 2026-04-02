@@ -24,6 +24,9 @@ const DefaultLayout = ({ children, navigation, options }) => {
   const insets = useSafeAreaInsets();
   const navigationState = navigation?.getState?.();
   const currentRouteName = navigationState?.routes?.[navigationState?.index]?.name;
+  const currentRouteParams = navigationState?.routes?.[navigationState?.index]?.params || {};
+  const shouldHideBottomToolBar = !!currentRouteParams?.hideBottomToolBar;
+  const effectiveShowBottomToolBar = !!showBottomToolBar && !shouldHideBottomToolBar;
   const modernDockRouteNames = new Set([
     'DisplayList',
     'DisplayDetails',
@@ -33,19 +36,19 @@ const DefaultLayout = ({ children, navigation, options }) => {
   ]);
 
   const isModernDockEnabled =
-    showBottomToolBar &&
+    effectiveShowBottomToolBar &&
     (env.APP_TYPE === 'MANAGER' || env.APP_TYPE === 'PPC') &&
     modernDockRouteNames.has(currentRouteName);
   const toolbarBaseHeight = isModernDockEnabled ? 86 : 62;
 
   // Bottom bars are rendered as overlays, so reserve space in content.
   const bottomInsetCompensation =
-    showBottomToolBar
+    effectiveShowBottomToolBar
       ? toolbarBaseHeight + Math.max(insets.bottom, 8)
       : 0;
 
   const cartBottomOffset =
-    showBottomToolBar
+    effectiveShowBottomToolBar
       ? toolbarBaseHeight + Math.max(insets.bottom, 8)
       : 0;
 
@@ -80,7 +83,7 @@ const DefaultLayout = ({ children, navigation, options }) => {
           bottomOffset={cartBottomOffset}
         />
       )}
-      {showBottomToolBar && (
+      {effectiveShowBottomToolBar && (
         <>
           {env.APP_TYPE === 'CRM' && <BottomToolbar navigation={navigation} />}
           {env.APP_TYPE === 'MANAGER' && (
