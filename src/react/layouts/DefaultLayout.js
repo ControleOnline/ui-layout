@@ -8,6 +8,7 @@ import CompanyFilter from '@controleonline/ui-manager/src/react/components/Compa
 import ManagerToolbar from '@controleonline/ui-manager/src/react/components/ManagerToolbar';
 import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
 import ShopToolbar from '@controleonline/ui-shop/src/react/components/ShopToolbar';
+import PDVToolbar from '@controleonline/ui-orders/src/react/components/PDVToolbar';
 import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBottomDock';
 
 import { env } from '@env';
@@ -91,7 +92,7 @@ const DefaultLayout = ({ children, navigation, options }) => {
               ? <AppBottomDock navigation={navigation} variant="manager" />
               : <ManagerToolbar navigation={navigation} />
           )}
-          {env.APP_TYPE === 'POS' && <ShopToolbar navigation={navigation} />}
+          {env.APP_TYPE === 'POS' && <PDVToolbar navigation={navigation} />}
           {env.APP_TYPE === 'PPC' && (
             isModernDockEnabled
               ? <AppBottomDock navigation={navigation} variant="ppc" />
