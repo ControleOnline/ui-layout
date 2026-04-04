@@ -15,6 +15,7 @@ import TouchFeedbackProvider from '@controleonline/ui-common/src/react/component
 import { VideoView, useVideoPlayer } from 'expo-video'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { toast, Toasts } from '@backpackapp-io/react-native-toast'
+import { env } from '@env'
 
 const MOSTRAR_ICONE = false
 let MOSTRAR_VIDEO = Platform.OS !== 'web'
@@ -35,6 +36,9 @@ export default function App() {
   const [bootstrapReady, setBootstrapReady] = useState(false)
   const [videoEnded, setVideoEnded] = useState(!MOSTRAR_VIDEO)
   const shouldShowSplash = !bootstrapReady || !videoEnded
+  const appType = String(env.APP_TYPE || '').toUpperCase()
+  const shouldLockWebViewportToApp =
+    Platform.OS === 'web' && (appType === 'SHOP' || appType === 'DELIVERY')
 
   const player = useVideoPlayer(
     shouldShowSplash && MOSTRAR_VIDEO && !videoEnded ? splashVideo : null,
@@ -60,8 +64,63 @@ export default function App() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!shouldLockWebViewportToApp || typeof document === 'undefined') {
+      return
+    }
+
+    const html = document.documentElement
+    const body = document.body
+    const root = document.getElementById('root')
+
+    const previous = {
+      htmlHeight: html.style.height,
+      htmlWidth: html.style.width,
+      htmlOverflow: html.style.overflow,
+      bodyHeight: body.style.height,
+      bodyWidth: body.style.width,
+      bodyOverflow: body.style.overflow,
+      bodyMargin: body.style.margin,
+      rootHeight: root?.style.height || '',
+      rootWidth: root?.style.width || '',
+      rootOverflow: root?.style.overflow || '',
+    }
+
+    html.style.height = '100%'
+    html.style.width = '100%'
+    html.style.overflow = 'hidden'
+
+    body.style.height = '100%'
+    body.style.width = '100%'
+    body.style.overflow = 'hidden'
+    body.style.margin = '0'
+
+    if (root) {
+      root.style.height = '100%'
+      root.style.width = '100%'
+      root.style.overflow = 'hidden'
+    }
+
+    return () => {
+      html.style.height = previous.htmlHeight
+      html.style.width = previous.htmlWidth
+      html.style.overflow = previous.htmlOverflow
+
+      body.style.height = previous.bodyHeight
+      body.style.width = previous.bodyWidth
+      body.style.overflow = previous.bodyOverflow
+      body.style.margin = previous.bodyMargin
+
+      if (root) {
+        root.style.height = previous.rootHeight
+        root.style.width = previous.rootWidth
+        root.style.overflow = previous.rootOverflow
+      }
+    }
+  }, [shouldLockWebViewportToApp])
+
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
       <PaperProvider>
         <TouchFeedbackProvider>
           <MessageProvider>

@@ -7,6 +7,7 @@ import BottomCart from '@controleonline/ui-orders/src/react/components/cart/Bott
 import CompanyFilter from '@controleonline/ui-manager/src/react/components/CompanyFilter';
 import ManagerToolbar from '@controleonline/ui-manager/src/react/components/ManagerToolbar';
 import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
+import ShopBottomCart from '@controleonline/ui-shop/src/react/components/storefront/ShopBottomCart';
 import ShopToolbar from '@controleonline/ui-shop/src/react/components/ShopToolbar';
 import PDVToolbar from '@controleonline/ui-orders/src/react/components/PDVToolbar';
 import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBottomDock';
@@ -23,6 +24,8 @@ const DefaultLayout = ({ children, navigation, options }) => {
     options?.companyFilterMode === 'icon' &&
     options?.headerShown !== false;
   const insets = useSafeAreaInsets();
+  const appType = String(env.APP_TYPE || '').toUpperCase();
+  const isShopApp = appType === 'SHOP' || appType === 'DELIVERY';
   const navigationState = navigation?.getState?.();
   const currentRouteName = navigationState?.routes?.[navigationState?.index]?.name;
   const currentRouteParams = navigationState?.routes?.[navigationState?.index]?.params || {};
@@ -38,7 +41,7 @@ const DefaultLayout = ({ children, navigation, options }) => {
 
   const isModernDockEnabled =
     effectiveShowBottomToolBar &&
-    (env.APP_TYPE === 'MANAGER' || env.APP_TYPE === 'PPC') &&
+    (appType === 'MANAGER' || appType === 'PPC') &&
     modernDockRouteNames.has(currentRouteName);
   const toolbarBaseHeight = isModernDockEnabled ? 86 : 62;
 
@@ -78,22 +81,28 @@ const DefaultLayout = ({ children, navigation, options }) => {
       <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>
         {children}
       </View>
-      {showBottomCart && (
-        <BottomCart
-          navigation={navigation}
-          bottomOffset={cartBottomOffset}
-        />
-      )}
+      {showBottomCart &&
+        (isShopApp ? (
+          <ShopBottomCart
+            navigation={navigation}
+            bottomOffset={cartBottomOffset}
+          />
+        ) : (
+          <BottomCart
+            navigation={navigation}
+            bottomOffset={cartBottomOffset}
+          />
+        ))}
       {effectiveShowBottomToolBar && (
         <>
-          {env.APP_TYPE === 'CRM' && <BottomToolbar navigation={navigation} />}
-          {env.APP_TYPE === 'MANAGER' && (
+          {appType === 'CRM' && <BottomToolbar navigation={navigation} />}
+          {appType === 'MANAGER' && (
             isModernDockEnabled
               ? <AppBottomDock navigation={navigation} variant="manager" />
               : <ManagerToolbar navigation={navigation} />
           )}
-          {env.APP_TYPE === 'POS' && <PDVToolbar navigation={navigation} />}
-          {env.APP_TYPE === 'PPC' && (
+          {appType === 'POS' && <PDVToolbar navigation={navigation} />}
+          {appType === 'PPC' && (
             isModernDockEnabled
               ? <AppBottomDock navigation={navigation} variant="ppc" />
               : <PPCToolbar navigation={navigation} />
