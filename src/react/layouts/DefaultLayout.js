@@ -35,7 +35,6 @@ const DefaultLayout = ({ children, navigation, options }) => {
     'DisplayList',
     'DisplayDetails',
     'OrderDetails',
-    'OrderTools',
     'AddProductScreen',
   ]);
 
