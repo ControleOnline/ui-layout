@@ -46,7 +46,7 @@ export default function App() {
   const shouldShowSplash = !bootstrapReady || !videoEnded
   const appType = String(env.APP_TYPE || '').toUpperCase()
   const shouldLockWebViewportToApp =
-    Platform.OS === 'web' && (appType === 'SHOP' || appType === 'DELIVERY')
+    Platform.OS === 'web' && appType === 'SHOP'
 
   const player = useVideoPlayer(
     shouldShowSplash && MOSTRAR_VIDEO && !videoEnded ? splashVideo : null,

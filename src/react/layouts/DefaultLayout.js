@@ -8,7 +8,6 @@ import CompanyFilter from '@controleonline/ui-manager/src/react/components/Compa
 import ManagerToolbar from '@controleonline/ui-manager/src/react/components/ManagerToolbar';
 import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
 import ShopBottomCart from '@controleonline/ui-shop/src/react/components/storefront/ShopBottomCart';
-import ShopToolbar from '@controleonline/ui-shop/src/react/components/ShopToolbar';
 import PDVToolbar from '@controleonline/ui-orders/src/react/components/PDVToolbar';
 import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBottomDock';
 
@@ -18,7 +17,7 @@ import styles from './DefaultLayout.styles';
 const DefaultLayout = ({ children, navigation, options }) => {
   const insets = useSafeAreaInsets();
   const appType = String(env.APP_TYPE || '').toUpperCase();
-  const isShopApp = appType === 'SHOP' || appType === 'DELIVERY';
+  const isShopApp = appType === 'SHOP';
   const allowCompanyFilter = !isShopApp && options?.showCompanyFilter;
   const showBottomToolBar = options?.showBottomToolBar;
   const showBottomCart = options?.showBottomCart;
