@@ -16,17 +16,18 @@ import { env } from '@env';
 import styles from './DefaultLayout.styles';
 
 const DefaultLayout = ({ children, navigation, options }) => {
-  const showBottomToolBar = options?.showBottomToolBar;
-  const showBottomCart = options?.showBottomCart;
-  const showInlineCompanyFilter =
-    options?.showCompanyFilter && options?.companyFilterMode !== 'icon';
-  const showHeaderCompanyFilter =
-    options?.showCompanyFilter &&
-    options?.companyFilterMode === 'icon' &&
-    options?.headerShown !== false;
   const insets = useSafeAreaInsets();
   const appType = String(env.APP_TYPE || '').toUpperCase();
   const isShopApp = appType === 'SHOP' || appType === 'DELIVERY';
+  const allowCompanyFilter = !isShopApp && options?.showCompanyFilter;
+  const showBottomToolBar = options?.showBottomToolBar;
+  const showBottomCart = options?.showBottomCart;
+  const showInlineCompanyFilter =
+    allowCompanyFilter && options?.companyFilterMode !== 'icon';
+  const showHeaderCompanyFilter =
+    allowCompanyFilter &&
+    options?.companyFilterMode === 'icon' &&
+    options?.headerShown !== false;
   const navigationState = navigation?.getState?.();
   const currentRouteName = navigationState?.routes?.[navigationState?.index]?.name;
   const currentRouteParams = navigationState?.routes?.[navigationState?.index]?.params || {};
