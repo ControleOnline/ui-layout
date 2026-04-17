@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { useNavigationState } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Feather';
 import { useStore } from '@store';
+import createStyles from './AppBottomDock.styles';
 
 const MANAGER_ITEMS = [
   { route: 'HomePage', label: 'Home', icon: 'home' },
@@ -70,7 +71,7 @@ const AppBottomDock = ({ navigation, variant = 'manager' }) => {
   const navigateTo = routeName => {
     try {
       navigation.navigate(routeName);
-    } catch (e) {
+    } catch {
       // Avoid breaking UX when a route is not available in current app flavor.
     }
   };
@@ -113,90 +114,6 @@ const AppBottomDock = ({ navigation, variant = 'manager' }) => {
   );
 };
 
-const createStyles = ({
-  primaryColor,
-  dockBackground,
-  borderColor,
-  inactiveText,
-  activeBg,
-  activeBorder,
-  insets,
-}) =>
-  StyleSheet.create({
-    host: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: 0,
-      zIndex: 60,
-      paddingHorizontal: 10,
-      paddingTop: 8,
-      paddingBottom: Math.max(insets.bottom, 10),
-      backgroundColor: 'transparent',
-    },
-    dock: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      borderRadius: 20,
-      borderWidth: 1,
-      borderColor,
-      backgroundColor: dockBackground,
-      paddingHorizontal: 6,
-      paddingVertical: 6,
-      ...(Platform.OS === 'android'
-        ? { elevation: 8 }
-        : {
-            shadowColor: '#0F172A',
-            shadowOpacity: 0.16,
-            shadowOffset: { width: 0, height: 10 },
-            shadowRadius: 18,
-          }),
-    },
-    item: {
-      flex: 1,
-      minHeight: 58,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 14,
-      paddingVertical: 6,
-      paddingHorizontal: 2,
-      borderWidth: 1,
-      borderColor: 'transparent',
-    },
-    itemActive: {
-      backgroundColor: activeBg,
-      borderColor: activeBorder,
-    },
-    itemPressed: {
-      opacity: 0.92,
-      transform: [{ scale: 0.99 }],
-    },
-    itemDisabled: {
-      opacity: 0.45,
-    },
-    iconWrap: {
-      width: 28,
-      height: 28,
-      borderRadius: 999,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: 4,
-      backgroundColor: 'transparent',
-    },
-    iconWrapActive: {
-      backgroundColor: withAlpha(primaryColor, '24'),
-    },
-    itemLabel: {
-      fontSize: 11,
-      fontWeight: '700',
-      color: inactiveText,
-      textAlign: 'center',
-    },
-    itemLabelActive: {
-      color: primaryColor,
-      fontWeight: '800',
-    },
-  });
+
 
 export default AppBottomDock;

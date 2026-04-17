@@ -7,19 +7,27 @@ import { DefaultProvider } from '@controleonline/ui-common/src/react/components/
 import CheckLogin from '@controleonline/ui-login/src/react/components/CheckLogin'
 import { PaperProvider } from 'react-native-paper'
 import { MessageProvider } from '@controleonline/ui-common/src/react/components/MessageService'
+
 import {
   TOAST_EXTRA_INSETS,
   TOAST_PROVIDER_KEYS,
 } from '@controleonline/ui-common/src/react/components/toastConfig'
+
 import TouchFeedbackProvider from '@controleonline/ui-common/src/react/components/TouchFeedbackProvider'
 import { VideoView, useVideoPlayer } from 'expo-video'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { toast, Toasts } from '@backpackapp-io/react-native-toast'
 import { env } from '@env'
 
+import {
+  inlineStyle_123_28,
+  inlineStyle_150_16,
+  inlineStyle_159_20,
+  inlineStyle_166_16,
+} from './App.styles';
+
 const MOSTRAR_ICONE = false
 let MOSTRAR_VIDEO = Platform.OS !== 'web'
-
 let splashVideo = null
 
 if (MOSTRAR_VIDEO) {
@@ -120,7 +128,7 @@ export default function App() {
   }, [shouldLockWebViewportToApp])
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, minHeight: 0, minWidth: 0, overflow: 'hidden' }}>
+    <GestureHandlerRootView style={inlineStyle_123_28}>
       <PaperProvider>
         <TouchFeedbackProvider>
           <MessageProvider>
@@ -147,28 +155,21 @@ export default function App() {
         </TouchFeedbackProvider>
 
         {shouldShowSplash && (
-          <View style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: '#000',
-          }}>
+          <View style={inlineStyle_150_16}>
             {MOSTRAR_ICONE && (
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} />
+              <View style={inlineStyle_159_20} />
             )}
 
             {MOSTRAR_VIDEO && !videoEnded && (
               <VideoView
                 player={player}
                 allowsFullscreen={false}
-                style={{ flex: 1 }}
+                style={inlineStyle_166_16}
               />
             )}
           </View>
         )}
       </PaperProvider>
     </GestureHandlerRootView>
-  )
+  );
 }

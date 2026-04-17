@@ -1,5 +1,5 @@
 import React, { useLayoutEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BottomToolbar from '@controleonline/ui-crm/src/react/components/BottomToolbar';
@@ -13,6 +13,7 @@ import PDVToolbar from '@controleonline/ui-orders/src/react/components/PDVToolba
 import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBottomDock';
 
 import { env } from '@env';
+import styles from './DefaultLayout.styles';
 
 const DefaultLayout = ({ children, navigation, options }) => {
   const showBottomToolBar = options?.showBottomToolBar;
@@ -111,24 +112,5 @@ const DefaultLayout = ({ children, navigation, options }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: 'relative',
-    minHeight: 0,
-    minWidth: 0,
-    backgroundColor: '#f8f9fa',
-  },
-  content: {
-    flex: 1,
-    minHeight: 0,
-    minWidth: 0,
-    backgroundColor: '#f8f9fa',
-  },
-  headerRightContainer: {
-    paddingRight: 16,
-  },
-});
 
 export default DefaultLayout;
