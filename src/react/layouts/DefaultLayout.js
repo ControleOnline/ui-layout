@@ -32,6 +32,11 @@ const DefaultLayout = ({ children, navigation, options }) => {
   const currentRouteParams = navigationState?.routes?.[navigationState?.index]?.params || {};
   const shouldHideBottomToolBar = !!currentRouteParams?.hideBottomToolBar;
   const effectiveShowBottomToolBar = !!showBottomToolBar && !shouldHideBottomToolBar;
+  const showBottomCartOverride = currentRouteParams?.showBottomCart;
+  const effectiveShowBottomCart =
+    typeof showBottomCartOverride === 'boolean'
+      ? showBottomCartOverride
+      : !!showBottomCart;
   const modernDockRouteNames = new Set([
     'DisplayList',
     'DisplayDetails',
@@ -81,7 +86,7 @@ const DefaultLayout = ({ children, navigation, options }) => {
       <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>
         {children}
       </View>
-      {showBottomCart &&
+      {effectiveShowBottomCart &&
         (isShopApp ? (
           <ShopBottomCart
             navigation={navigation}
