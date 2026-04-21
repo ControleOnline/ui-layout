@@ -31,7 +31,13 @@ const DefaultLayout = ({ children, navigation, options }) => {
   const currentRouteName = navigationState?.routes?.[navigationState?.index]?.name;
   const currentRouteParams = navigationState?.routes?.[navigationState?.index]?.params || {};
   const shouldHideBottomToolBar = !!currentRouteParams?.hideBottomToolBar;
-  const effectiveShowBottomToolBar = !!showBottomToolBar && !shouldHideBottomToolBar;
+  const showBottomToolBarOverride = currentRouteParams?.showBottomToolBar;
+  const effectiveShowBottomToolBar =
+    (
+      typeof showBottomToolBarOverride === 'boolean'
+        ? showBottomToolBarOverride
+        : !!showBottomToolBar
+    ) && !shouldHideBottomToolBar;
   const showBottomCartOverride = currentRouteParams?.showBottomCart;
   const effectiveShowBottomCart =
     typeof showBottomCartOverride === 'boolean'
