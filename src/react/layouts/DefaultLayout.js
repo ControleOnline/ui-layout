@@ -14,7 +14,24 @@ import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBot
 import { env } from '@env';
 import styles from './DefaultLayout.styles';
 
-const DefaultLayout = ({ children, navigation, options }) => {
+const resolveBooleanOverride = value => {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  const normalized = String(value || '').trim().toLowerCase();
+  if (normalized === 'true') {
+    return true;
+  }
+
+  if (normalized === 'false') {
+    return false;
+  }
+
+  return null;
+};
+
+const DefaultLayout = ({ children, navigation, route, options }) => {
   const insets = useSafeAreaInsets();
   const appType = String(env.APP_TYPE || '').toUpperCase();
   const isShopApp = appType === 'SHOP';
@@ -28,19 +45,25 @@ const DefaultLayout = ({ children, navigation, options }) => {
     options?.companyFilterMode === 'icon' &&
     options?.headerShown !== false;
   const navigationState = navigation?.getState?.();
-  const currentRouteName = navigationState?.routes?.[navigationState?.index]?.name;
-  const currentRouteParams = navigationState?.routes?.[navigationState?.index]?.params || {};
+  const currentRouteName =
+    route?.name || navigationState?.routes?.[navigationState?.index]?.name;
+  const currentRouteParams =
+    route?.params || navigationState?.routes?.[navigationState?.index]?.params || {};
   const shouldHideBottomToolBar = !!currentRouteParams?.hideBottomToolBar;
-  const showBottomToolBarOverride = currentRouteParams?.showBottomToolBar;
+  const showBottomToolBarOverride = resolveBooleanOverride(
+    currentRouteParams?.showBottomToolBar,
+  );
   const effectiveShowBottomToolBar =
     (
-      typeof showBottomToolBarOverride === 'boolean'
+      showBottomToolBarOverride !== null
         ? showBottomToolBarOverride
         : !!showBottomToolBar
     ) && !shouldHideBottomToolBar;
-  const showBottomCartOverride = currentRouteParams?.showBottomCart;
+  const showBottomCartOverride = resolveBooleanOverride(
+    currentRouteParams?.showBottomCart,
+  );
   const effectiveShowBottomCart =
-    typeof showBottomCartOverride === 'boolean'
+    showBottomCartOverride !== null
       ? showBottomCartOverride
       : !!showBottomCart;
   const modernDockRouteNames = new Set([

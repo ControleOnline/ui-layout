@@ -11,3 +11,7 @@
 
 ## Limites
 - Nao colocar regra de negocio aqui. Este modulo deve organizar a casca visual e a infraestrutura de tela.
+
+## Regras
+- `DefaultLayout` deve priorizar a `route` recebida pela propria screen para decidir barras e dock, usando `navigation.getState()` apenas como fallback.
+- Flags de layout vindas na URL ou em deep link, como `showBottomCart` e `showBottomToolBar`, devem aceitar `true`/`false` em string e ser normalizadas antes de decidir overlays.
