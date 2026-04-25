@@ -15,3 +15,6 @@
 ## Regras
 - `DefaultLayout` deve priorizar a `route` recebida pela propria screen para decidir barras e dock, usando `navigation.getState()` apenas como fallback.
 - Flags de layout vindas na URL ou em deep link, como `showBottomCart` e `showBottomToolBar`, devem aceitar `true`/`false` em string e ser normalizadas antes de decidir overlays.
+- Quando uma tela operacional de `orders` assumir a propria barra de pagamento/acao, ela deve forcar `showBottomCart: false` e `showBottomToolBar: false` para o layout nao reservar espaco nem renderizar uma segunda barra por baixo.
+- O listener global de leitura por teclado do fluxo `POS` pode ser montado pelo layout, mas ele deve apenas ligar/desligar a infraestrutura visual. Regras de materializacao de pedido e adicao de produto continuam pertencendo a `ui-orders`.
+- O bloqueio de rotas e a simplificacao visual do `kiosk` devem respeitar `pos-operation-mode=kiosk` sem criar um novo `APP_TYPE`.
