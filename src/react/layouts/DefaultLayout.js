@@ -13,6 +13,7 @@ import PDVToolbar from '@controleonline/ui-orders/src/react/components/PDVToolba
 import PosKioskBarcodeListener from '@controleonline/ui-orders/src/react/components/PosKioskBarcodeListener';
 import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBottomDock';
 import {isPosKioskMode} from '@controleonline/ui-common/src/react/config/deviceConfigBootstrap';
+import {isPdvRouteContext} from '@controleonline/ui-orders/src/react/utils/orderRoute';
 
 import { env } from '@env';
 import styles from './DefaultLayout.styles';
@@ -79,13 +80,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     'OrderDetails',
     'AddProductScreen',
   ]);
-  const posScannerEnabledRouteNames = new Set([
-    'AddProductScreen',
-    'ProductsPage',
-    'OrderDetails',
-    'Checkout',
-    'CustomizeScreen',
-  ]);
   const kioskBlockedRouteNames = new Set([
     'HomePage',
     'CashRegisterIndex',
@@ -102,7 +96,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     modernDockRouteNames.has(currentRouteName);
   const shouldHidePosToolbar = isPosApp && isKioskMode;
   const shouldEnablePosScanner =
-    isPosApp && posScannerEnabledRouteNames.has(currentRouteName);
+    isPosApp || isPdvRouteContext(currentRouteParams);
   const toolbarBaseHeight = isModernDockEnabled ? 86 : 62;
 
   // Bottom bars are rendered as overlays, so reserve space in content.
