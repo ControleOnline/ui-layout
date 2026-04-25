@@ -79,7 +79,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     'OrderDetails',
     'AddProductScreen',
   ]);
-  const kioskEnabledRouteNames = new Set([
+  const posScannerEnabledRouteNames = new Set([
     'AddProductScreen',
     'ProductsPage',
     'OrderDetails',
@@ -101,8 +101,8 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     (appType === 'MANAGER' || appType === 'PPC') &&
     modernDockRouteNames.has(currentRouteName);
   const shouldHidePosToolbar = isPosApp && isKioskMode;
-  const shouldEnableKioskScanner =
-    isPosApp && isKioskMode && kioskEnabledRouteNames.has(currentRouteName);
+  const shouldEnablePosScanner =
+    isPosApp && posScannerEnabledRouteNames.has(currentRouteName);
   const toolbarBaseHeight = isModernDockEnabled ? 86 : 62;
 
   // Bottom bars are rendered as overlays, so reserve space in content.
@@ -153,7 +153,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
         {children}
       </View>
       <PosKioskBarcodeListener
-        enabled={shouldEnableKioskScanner}
+        enabled={shouldEnablePosScanner}
         currentRouteName={currentRouteName}
         interactionParams={currentRouteParams}
         navigation={navigation}
