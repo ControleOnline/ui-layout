@@ -137,7 +137,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
 
     navigation.reset({
       index: 0,
-      routes: [{name: 'AddProductScreen', params: {forceCreate: true}}],
+      routes: [{name: 'AddProductScreen'}],
     });
   }, [currentRouteName, isKioskMode, isPosApp, navigation]);
 
@@ -152,7 +152,12 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>
         {children}
       </View>
-      <PosKioskBarcodeListener enabled={shouldEnableKioskScanner} />
+      <PosKioskBarcodeListener
+        enabled={shouldEnableKioskScanner}
+        currentRouteName={currentRouteName}
+        interactionParams={currentRouteParams}
+        navigation={navigation}
+      />
       {effectiveShowBottomCart &&
         (isShopApp ? (
           <ShopBottomCart
