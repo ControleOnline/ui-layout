@@ -1,6 +1,7 @@
-import React, { useLayoutEffect } from 'react';
+import React, {useEffect, useLayoutEffect, useMemo} from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {useStore} from '@store';
 
 import BottomToolbar from '@controleonline/ui-crm/src/react/components/BottomToolbar';
 import BottomCart from '@controleonline/ui-orders/src/react/components/cart/BottomCart';
@@ -9,7 +10,9 @@ import ManagerToolbar from '@controleonline/ui-manager/src/react/components/Mana
 import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
 import ShopBottomCart from '@controleonline/ui-shop/src/react/components/storefront/ShopBottomCart';
 import PDVToolbar from '@controleonline/ui-orders/src/react/components/PDVToolbar';
+import PosKioskBarcodeListener from '@controleonline/ui-orders/src/react/components/PosKioskBarcodeListener';
 import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBottomDock';
+import {isPosKioskMode} from '@controleonline/ui-common/src/react/config/deviceConfigBootstrap';
 
 import { env } from '@env';
 import styles from './DefaultLayout.styles';
@@ -33,8 +36,12 @@ const resolveBooleanOverride = value => {
 
 const DefaultLayout = ({ children, navigation, route, options }) => {
   const insets = useSafeAreaInsets();
+  const deviceConfigStore = useStore('device_config');
+  const {item: device} = deviceConfigStore.getters;
   const appType = String(env.APP_TYPE || '').toUpperCase();
   const isShopApp = appType === 'SHOP';
+  const isPosApp = appType === 'POS';
+  const isKioskMode = useMemo(() => isPosKioskMode(device?.configs), [device?.configs]);
   const allowCompanyFilter = !isShopApp && options?.showCompanyFilter;
   const showBottomToolBar = options?.showBottomToolBar;
   const showBottomCart = options?.showBottomCart;
@@ -72,11 +79,30 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     'OrderDetails',
     'AddProductScreen',
   ]);
+  const kioskEnabledRouteNames = new Set([
+    'AddProductScreen',
+    'ProductsPage',
+    'OrderDetails',
+    'Checkout',
+    'CustomizeScreen',
+  ]);
+  const kioskBlockedRouteNames = new Set([
+    'HomePage',
+    'CashRegisterIndex',
+    'CloseCashRegister',
+    'Withdrawal',
+    'PrintQueuePage',
+    'OrderHistoryPage',
+    'ProfilePage',
+  ]);
 
   const isModernDockEnabled =
     effectiveShowBottomToolBar &&
     (appType === 'MANAGER' || appType === 'PPC') &&
     modernDockRouteNames.has(currentRouteName);
+  const shouldHidePosToolbar = isPosApp && isKioskMode;
+  const shouldEnableKioskScanner =
+    isPosApp && isKioskMode && kioskEnabledRouteNames.has(currentRouteName);
   const toolbarBaseHeight = isModernDockEnabled ? 86 : 62;
 
   // Bottom bars are rendered as overlays, so reserve space in content.
@@ -104,6 +130,17 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     });
   }, [navigation, options?.companyFilterMode, showHeaderCompanyFilter]);
 
+  useEffect(() => {
+    if (!isPosApp || !isKioskMode || !kioskBlockedRouteNames.has(currentRouteName)) {
+      return;
+    }
+
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'AddProductScreen', params: {forceCreate: true}}],
+    });
+  }, [currentRouteName, isKioskMode, isPosApp, navigation]);
+
   return (
     <View style={[styles.container, { paddingTop: options?.headerShown === false ? insets.top : 0 }]}>
       {showInlineCompanyFilter && (
@@ -115,6 +152,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>
         {children}
       </View>
+      <PosKioskBarcodeListener enabled={shouldEnableKioskScanner} />
       {effectiveShowBottomCart &&
         (isShopApp ? (
           <ShopBottomCart
@@ -135,7 +173,9 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
               ? <AppBottomDock navigation={navigation} variant="manager" />
               : <ManagerToolbar navigation={navigation} />
           )}
-          {appType === 'POS' && <PDVToolbar navigation={navigation} />}
+          {appType === 'POS' && !shouldHidePosToolbar && (
+            <PDVToolbar navigation={navigation} />
+          )}
           {appType === 'PPC' && (
             isModernDockEnabled
               ? <AppBottomDock navigation={navigation} variant="ppc" />
