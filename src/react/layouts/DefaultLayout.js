@@ -14,7 +14,7 @@ import PosKioskBarcodeListener from '@controleonline/ui-orders/src/react/compone
 import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBottomDock';
 import {
   isPosCashRegisterClosed,
-  isPosSelfServiceMode,
+  isPosKioskMode,
   shouldUsePosCashRegisterLifecycle,
 } from '@controleonline/ui-common/src/react/config/deviceConfigBootstrap';
 import {isPdvRouteContext} from '@controleonline/ui-orders/src/react/utils/orderRoute';
@@ -39,6 +39,17 @@ const resolveBooleanOverride = value => {
   return null;
 };
 
+const POS_TOOLBAR_ROUTE_NAMES = new Set([
+  'HomePage',
+  'AddProductScreen',
+  'OrderHistoryPage',
+  'CashRegisterIndex',
+  'CloseCashRegister',
+  'Withdrawal',
+  'PrintQueuePage',
+  'ProfilePage',
+]);
+
 const DefaultLayout = ({ children, navigation, route, options }) => {
   const insets = useSafeAreaInsets();
   const deviceConfigStore = useStore('device_config');
@@ -46,8 +57,8 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const appType = String(env.APP_TYPE || '').toUpperCase();
   const isShopApp = appType === 'SHOP';
   const isPosApp = appType === 'POS';
-  const isSelfServiceMode = useMemo(
-    () => isPosSelfServiceMode(device?.configs),
+  const isKioskMode = useMemo(
+    () => isPosKioskMode(device?.configs),
     [device?.configs],
   );
   const requiresCashRegisterLifecycle = useMemo(
@@ -76,10 +87,16 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const showBottomToolBarOverride = resolveBooleanOverride(
     currentRouteParams?.showBottomToolBar,
   );
+  const shouldForcePosToolbar =
+    isPosApp &&
+    !isKioskMode &&
+    POS_TOOLBAR_ROUTE_NAMES.has(currentRouteName);
   const effectiveShowBottomToolBar =
     (
       showBottomToolBarOverride !== null
         ? showBottomToolBarOverride
+        : shouldForcePosToolbar
+          ? true
         : !!showBottomToolBar
     ) && !shouldHideBottomToolBar;
   const showBottomCartOverride = resolveBooleanOverride(
@@ -95,7 +112,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     'OrderDetails',
     'AddProductScreen',
   ]);
-  const selfServiceBlockedRouteNames = useMemo(
+  const kioskBlockedRouteNames = useMemo(
     () =>
       new Set([
         'HomePage',
@@ -112,19 +129,27 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     effectiveShowBottomToolBar &&
     (appType === 'MANAGER' || appType === 'PPC') &&
     modernDockRouteNames.has(currentRouteName);
-  const shouldHidePosToolbar = isPosApp && isSelfServiceMode;
+  const shouldHidePosToolbar = isPosApp && isKioskMode;
+  const shouldRenderBottomToolBar =
+    effectiveShowBottomToolBar &&
+    (
+      appType === 'CRM' ||
+      appType === 'MANAGER' ||
+      appType === 'PPC' ||
+      (appType === 'POS' && !shouldHidePosToolbar)
+    );
   const shouldEnablePosScanner =
     isPosApp || isPdvRouteContext(currentRouteParams);
   const toolbarBaseHeight = isModernDockEnabled ? 86 : 62;
 
   // Bottom bars are rendered as overlays, so reserve space in content.
   const bottomInsetCompensation =
-    effectiveShowBottomToolBar
+    shouldRenderBottomToolBar
       ? toolbarBaseHeight + Math.max(insets.bottom, 8)
       : 0;
 
   const cartBottomOffset =
-    effectiveShowBottomToolBar
+    shouldRenderBottomToolBar
       ? toolbarBaseHeight + Math.max(insets.bottom, 8)
       : 0;
 
@@ -145,8 +170,8 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   useEffect(() => {
     if (
       !isPosApp ||
-      !isSelfServiceMode ||
-      !selfServiceBlockedRouteNames.has(currentRouteName)
+      !isKioskMode ||
+      !kioskBlockedRouteNames.has(currentRouteName)
     ) {
       return;
     }
@@ -165,11 +190,11 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   }, [
     currentRouteName,
     isCashRegisterClosed,
+    isKioskMode,
     isPosApp,
-    isSelfServiceMode,
     navigation,
     requiresCashRegisterLifecycle,
-    selfServiceBlockedRouteNames,
+    kioskBlockedRouteNames,
   ]);
 
   return (
@@ -201,7 +226,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
             bottomOffset={cartBottomOffset}
           />
         ))}
-      {effectiveShowBottomToolBar && (
+      {shouldRenderBottomToolBar && (
         <>
           {appType === 'CRM' && <BottomToolbar navigation={navigation} />}
           {appType === 'MANAGER' && (
