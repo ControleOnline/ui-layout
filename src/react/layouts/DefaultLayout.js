@@ -12,7 +12,11 @@ import ShopBottomCart from '@controleonline/ui-shop/src/react/components/storefr
 import PDVToolbar from '@controleonline/ui-orders/src/react/components/PDVToolbar';
 import PosKioskBarcodeListener from '@controleonline/ui-orders/src/react/components/PosKioskBarcodeListener';
 import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBottomDock';
-import {isPosKioskMode} from '@controleonline/ui-common/src/react/config/deviceConfigBootstrap';
+import {
+  isPosCashRegisterClosed,
+  isPosSelfServiceMode,
+  shouldUsePosCashRegisterLifecycle,
+} from '@controleonline/ui-common/src/react/config/deviceConfigBootstrap';
 import {isPdvRouteContext} from '@controleonline/ui-orders/src/react/utils/orderRoute';
 
 import { env } from '@env';
@@ -42,7 +46,18 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const appType = String(env.APP_TYPE || '').toUpperCase();
   const isShopApp = appType === 'SHOP';
   const isPosApp = appType === 'POS';
-  const isKioskMode = useMemo(() => isPosKioskMode(device?.configs), [device?.configs]);
+  const isSelfServiceMode = useMemo(
+    () => isPosSelfServiceMode(device?.configs),
+    [device?.configs],
+  );
+  const requiresCashRegisterLifecycle = useMemo(
+    () => shouldUsePosCashRegisterLifecycle(device?.configs),
+    [device?.configs],
+  );
+  const isCashRegisterClosed = useMemo(
+    () => isPosCashRegisterClosed(device?.configs),
+    [device?.configs],
+  );
   const allowCompanyFilter = !isShopApp && options?.showCompanyFilter;
   const showBottomToolBar = options?.showBottomToolBar;
   const showBottomCart = options?.showBottomCart;
@@ -80,21 +95,24 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     'OrderDetails',
     'AddProductScreen',
   ]);
-  const kioskBlockedRouteNames = new Set([
-    'HomePage',
-    'CashRegisterIndex',
-    'CloseCashRegister',
-    'Withdrawal',
-    'PrintQueuePage',
-    'OrderHistoryPage',
-    'ProfilePage',
-  ]);
+  const selfServiceBlockedRouteNames = useMemo(
+    () =>
+      new Set([
+        'HomePage',
+        'Withdrawal',
+        'PrintQueuePage',
+        'OrderHistoryPage',
+        'ProfilePage',
+        ...(requiresCashRegisterLifecycle ? ['CashRegisterIndex'] : []),
+      ]),
+    [requiresCashRegisterLifecycle],
+  );
 
   const isModernDockEnabled =
     effectiveShowBottomToolBar &&
     (appType === 'MANAGER' || appType === 'PPC') &&
     modernDockRouteNames.has(currentRouteName);
-  const shouldHidePosToolbar = isPosApp && isKioskMode;
+  const shouldHidePosToolbar = isPosApp && isSelfServiceMode;
   const shouldEnablePosScanner =
     isPosApp || isPdvRouteContext(currentRouteParams);
   const toolbarBaseHeight = isModernDockEnabled ? 86 : 62;
@@ -125,15 +143,34 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   }, [navigation, options?.companyFilterMode, showHeaderCompanyFilter]);
 
   useEffect(() => {
-    if (!isPosApp || !isKioskMode || !kioskBlockedRouteNames.has(currentRouteName)) {
+    if (
+      !isPosApp ||
+      !isSelfServiceMode ||
+      !selfServiceBlockedRouteNames.has(currentRouteName)
+    ) {
       return;
     }
 
     navigation.reset({
       index: 0,
-      routes: [{name: 'AddProductScreen'}],
+      routes: [
+        {
+          name:
+            requiresCashRegisterLifecycle && isCashRegisterClosed
+              ? 'CloseCashRegister'
+              : 'AddProductScreen',
+        },
+      ],
     });
-  }, [currentRouteName, isKioskMode, isPosApp, navigation]);
+  }, [
+    currentRouteName,
+    isCashRegisterClosed,
+    isPosApp,
+    isSelfServiceMode,
+    navigation,
+    requiresCashRegisterLifecycle,
+    selfServiceBlockedRouteNames,
+  ]);
 
   return (
     <View style={[styles.container, { paddingTop: options?.headerShown === false ? insets.top : 0 }]}>
