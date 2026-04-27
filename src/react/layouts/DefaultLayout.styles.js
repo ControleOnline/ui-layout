@@ -15,6 +15,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   headerRightContainer: {
+    flex: 1,
+    marginLeft: 'auto',
     paddingRight: 16,
     maxWidth: 240,
     alignItems: 'flex-end',
