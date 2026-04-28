@@ -19,6 +19,11 @@ const PPC_ITEMS = [
   { route: 'ProfilePage', label: 'Perfil', icon: 'user' },
 ];
 
+const MANAGER_ROUTE_ALIASES = {
+  ClientDetails: 'ClientsIndex',
+  EmployeesIndex: 'ClientsIndex',
+};
+
 const withAlpha = (color, alphaHex) => {
   const raw = String(color || '').trim().replace('#', '');
   if (/^[0-9a-fA-F]{6}$/.test(raw)) {
@@ -43,8 +48,12 @@ const AppBottomDock = ({ navigation, variant = 'manager' }) => {
   const colors = themeStore?.getters?.colors || {};
 
   const navItems = variant === 'ppc' ? PPC_ITEMS : MANAGER_ITEMS;
-  const knownRoute = navItems.some(item => item.route === activeRouteName);
-  const effectiveActiveRoute = knownRoute ? activeRouteName : navItems[0].route;
+  const resolvedActiveRoute =
+    variant === 'ppc'
+      ? activeRouteName
+      : MANAGER_ROUTE_ALIASES[activeRouteName] || activeRouteName;
+  const knownRoute = navItems.some(item => item.route === resolvedActiveRoute);
+  const effectiveActiveRoute = knownRoute ? resolvedActiveRoute : navItems[0].route;
   const isCompanyValid = !!(currentCompany && Object.keys(currentCompany).length > 0);
 
   const primaryColor = colors.primary || '#1B5587';
