@@ -149,6 +149,16 @@ export default function App() {
                   extraInsets={TOAST_EXTRA_INSETS}
                   onToastPress={currentToast => toast.dismiss(currentToast.id)}
                 />
+                <Toasts
+                  providerKey={TOAST_PROVIDER_KEYS.MODAL}
+                  extraInsets={TOAST_EXTRA_INSETS}
+                  onToastPress={currentToast => toast.dismiss(currentToast.id)}
+                />
+                <Toasts
+                  providerKey={TOAST_PROVIDER_KEYS.PERSIST}
+                  extraInsets={TOAST_EXTRA_INSETS}
+                  onToastPress={currentToast => toast.dismiss(currentToast.id)}
+                />
               </NavigationContainer>
             </DefaultProvider>
           </MessageProvider>
