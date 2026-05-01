@@ -50,6 +50,10 @@ const POS_TOOLBAR_ROUTE_NAMES = new Set([
   'ProfilePage',
 ]);
 
+const OWNED_BOTTOM_UI_ROUTE_NAMES = new Set([
+  'OrderDetails',
+]);
+
 const DefaultLayout = ({ children, navigation, route, options }) => {
   const insets = useSafeAreaInsets();
   const deviceConfigStore = useStore('device_config');
@@ -83,6 +87,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     route?.name || navigationState?.routes?.[navigationState?.index]?.name;
   const currentRouteParams =
     route?.params || navigationState?.routes?.[navigationState?.index]?.params || {};
+  const shouldUseOwnedBottomUi = OWNED_BOTTOM_UI_ROUTE_NAMES.has(currentRouteName);
   const shouldHideBottomToolBar = !!currentRouteParams?.hideBottomToolBar;
   const showBottomToolBarOverride = resolveBooleanOverride(
     currentRouteParams?.showBottomToolBar,
@@ -92,20 +97,28 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     !isKioskMode &&
     POS_TOOLBAR_ROUTE_NAMES.has(currentRouteName);
   const effectiveShowBottomToolBar =
-    (
-      showBottomToolBarOverride !== null
-        ? showBottomToolBarOverride
-        : shouldForcePosToolbar
-          ? true
-        : !!showBottomToolBar
-    ) && !shouldHideBottomToolBar;
+    shouldUseOwnedBottomUi
+      ? false
+      : (
+        (
+          showBottomToolBarOverride !== null
+            ? showBottomToolBarOverride
+            : shouldForcePosToolbar
+              ? true
+            : !!showBottomToolBar
+        ) && !shouldHideBottomToolBar
+      );
   const showBottomCartOverride = resolveBooleanOverride(
     currentRouteParams?.showBottomCart,
   );
   const effectiveShowBottomCart =
-    showBottomCartOverride !== null
-      ? showBottomCartOverride
-      : !!showBottomCart;
+    shouldUseOwnedBottomUi
+      ? false
+      : (
+        showBottomCartOverride !== null
+          ? showBottomCartOverride
+          : !!showBottomCart
+      );
   const modernDockRouteNames = new Set([
     'DisplayList',
     'DisplayDetails',
