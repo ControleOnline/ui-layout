@@ -6,7 +6,12 @@
   "license": "MIT",
   "main": "src/vue/index.js",
   "scripts": {
-    "test:toast-providers": "node --test src/tests/react/App.toastProviders.test.js"
+    "test": "npm run test:toast-providers",
+    "test:toast-providers": "node --test src/tests/react/App.toastProviders.test.js",
+    "test:coverage": "c8 --reporter=clover --report-dir coverage npm test"
+  },
+  "devDependencies": {
+    "c8": "^10.1.3"
   },
   "repository": {
     "type": "git",
