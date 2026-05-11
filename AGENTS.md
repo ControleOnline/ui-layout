@@ -20,3 +20,4 @@
 - O listener global de leitura por teclado do fluxo `POS` pode ser montado pelo layout, mas ele deve apenas ligar/desligar a infraestrutura visual. Regras de materializacao de pedido e adicao de produto continuam pertencendo a `ui-orders`.
 - O bloqueio de rotas e a simplificacao visual do `kiosk` devem respeitar `pos-operation-mode=kiosk` sem criar um novo `APP_TYPE`.
 - O layout pode redirecionar rotas bloqueadas do `kiosk` de volta para `AddProductScreen`, mas a trava Android fisica pertence ao bridge comum e ao plugin nativo.
+- `StateStore` no layout existe para loading/saving compartilhado. Erro visual de store nao deve ser desenhado ali; ele precisa sair pelo `MessageService`.
