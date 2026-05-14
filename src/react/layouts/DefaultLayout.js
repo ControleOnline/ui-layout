@@ -166,16 +166,18 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       : 0;
 
   useLayoutEffect(() => {
-    if (!showHeaderCompanyFilter) return;
-
     navigation.setOptions({
-      headerRightContainerStyle: styles.headerRightContainer,
-      headerRight: () => (
-        <CompanyFilter
-          navigation={navigation}
-          mode={options?.companyFilterMode}
-        />
-      ),
+      headerRightContainerStyle: showHeaderCompanyFilter
+        ? styles.headerRightContainer
+        : undefined,
+      headerRight: showHeaderCompanyFilter
+        ? () => (
+          <CompanyFilter
+            navigation={navigation}
+            mode={options?.companyFilterMode}
+          />
+        )
+        : undefined,
     });
   }, [navigation, options?.companyFilterMode, showHeaderCompanyFilter]);
 
