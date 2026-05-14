@@ -50,7 +50,7 @@ const POS_TOOLBAR_ROUTE_NAMES = new Set([
   'ProfilePage',
 ]);
 
-const OWNED_BOTTOM_UI_ROUTE_NAMES = new Set([
+const OWNED_BOTTOM_CART_ROUTE_NAMES = new Set([
   'OrderDetails',
 ]);
 
@@ -87,7 +87,8 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     route?.name || navigationState?.routes?.[navigationState?.index]?.name;
   const currentRouteParams =
     route?.params || navigationState?.routes?.[navigationState?.index]?.params || {};
-  const shouldUseOwnedBottomUi = OWNED_BOTTOM_UI_ROUTE_NAMES.has(currentRouteName);
+  const shouldUseOwnedBottomCart =
+    OWNED_BOTTOM_CART_ROUTE_NAMES.has(currentRouteName);
   const shouldHideBottomToolBar = !!currentRouteParams?.hideBottomToolBar;
   const showBottomToolBarOverride = resolveBooleanOverride(
     currentRouteParams?.showBottomToolBar,
@@ -97,22 +98,20 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     !isKioskMode &&
     POS_TOOLBAR_ROUTE_NAMES.has(currentRouteName);
   const effectiveShowBottomToolBar =
-    shouldUseOwnedBottomUi
-      ? false
-      : (
-        (
-          showBottomToolBarOverride !== null
-            ? showBottomToolBarOverride
-            : shouldForcePosToolbar
-              ? true
-            : !!showBottomToolBar
-        ) && !shouldHideBottomToolBar
-      );
+    (
+      (
+        showBottomToolBarOverride !== null
+          ? showBottomToolBarOverride
+          : shouldForcePosToolbar
+            ? true
+          : !!showBottomToolBar
+      ) && !shouldHideBottomToolBar
+    );
   const showBottomCartOverride = resolveBooleanOverride(
     currentRouteParams?.showBottomCart,
   );
   const effectiveShowBottomCart =
-    shouldUseOwnedBottomUi
+    shouldUseOwnedBottomCart
       ? false
       : (
         showBottomCartOverride !== null
@@ -167,16 +166,18 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       : 0;
 
   useLayoutEffect(() => {
-    if (!showHeaderCompanyFilter) return;
-
     navigation.setOptions({
-      headerRightContainerStyle: styles.headerRightContainer,
-      headerRight: () => (
-        <CompanyFilter
-          navigation={navigation}
-          mode={options?.companyFilterMode}
-        />
-      ),
+      headerRightContainerStyle: showHeaderCompanyFilter
+        ? styles.headerRightContainer
+        : undefined,
+      headerRight: showHeaderCompanyFilter
+        ? () => (
+          <CompanyFilter
+            navigation={navigation}
+            mode={options?.companyFilterMode}
+          />
+        )
+        : undefined,
     });
   }, [navigation, options?.companyFilterMode, showHeaderCompanyFilter]);
 
