@@ -32,3 +32,11 @@ export const getBottomNavigationOffset = ({
 } = {}) =>
   getBottomNavigationBaseHeight(appType) +
   Math.max(Number(bottomInset) || 0, 8);
+
+export const getOwnedBottomBarOffset = ({
+  hasBottomNavigation = false,
+  bottomInset = 0,
+} = {}) =>
+  hasBottomNavigation
+    ? 0
+    : Math.max(Number(bottomInset) || 0, 0);

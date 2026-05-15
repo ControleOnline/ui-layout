@@ -5,6 +5,7 @@ const {
   MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT,
   getBottomNavigationBaseHeight,
   getBottomNavigationOffset,
+  getOwnedBottomBarOffset,
   shouldShowOperationalBottomNavigation,
 } = require('../../../react/utils/posBottomNavigation')
 
@@ -74,5 +75,21 @@ describe('posBottomNavigation', () => {
     expect(
       getBottomNavigationOffset({appType: 'MANAGER', bottomInset: 24}),
     ).toBe(MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT + 24)
+  })
+
+  it('does not add dock height again for bottom bars owned by the current screen', () => {
+    expect(
+      getOwnedBottomBarOffset({
+        hasBottomNavigation: true,
+        bottomInset: 0,
+      }),
+    ).toBe(0)
+
+    expect(
+      getOwnedBottomBarOffset({
+        hasBottomNavigation: false,
+        bottomInset: 24,
+      }),
+    ).toBe(24)
   })
 })

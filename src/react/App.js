@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { StatusBar, View, Platform } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import Routes, { linking } from '@controleonline/../../src/routers'
@@ -43,6 +43,7 @@ export default function App() {
   const [navigationReady, setNavigationReady] = useState(false)
   const [bootstrapReady, setBootstrapReady] = useState(false)
   const [videoEnded, setVideoEnded] = useState(!MOSTRAR_VIDEO)
+  const navigationRef = useRef(null)
   const shouldShowSplash = !bootstrapReady || !videoEnded
   const appType = String(env.APP_TYPE || '').toUpperCase()
   const shouldLockWebViewportToApp =
@@ -127,6 +128,13 @@ export default function App() {
     }
   }, [shouldLockWebViewportToApp])
 
+  const syncRuntimeRouteName = useCallback(() => {
+    const currentRouteName =
+      navigationRef.current?.getCurrentRoute?.()?.name || ''
+
+    global.setRuntimeRouteName?.(currentRouteName)
+  }, [])
+
   return (
     <GestureHandlerRootView style={inlineStyle_123_28}>
       <PaperProvider>
@@ -134,8 +142,13 @@ export default function App() {
           <MessageProvider>
             <DefaultProvider onBootstrapReady={() => setBootstrapReady(true)}>
               <NavigationContainer
+                ref={navigationRef}
                 linking={linking}
-                onReady={() => setNavigationReady(true)}
+                onReady={() => {
+                  setNavigationReady(true)
+                  syncRuntimeRouteName()
+                }}
+                onStateChange={syncRuntimeRouteName}
               >
                 <StatusBar
                   barStyle="light-content"
