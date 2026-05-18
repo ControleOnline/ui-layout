@@ -87,6 +87,10 @@ export default function createStyles({colors = {}, width = 1024}) {
         fontWeight: '700',
         lineHeight: isCompact ? 17 : 18,
       },
+      cardLabelCompact: {
+        fontSize: isCompact ? 12 : 13,
+        lineHeight: isCompact ? 16 : 17,
+      },
       emptyBox: {
         alignItems: 'center',
         backgroundColor: palette.surface,
