@@ -4,6 +4,8 @@ import Icon from 'react-native-vector-icons/Feather';
 import {useStore} from '@store';
 import createStyles, {withAlpha} from './AppMenuGrid.styles';
 
+const compactMenuLabels = new Set(['viewProspects', 'financialReport']);
+
 const normalizeMenus = menus =>
   (Array.isArray(menus) ? menus : [])
     .map(module => ({
@@ -17,6 +19,9 @@ const resolveIconColor = (color, fallback) => {
   if (/^#[0-9a-f]{6}$/i.test(tokenColor)) return tokenColor;
   return fallback;
 };
+
+const shouldUseCompactCardLabel = item =>
+  compactMenuLabels.has(String(item?.label || '').trim());
 
 const AppMenuGrid = ({
   emptyMessage = 'Nenhum menu disponivel.',
@@ -107,7 +112,13 @@ const AppMenuGrid = ({
                       color={resolveIconColor(item.color, styles.palette.primary)}
                     />
                   </View>
-                  <Text numberOfLines={2} style={styles.cardLabel}>
+                  <Text
+                    numberOfLines={2}
+                    style={[
+                      styles.cardLabel,
+                      shouldUseCompactCardLabel(item) && styles.cardLabelCompact,
+                    ]}
+                  >
                     {global.t?.t('menu', 'menu', item.label) || item.label}
                   </Text>
                 </View>
