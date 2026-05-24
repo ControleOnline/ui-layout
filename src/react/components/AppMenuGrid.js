@@ -2,6 +2,10 @@ import React, {useMemo} from 'react';
 import {Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {useStore} from '@store';
+import {
+  resolveMenuRouteName,
+  resolveMenuRouteParams,
+} from '@controleonline/ui-layout/src/react/utils/menuNavigation';
 import createStyles, {withAlpha} from './AppMenuGrid.styles';
 
 const normalizeMenus = menus =>
@@ -49,8 +53,17 @@ const AppMenuGrid = ({
       return;
     }
 
+    const routeName = resolveMenuRouteName(item?.route);
+
+    if (!routeName) {
+      return;
+    }
+
     try {
-      navigation?.navigate?.(item.route, item.routeParams || {});
+      navigation?.navigate?.(
+        routeName,
+        resolveMenuRouteParams(item?.routeParams),
+      );
     } catch {
       // The route can be absent in a specific app flavor.
     }
