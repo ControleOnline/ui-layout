@@ -7,6 +7,10 @@ import { DefaultProvider } from '@controleonline/ui-common/src/react/components/
 import CheckLogin from '@controleonline/ui-login/src/react/components/CheckLogin'
 import { PaperProvider } from 'react-native-paper'
 import { MessageProvider } from '@controleonline/ui-common/src/react/components/MessageService'
+import {
+  flushNotificationNavigationQueue,
+  setNotificationNavigationHandler,
+} from '@controleonline/ui-common/src/react/utils/notificationNavigation'
 
 import {
   TOAST_EXTRA_INSETS,
@@ -134,6 +138,31 @@ export default function App() {
 
     global.setRuntimeRouteName?.(currentRouteName)
   }, [])
+
+  const handleNotificationNavigation = useCallback((routeName, params = {}) => {
+    if (!navigationReady || !navigationRef.current) {
+      return false
+    }
+
+    navigationRef.current.navigate(routeName, params)
+    return true
+  }, [navigationReady])
+
+  useEffect(() => {
+    const cleanup = setNotificationNavigationHandler(handleNotificationNavigation)
+
+    return () => {
+      cleanup?.()
+    }
+  }, [handleNotificationNavigation])
+
+  useEffect(() => {
+    if (!navigationReady) {
+      return
+    }
+
+    flushNotificationNavigationQueue()
+  }, [navigationReady])
 
   return (
     <GestureHandlerRootView style={inlineStyle_123_28}>
