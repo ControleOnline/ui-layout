@@ -121,7 +121,7 @@ const AppMenuGrid = ({
                     />
                   </View>
                   <Text numberOfLines={2} style={styles.cardLabel}>
-                    {global.t?.t('menu', 'menu', item.menuKey)}
+                    {global.t?.t('menu', 'menu', item.menuKey) || item.label || item.menuKey}
                   </Text>
                 </View>
               </TouchableOpacity>

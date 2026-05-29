@@ -9,7 +9,7 @@ export default {
     item: {},
     items: [],
     colors: {},
-    menus: {},
+    menus: [],
   },
   getters,
   mutations,
