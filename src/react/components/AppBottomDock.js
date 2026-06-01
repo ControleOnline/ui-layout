@@ -22,6 +22,7 @@ const PPC_ITEMS = [
 const MANAGER_ROUTE_ALIASES = {
   ClientDetails: 'ClientsIndex',
   EmployeesIndex: 'ClientsIndex',
+  FranchiseesIndex: 'ClientsIndex',
 };
 
 const withAlpha = (color, alphaHex) => {
