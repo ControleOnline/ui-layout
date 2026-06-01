@@ -21,9 +21,7 @@ export const shouldShowOperationalBottomNavigation = ({
 export const getBottomNavigationBaseHeight = appType => {
   const normalizedAppType = String(appType || '').trim().toUpperCase();
 
-  return normalizedAppType === 'MANAGER' || normalizedAppType === 'PPC'
-    ? MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT
-    : DEFAULT_BOTTOM_NAVIGATION_HEIGHT;
+  return MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT;
 };
 
 export const getBottomNavigationOffset = ({
