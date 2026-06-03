@@ -4,7 +4,7 @@
   "author": "ControleOnline",
   "description": "ControleOnline Docs Quasar UI Component",
   "license": "MIT",
-  "main": "src/vue/index.js",
+  "main": "src/react/index.js",
   "scripts": {
     "test": "npm run test:toast-providers",
     "test:toast-providers": "node --test src/tests/react/App.toastProviders.test.js",

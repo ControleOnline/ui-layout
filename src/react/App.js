@@ -5,7 +5,6 @@
  * - Aqui ficam providers, navegacao e wiring global da interface.
  *
  * ## Estado
- * - Se existir `src/vue`, ela e apenas legado e nao deve receber este contrato.
  *
  * ## Limites
  * - Nao colocar regra de negocio de modulo neste arquivo.
