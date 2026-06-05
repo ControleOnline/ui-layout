@@ -35,7 +35,7 @@ const withAlpha = (color, alphaHex) => {
     return `#${raw.slice(0, 6)}${alphaHex}`;
   }
 
-  return color;
+  return color || '#1B5587';
 };
 
 const AppBottomDock = ({ navigation, variant = 'manager' }) => {
@@ -57,10 +57,10 @@ const AppBottomDock = ({ navigation, variant = 'manager' }) => {
   const effectiveActiveRoute = knownRoute ? resolvedActiveRoute : navItems[0].route;
   const isCompanyValid = !!(currentCompany && Object.keys(currentCompany).length > 0);
 
-  const primaryColor = colors.primary;
-  const dockBackground = colors['toolbar-background'];
-  const borderColor = colors['toolbar-border'];
-  const inactiveText = colors['toolbar-text-muted'];
+  const primaryColor = colors.primary || '#1B5587';
+  const dockBackground = colors['toolbar-background'] || '#F8FBFF';
+  const borderColor = colors['toolbar-border'] || '#D1DDE9';
+  const inactiveText = colors['toolbar-text-muted'] || '#64748B';
   const activeBg = withAlpha(primaryColor, '1A');
   const activeBorder = withAlpha(primaryColor, '55');
 

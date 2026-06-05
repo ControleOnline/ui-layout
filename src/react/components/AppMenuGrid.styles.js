@@ -3,17 +3,17 @@ import {StyleSheet} from 'react-native';
 export const withAlpha = (color, alphaHex) => {
   const raw = String(color || '').replace('#', '').trim();
   if (/^[0-9a-fA-F]{6}$/.test(raw)) return `#${raw}${alphaHex}`;
-  return color;
+  return color || '#2563EB';
 };
 
 export default function createStyles({colors = {}, width = 1024}) {
   const palette = {
-    primary: colors.primary,
-    surface: colors.surface || colors.background,
-    background: colors.background,
-    border: colors.border,
-    text: colors.text,
-    muted: colors['text-muted'],
+    primary: colors.primary || '#2563EB',
+    surface: colors.surface || colors.background || '#FFFFFF',
+    background: colors.background || '#F8FAFC',
+    border: colors.border || '#D8E0EA',
+    text: colors.text || '#0F172A',
+    muted: colors['text-muted'] || '#64748B',
   };
 
   const isCompact = width < 700;
