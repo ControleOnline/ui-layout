@@ -121,6 +121,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const modernDockRouteNames = new Set([
     'DisplayList',
     'DisplayDetails',
+    'DisplayOrderConference',
     'OrderDetails',
     'AddProductScreen',
   ]);
