@@ -14,7 +14,7 @@ import PosKioskBarcodeListener from '@controleonline/ui-orders/src/react/compone
 import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBottomDock';
 import {
   isPosCashRegisterClosed,
-  isPosKioskMode,
+  isPosTotemMode,
   shouldUsePosCashRegisterLifecycle,
 } from '@controleonline/ui-common/src/react/config/deviceConfigBootstrap';
 import {isPdvRouteContext} from '@controleonline/ui-orders/src/react/utils/orderRoute';
@@ -61,8 +61,8 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const appType = String(env.APP_TYPE || '').toUpperCase();
   const isShopApp = appType === 'SHOP';
   const isPosApp = appType === 'POS';
-  const isKioskMode = useMemo(
-    () => isPosKioskMode(device?.configs),
+  const isTotemMode = useMemo(
+    () => isPosTotemMode(device?.configs),
     [device?.configs],
   );
   const requiresCashRegisterLifecycle = useMemo(
@@ -95,7 +95,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   );
   const shouldForcePosToolbar =
     isPosApp &&
-    !isKioskMode &&
+    !isTotemMode &&
     POS_TOOLBAR_ROUTE_NAMES.has(currentRouteName);
   const effectiveShowBottomToolBar =
     (
@@ -125,7 +125,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     'OrderDetails',
     'AddProductScreen',
   ]);
-  const kioskBlockedRouteNames = useMemo(
+  const totemBlockedRouteNames = useMemo(
     () =>
       new Set([
         'HomePage',
@@ -142,7 +142,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     effectiveShowBottomToolBar &&
     (appType === 'MANAGER' || appType === 'PPC') &&
     modernDockRouteNames.has(currentRouteName);
-  const shouldHidePosToolbar = isPosApp && isKioskMode;
+  const shouldHidePosToolbar = isPosApp && isTotemMode;
   const shouldRenderBottomToolBar =
     effectiveShowBottomToolBar &&
     (
@@ -185,8 +185,8 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   useEffect(() => {
     if (
       !isPosApp ||
-      !isKioskMode ||
-      !kioskBlockedRouteNames.has(currentRouteName)
+      !isTotemMode ||
+      !totemBlockedRouteNames.has(currentRouteName)
     ) {
       return;
     }
@@ -205,11 +205,11 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   }, [
     currentRouteName,
     isCashRegisterClosed,
-    isKioskMode,
+    isTotemMode,
     isPosApp,
     navigation,
     requiresCashRegisterLifecycle,
-    kioskBlockedRouteNames,
+    totemBlockedRouteNames,
   ]);
 
   return (

@@ -4,9 +4,9 @@ export const MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT = 86;
 export const shouldShowOperationalBottomNavigation = ({
   appType,
   interactionMode,
-  isKioskMode,
+  isTotemMode,
 } = {}) => {
-  if (isKioskMode) {
+  if (isTotemMode) {
     return false;
   }
 

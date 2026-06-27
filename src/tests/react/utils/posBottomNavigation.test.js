@@ -15,7 +15,7 @@ describe('posBottomNavigation', () => {
       shouldShowOperationalBottomNavigation({
         appType: 'POS',
         interactionMode: 'pdv',
-        isKioskMode: false,
+        isTotemMode: false,
       }),
     ).toBe(true)
 
@@ -23,7 +23,7 @@ describe('posBottomNavigation', () => {
       shouldShowOperationalBottomNavigation({
         appType: 'POS',
         interactionMode: 'waiter',
-        isKioskMode: false,
+        isTotemMode: false,
       }),
     ).toBe(true)
   })
@@ -33,17 +33,17 @@ describe('posBottomNavigation', () => {
       shouldShowOperationalBottomNavigation({
         appType: 'MANAGER',
         interactionMode: 'pdv',
-        isKioskMode: false,
+        isTotemMode: false,
       }),
     ).toBe(true)
   })
 
-  it('hides the operational dock in kiosk mode or non-pdv manager flows', () => {
+  it('hides the operational dock in totem mode or non-pdv manager flows', () => {
     expect(
       shouldShowOperationalBottomNavigation({
         appType: 'POS',
         interactionMode: 'pdv',
-        isKioskMode: true,
+        isTotemMode: true,
       }),
     ).toBe(false)
 
@@ -51,7 +51,7 @@ describe('posBottomNavigation', () => {
       shouldShowOperationalBottomNavigation({
         appType: 'MANAGER',
         interactionMode: 'manager',
-        isKioskMode: false,
+        isTotemMode: false,
       }),
     ).toBe(false)
   })
