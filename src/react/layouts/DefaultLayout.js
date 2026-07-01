@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useMemo} from 'react';
+import React, {useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useStore} from '@store';
@@ -17,7 +17,15 @@ import {
   isPosTotemMode,
   shouldUsePosCashRegisterLifecycle,
 } from '@controleonline/ui-common/src/react/config/deviceConfigBootstrap';
-import {isPdvRouteContext} from '@controleonline/ui-orders/src/react/utils/orderRoute';
+import {
+  buildOrderDetailsRouteParams,
+  isPdvRouteContext,
+} from '@controleonline/ui-orders/src/react/utils/orderRoute';
+import {
+  normalizeDeliveryOrderId,
+  resolveDeliveryAcceptanceQueueHead,
+} from '@controleonline/ui-logistic/src/react/utils/deliveryAcceptanceQueue';
+import {resolveCurrentPeopleIri} from '@controleonline/ui-logistic/src/react/utils/deliveryIdentity';
 
 import { env } from '@env';
 import styles from './DefaultLayout.styles';
@@ -56,12 +64,19 @@ const OWNED_BOTTOM_CART_ROUTE_NAMES = new Set([
 
 const DefaultLayout = ({ children, navigation, route, options }) => {
   const insets = useSafeAreaInsets();
+  const authStore = useStore('auth');
+  const deliveryOrdersStore = useStore('delivery_orders');
   const deviceConfigStore = useStore('device_config');
   const {item: device} = deviceConfigStore.getters;
+  const currentUser = authStore?.getters?.user || null;
   const appType = String(env.APP_TYPE || '').toUpperCase();
   const isShopApp = appType === 'SHOP';
   const isPosApp = appType === 'POS';
   const isDeliveryApp = appType === 'DELIVERY';
+  const currentPeopleIri = useMemo(
+    () => resolveCurrentPeopleIri(currentUser),
+    [currentUser],
+  );
   const isTotemMode = useMemo(
     () => isPosTotemMode(device?.configs),
     [device?.configs],
@@ -83,11 +98,14 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     allowCompanyFilter &&
     options?.companyFilterMode === 'icon' &&
     options?.headerShown !== false;
+  const [deliveryQueueLoadedForIri, setDeliveryQueueLoadedForIri] = useState('');
+  const deliveryQueueLoadOwnerRef = useRef('');
   const navigationState = navigation?.getState?.();
   const currentRouteName =
     route?.name || navigationState?.routes?.[navigationState?.index]?.name;
   const currentRouteParams =
     route?.params || navigationState?.routes?.[navigationState?.index]?.params || {};
+  const currentRouteOrderId = normalizeDeliveryOrderId(currentRouteParams?.id);
   const shouldUseOwnedBottomCart =
     OWNED_BOTTOM_CART_ROUTE_NAMES.has(currentRouteName);
   const shouldHideBottomToolBar = !!currentRouteParams?.hideBottomToolBar;
@@ -162,6 +180,25 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const shouldEnablePosScanner =
     isPosApp || isPdvRouteContext(currentRouteParams);
   const toolbarBaseHeight = isModernDockEnabled ? 86 : 62;
+  const deliveryQueueItems = Array.isArray(deliveryOrdersStore?.getters?.items)
+    ? deliveryOrdersStore.getters.items
+    : [];
+  const deliveryQueueHead = useMemo(
+    () =>
+      deliveryQueueLoadedForIri === currentPeopleIri
+        ? resolveDeliveryAcceptanceQueueHead(deliveryQueueItems)
+        : null,
+    [currentPeopleIri, deliveryQueueItems, deliveryQueueLoadedForIri],
+  );
+  const deliveryQueueHeadId = normalizeDeliveryOrderId(deliveryQueueHead?.id);
+  const shouldLockToDeliveryQueue = Boolean(
+    isDeliveryApp &&
+      deliveryQueueHeadId &&
+      (
+        currentRouteName !== 'OrderDetails' ||
+        currentRouteOrderId !== deliveryQueueHeadId
+      ),
+  );
 
   // Bottom bars are rendered as overlays, so reserve space in content.
   const bottomInsetCompensation =
@@ -189,6 +226,81 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
         : undefined,
     });
   }, [navigation, options?.companyFilterMode, showHeaderCompanyFilter]);
+
+  useEffect(() => {
+    if (
+      !isDeliveryApp ||
+      !currentPeopleIri ||
+      typeof deliveryOrdersStore?.actions?.getItems !== 'function'
+    ) {
+      return undefined;
+    }
+
+    if (
+      deliveryQueueLoadedForIri === currentPeopleIri ||
+      deliveryQueueLoadOwnerRef.current === currentPeopleIri
+    ) {
+      return undefined;
+    }
+
+    let cancelled = false;
+    deliveryQueueLoadOwnerRef.current = currentPeopleIri;
+
+    Promise.resolve(
+      deliveryOrdersStore.actions.getItems({
+        orderType: 'delivery',
+        provider: currentPeopleIri,
+      }),
+    )
+      .then(() => {
+        if (!cancelled) {
+          setDeliveryQueueLoadedForIri(currentPeopleIri);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setDeliveryQueueLoadedForIri('');
+        }
+      })
+      .finally(() => {
+        if (deliveryQueueLoadOwnerRef.current === currentPeopleIri) {
+          deliveryQueueLoadOwnerRef.current = '';
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    currentPeopleIri,
+    deliveryOrdersStore?.actions?.getItems,
+    deliveryQueueLoadedForIri,
+    isDeliveryApp,
+  ]);
+
+  useEffect(() => {
+    if (!shouldLockToDeliveryQueue) {
+      return;
+    }
+
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'OrderDetails',
+          params: buildOrderDetailsRouteParams(deliveryQueueHeadId, {
+            store: 'orders',
+          }),
+        },
+      ],
+    });
+  }, [
+    deliveryQueueHeadId,
+    currentRouteName,
+    currentRouteOrderId,
+    navigation,
+    shouldLockToDeliveryQueue,
+  ]);
 
   useEffect(() => {
     if (
