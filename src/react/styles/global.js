@@ -38,6 +38,40 @@ const css = () => {
       color: '#000000',
     },
     state: {
+      container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+      },
+      compactContainer: {
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+      },
+      content: {
+        width: '100%',
+        maxWidth: 520,
+        gap: 8,
+        padding: 20,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        elevation: 5,
+      },
+      compactContent: {
+        width: '100%',
+        gap: 8,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      loadingContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
       errorContainer: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -46,8 +80,14 @@ const css = () => {
         borderRadius: 10,
         elevation: 5,
       },
+      messageText: {
+        color: '#475569',
+        textAlign: 'center',
+      },
       errorText: {
         color: '#000',
+        textAlign: 'center',
+        fontWeight: '700',
       },
     },
   });

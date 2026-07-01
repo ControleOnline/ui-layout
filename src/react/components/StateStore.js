@@ -1,56 +1,160 @@
 import React from 'react';
-import {View, Text, ActivityIndicator} from 'react-native';
+import {View, Text} from 'react-native';
 import globalStyles from '@controleonline/ui-layout/src/react/styles/global';
-import {useStore, useStores} from '@store';
+import {useStores} from '@store';
+import resolveSystemErrorMessage from '@controleonline/ui-common/src/react/utils/systemErrorMessage';
 
-const StateStore = ({store, stores = []}) => {
-  const allStores = useStores(state => state);
-  const themeStore = useStore('theme') || {};
-  const themeGetters = themeStore?.getters || {};
-  const {colors = {primary: '#000'}} = themeGetters;
+const resolveStateMessage = (value, fallback) => {
+  if (value === null || value === undefined || value === false) {
+    return '';
+  }
+
+  if (typeof value === 'boolean') {
+    return fallback;
+  }
+
+  if (typeof value === 'string') {
+    return value.trim() || fallback;
+  }
+
+  return resolveSystemErrorMessage(value) || fallback;
+};
+
+const resolveStoreStateLabel = (kind, storeNames, message) => {
+  const label = Array.isArray(storeNames) ? storeNames.filter(Boolean).join(', ') : '';
+
+  if (kind === 'error') {
+    return `Erro${label ? `: ${label}` : ''}${message ? ` - ${message}` : ''}`;
+  }
+
+  if (kind === 'saving') {
+    return `Salvando${label ? `: ${label}` : ''}`;
+  }
+
+  return `Carregando${label ? `: ${label}` : ''}`;
+};
+
+const StateStore = ({
+  store,
+  stores = [],
+  loading = false,
+  saving = false,
+  error = null,
+  loadingText = 'Carregando...',
+  savingText = 'Salvando...',
+  errorText = 'Nao foi possivel concluir a solicitacao.',
+  compact = false,
+  containerStyle = null,
+  contentStyle = null,
+}) => {
   const styles = globalStyles();
-
+  const allStores = typeof useStores === 'function' ? useStores(state => state) : null;
   const storeNames = [
     ...(Array.isArray(store) ? store : store ? [store] : []),
     ...(Array.isArray(stores) ? stores : []),
   ].filter(Boolean);
+  const containerBaseStyle = compact ? styles.state.compactContainer : styles.state.container;
+  const contentBaseStyle = compact
+    ? styles.state.compactContent
+    : [styles.state.content, styles.state.loadingContainer];
 
-  const entries = storeNames
-    .map(storeName => {
-      const currentStore = allStores?.[storeName] || {};
-      const getters = currentStore?.getters || {};
+  if (!allStores) {
+    const runtimeLoadingText = resolveStateMessage(loading, loadingText);
+    const runtimeSavingText = resolveStateMessage(saving, savingText);
+    const runtimeErrorText = resolveStateMessage(error, errorText);
+    const runtimeEntries = [
+      runtimeLoadingText ? {kind: 'loading', label: runtimeLoadingText} : null,
+      runtimeSavingText ? {kind: 'saving', label: runtimeSavingText} : null,
+      runtimeErrorText ? {kind: 'error', label: runtimeErrorText} : null,
+    ].filter(Boolean);
 
-      return {
-        storeName,
-        isLoading: getters.isLoading === true,
-        isSaving: getters.isSaving === true,
-      };
-    })
-    .filter(entry => entry.isLoading || entry.isSaving);
+    if (runtimeEntries.length === 0) {
+      return null;
+    }
 
-  const loadingEntries = entries.filter(entry => entry.isLoading);
-  const savingEntries = entries.filter(entry => entry.isSaving);
-
-  if (loadingEntries.length > 0 || savingEntries.length > 0)
     return (
-      <View style={styles.state.container}>
-        <View style={[styles.state.content, styles.state.loadingContainer]}>
-          <ActivityIndicator size="large" color={colors['primary']} />
-          {loadingEntries.length > 0 && (
-            <Text style={styles.state.errorText}>
-              Carregando: {loadingEntries.map(entry => entry.storeName).join(', ')}
+      <View style={[containerBaseStyle, containerStyle]}>
+        <View style={[contentBaseStyle, contentStyle]}>
+          {runtimeEntries.map(entry => (
+            <Text
+              key={`${entry.kind}-${entry.label}`}
+              style={
+                entry.kind === 'error'
+                  ? styles.state.errorText
+                  : styles.state.messageText
+              }
+            >
+              {entry.label}
             </Text>
-          )}
-          {savingEntries.length > 0 && (
-            <Text style={styles.state.errorText}>
-              Salvando: {savingEntries.map(entry => entry.storeName).join(', ')}
-            </Text>
-          )}
+          ))}
         </View>
       </View>
     );
+  }
 
-  return null;
+  const storeEntries = storeNames
+    .map(storeName => {
+      const currentStore = allStores?.[storeName] || {};
+      const getters = currentStore?.getters || {};
+      const storeError = resolveSystemErrorMessage(getters.error);
+
+      if (getters.isLoading === true) {
+        return {
+          kind: 'loading',
+          label: resolveStoreStateLabel('loading', [storeName]),
+        };
+      }
+
+      if (getters.isSaving === true) {
+        return {
+          kind: 'saving',
+          label: resolveStoreStateLabel('saving', [storeName]),
+        };
+      }
+
+      if (storeError) {
+        return {
+          kind: 'error',
+          label: resolveStoreStateLabel('error', [storeName], storeError),
+        };
+      }
+
+      return null;
+    })
+    .filter(Boolean);
+
+  const runtimeEntries = [
+    resolveStateMessage(loading, loadingText)
+      ? {kind: 'loading', label: resolveStateMessage(loading, loadingText)}
+      : null,
+    resolveStateMessage(saving, savingText)
+      ? {kind: 'saving', label: resolveStateMessage(saving, savingText)}
+      : null,
+    resolveStateMessage(error, errorText)
+      ? {kind: 'error', label: resolveStateMessage(error, errorText)}
+      : null,
+  ].filter(Boolean);
+
+  const entries = [...storeEntries, ...runtimeEntries];
+
+  if (entries.length === 0) {
+    return null;
+  }
+
+  return (
+    <View style={[containerBaseStyle, containerStyle]}>
+      <View style={[contentBaseStyle, contentStyle]}>
+        {entries.map(entry => (
+          <Text
+            key={`${entry.kind}-${entry.label}`}
+            style={entry.kind === 'error' ? styles.state.errorText : styles.state.messageText}
+          >
+            {entry.label}
+          </Text>
+        ))}
+      </View>
+    </View>
+  );
 };
 
 export default StateStore;
