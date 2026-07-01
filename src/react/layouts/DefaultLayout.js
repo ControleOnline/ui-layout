@@ -61,6 +61,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const appType = String(env.APP_TYPE || '').toUpperCase();
   const isShopApp = appType === 'SHOP';
   const isPosApp = appType === 'POS';
+  const isDeliveryApp = appType === 'DELIVERY';
   const isTotemMode = useMemo(
     () => isPosTotemMode(device?.configs),
     [device?.configs],
@@ -97,12 +98,13 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     isPosApp &&
     !isTotemMode &&
     POS_TOOLBAR_ROUTE_NAMES.has(currentRouteName);
+  const shouldForceAppToolbar = isDeliveryApp || shouldForcePosToolbar;
   const effectiveShowBottomToolBar =
     (
       (
         showBottomToolBarOverride !== null
           ? showBottomToolBarOverride
-          : shouldForcePosToolbar
+          : shouldForceAppToolbar
             ? true
           : !!showBottomToolBar
       ) && !shouldHideBottomToolBar
@@ -140,8 +142,13 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
 
   const isModernDockEnabled =
     effectiveShowBottomToolBar &&
-    (appType === 'MANAGER' || appType === 'PPC') &&
-    modernDockRouteNames.has(currentRouteName);
+    (
+      (
+        (appType === 'MANAGER' || appType === 'PPC') &&
+        modernDockRouteNames.has(currentRouteName)
+      ) ||
+      isDeliveryApp
+    );
   const shouldHidePosToolbar = isPosApp && isTotemMode;
   const shouldRenderBottomToolBar =
     effectiveShowBottomToolBar &&
@@ -149,7 +156,8 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       appType === 'CRM' ||
       appType === 'MANAGER' ||
       appType === 'PPC' ||
-      (appType === 'POS' && !shouldHidePosToolbar)
+      (appType === 'POS' && !shouldHidePosToolbar) ||
+      isDeliveryApp
     );
   const shouldEnablePosScanner =
     isPosApp || isPdvRouteContext(currentRouteParams);
@@ -251,6 +259,9 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
           )}
           {appType === 'POS' && !shouldHidePosToolbar && (
             <PDVToolbar navigation={navigation} />
+          )}
+          {appType === 'DELIVERY' && isModernDockEnabled && (
+            <AppBottomDock navigation={navigation} variant="delivery" />
           )}
           {appType === 'PPC' && (
             isModernDockEnabled
