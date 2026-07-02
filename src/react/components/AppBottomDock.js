@@ -1,10 +1,7 @@
-import React, { useMemo } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import React from 'react';
 import { useNavigationState } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Feather';
 import { useStore } from '@store';
-import createStyles from './AppBottomDock.styles';
+import BottomNavigationBar from '@controleonline/ui-common/src/react/components/BottomNavigationBar';
 
 const MANAGER_ITEMS = [
   { route: 'HomePage', label: 'Home', icon: 'home' },
@@ -45,21 +42,7 @@ const DELIVERY_ROUTE_ALIASES = {
   DeliveryCourierPresenceHistoryPage: 'DeliveryCompaniesPage',
 };
 
-const withAlpha = (color, alphaHex) => {
-  const raw = String(color || '').trim().replace('#', '');
-  if (/^[0-9a-fA-F]{6}$/.test(raw)) {
-    return `#${raw}${alphaHex}`;
-  }
-
-  if (/^[0-9a-fA-F]{8}$/.test(raw)) {
-    return `#${raw.slice(0, 6)}${alphaHex}`;
-  }
-
-  return color || '#1B5587';
-};
-
 const AppBottomDock = ({ navigation, variant = 'manager' }) => {
-  const insets = useSafeAreaInsets();
   const state = useNavigationState(current => current);
   const activeRouteName = state?.routes?.[state.index]?.name || 'HomePage';
 
@@ -84,70 +67,14 @@ const AppBottomDock = ({ navigation, variant = 'manager' }) => {
   const effectiveActiveRoute = knownRoute ? resolvedActiveRoute : navItems[0].route;
   const isCompanyValid = !!(currentCompany && Object.keys(currentCompany).length > 0);
 
-  const primaryColor = colors.primary || '#1B5587';
-  const dockBackground = colors['toolbar-background'] || '#F8FBFF';
-  const borderColor = colors['toolbar-border'] || '#D1DDE9';
-  const inactiveText = colors['toolbar-text-muted'] || '#64748B';
-  const activeBg = withAlpha(primaryColor, '1A');
-  const activeBorder = withAlpha(primaryColor, '55');
-
-  const styles = useMemo(
-    () =>
-      createStyles({
-        primaryColor,
-        dockBackground,
-        borderColor,
-        inactiveText,
-        activeBg,
-        activeBorder,
-        insets,
-      }),
-    [activeBg, activeBorder, borderColor, dockBackground, inactiveText, insets, primaryColor]
-  );
-
-  const navigateTo = routeName => {
-    try {
-      navigation.navigate(routeName);
-    } catch {
-      // Avoid breaking UX when a route is not available in current app flavor.
-    }
-  };
-
   return (
-    <View pointerEvents="box-none" style={styles.host}>
-      <View accessibilityRole="navigation" style={styles.dock} testID="bottom-navigation">
-        {navItems.map(item => {
-          const isActive = effectiveActiveRoute === item.route;
-          const disabled = !isCompanyValid;
-
-          return (
-            <Pressable
-              key={item.route}
-              accessibilityRole="button"
-              disabled={disabled}
-              onPress={() => navigateTo(item.route)}
-              style={({ pressed }) => [
-                styles.item,
-                isActive && styles.itemActive,
-                pressed && !disabled && styles.itemPressed,
-                disabled && styles.itemDisabled,
-              ]}
-            >
-              <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
-                <Icon
-                  color={isActive ? primaryColor : inactiveText}
-                  name={item.icon}
-                  size={18}
-                />
-              </View>
-              <Text numberOfLines={1} style={[styles.itemLabel, isActive && styles.itemLabelActive]}>
-                {item.label}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    </View>
+    <BottomNavigationBar
+      activeRouteName={effectiveActiveRoute}
+      colors={colors}
+      disabled={!isCompanyValid}
+      items={navItems}
+      navigation={navigation}
+    />
   );
 };
 
