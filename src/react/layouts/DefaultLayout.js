@@ -201,16 +201,14 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       ),
   );
 
-  // Bottom bars are rendered as overlays, so reserve space in content.
-  const bottomInsetCompensation =
-    shouldRenderBottomToolBar
-      ? toolbarBaseHeight + Math.max(insets.bottom, 10)
-      : 0;
+  // Reserve the dock plus the runtime footer that now lives under it.
+  const bottomChromeBaseHeight = 44;
+  const bottomChromeOffset = shouldRenderBottomToolBar
+    ? toolbarBaseHeight + bottomChromeBaseHeight + Math.max(insets.bottom, 10)
+    : 0;
 
-  const cartBottomOffset =
-    shouldRenderBottomToolBar
-      ? toolbarBaseHeight + Math.max(insets.bottom, 10)
-      : 0;
+  const bottomInsetCompensation = bottomChromeOffset;
+  const cartBottomOffset = bottomChromeOffset;
 
   useLayoutEffect(() => {
     navigation.setOptions({
