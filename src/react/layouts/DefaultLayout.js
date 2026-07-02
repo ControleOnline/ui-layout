@@ -3,15 +3,12 @@ import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useStore} from '@store';
 
-import BottomToolbar from '@controleonline/ui-crm/src/react/components/BottomToolbar';
 import BottomCart from '@controleonline/ui-orders/src/react/components/cart/BottomCart';
 import CompanyFilter from '@controleonline/ui-manager/src/react/components/CompanyFilter';
-import ManagerToolbar from '@controleonline/ui-manager/src/react/components/ManagerToolbar';
-import PPCToolbar from '../../../../ui-ppc/src/react/components/PPCToolbar.js';
+import RuntimeBottomNavigationBar from '@controleonline/ui-common/src/react/components/RuntimeBottomNavigationBar';
 import ShopBottomCart from '@controleonline/ui-shop/src/react/components/storefront/ShopBottomCart';
 import PDVToolbar from '@controleonline/ui-orders/src/react/components/PDVToolbar';
 import PosKioskBarcodeListener from '@controleonline/ui-orders/src/react/components/PosKioskBarcodeListener';
-import AppBottomDock from '@controleonline/ui-layout/src/react/components/AppBottomDock';
 import {
   isPosCashRegisterClosed,
   isPosTotemMode,
@@ -118,6 +115,13 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     !isTotemMode &&
     POS_TOOLBAR_ROUTE_NAMES.has(currentRouteName);
   const shouldForceAppToolbar = isDeliveryApp || shouldForcePosToolbar;
+  const renderBottomNavigationBar = presetKey => (
+    <RuntimeBottomNavigationBar
+      navigation={navigation}
+      menuType="toolbar"
+      presetKey={presetKey}
+    />
+  );
   const effectiveShowBottomToolBar =
     (
       (
@@ -362,23 +366,17 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
         ))}
       {shouldRenderBottomToolBar && (
         <>
-          {appType === 'CRM' && <BottomToolbar navigation={navigation} />}
-          {appType === 'MANAGER' && (
-            isModernDockEnabled
-              ? <AppBottomDock navigation={navigation} variant="manager" />
-              : <ManagerToolbar navigation={navigation} />
-          )}
+          {appType === 'CRM' && renderBottomNavigationBar('crmToolbar')}
+          {appType === 'MANAGER' &&
+            (isModernDockEnabled
+              ? renderBottomNavigationBar('managerDock')
+              : renderBottomNavigationBar('managerToolbar'))}
           {appType === 'POS' && !shouldHidePosToolbar && (
             <PDVToolbar navigation={navigation} />
           )}
-          {appType === 'DELIVERY' && isModernDockEnabled && (
-            <AppBottomDock navigation={navigation} variant="delivery" />
-          )}
-          {appType === 'PPC' && (
-            isModernDockEnabled
-              ? <AppBottomDock navigation={navigation} variant="ppc" />
-              : <PPCToolbar navigation={navigation} />
-          )}
+          {appType === 'DELIVERY' && isModernDockEnabled &&
+            renderBottomNavigationBar('deliveryDock')}
+          {appType === 'PPC' && renderBottomNavigationBar('ppcDock')}
         </>
       )}
     </View>
