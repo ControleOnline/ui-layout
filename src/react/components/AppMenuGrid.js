@@ -3,18 +3,14 @@ import {Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {useStore} from '@store';
 import {
+  filterRuntimeMenuModulesByType,
+  resolveRuntimeMenuLabel,
+} from '@controleonline/ui-common/src/react/utils/runtimeMenu';
+import {
   resolveMenuRouteName,
   resolveMenuRouteParams,
 } from '@controleonline/ui-layout/src/react/utils/menuNavigation';
 import createStyles, {withAlpha} from './AppMenuGrid.styles';
-
-const normalizeMenus = menus =>
-  (Array.isArray(menus) ? menus : [])
-    .map(module => ({
-      ...module,
-      menus: Array.isArray(module?.menus) ? module.menus : [],
-    }))
-    .filter(module => module.menus.length > 0);
 
 const resolveIconColor = (color, fallback) => {
   const tokenColor = String(color || '').trim();
@@ -26,6 +22,7 @@ const AppMenuGrid = ({
   emptyMessage = 'Nenhum menu disponivel.',
   menus,
   navigation,
+  menuType = 'home',
   onMenuPress,
 }) => {
   const {width} = useWindowDimensions();
@@ -33,7 +30,10 @@ const AppMenuGrid = ({
   const peopleStore = useStore('people');
   const {colors = {}} = themeStore.getters;
   const {currentCompany = {}} = peopleStore.getters;
-  const modules = normalizeMenus(menus);
+  const modules = useMemo(
+    () => filterRuntimeMenuModulesByType(menus, menuType),
+    [menuType, menus],
+  );
 
   const styles = useMemo(
     () =>
@@ -121,7 +121,7 @@ const AppMenuGrid = ({
                     />
                   </View>
                   <Text numberOfLines={2} style={styles.cardLabel}>
-                    {global.t?.t('menu', 'menu', item.menuKey) || item.label || item.menuKey}
+                    {resolveRuntimeMenuLabel(item, global.t?.t)}
                   </Text>
                 </View>
               </TouchableOpacity>
