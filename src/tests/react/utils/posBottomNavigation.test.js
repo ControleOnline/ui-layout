@@ -56,11 +56,14 @@ describe('posBottomNavigation', () => {
     ).toBe(false)
   })
 
-  it('uses the modern dock height only for manager and ppc shells', () => {
+  it('uses the shared dock height across app shells', () => {
     expect(getBottomNavigationBaseHeight('POS')).toBe(
       DEFAULT_BOTTOM_NAVIGATION_HEIGHT,
     )
     expect(getBottomNavigationBaseHeight('MANAGER')).toBe(
+      MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT,
+    )
+    expect(getBottomNavigationBaseHeight('DELIVERY')).toBe(
       MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT,
     )
     expect(getBottomNavigationBaseHeight('PPC')).toBe(
@@ -70,7 +73,7 @@ describe('posBottomNavigation', () => {
 
   it('keeps a minimum bottom inset when offsetting floating bars', () => {
     expect(getBottomNavigationOffset({appType: 'POS', bottomInset: 0})).toBe(
-      DEFAULT_BOTTOM_NAVIGATION_HEIGHT + 8,
+      DEFAULT_BOTTOM_NAVIGATION_HEIGHT + 10,
     )
     expect(
       getBottomNavigationOffset({appType: 'MANAGER', bottomInset: 24}),

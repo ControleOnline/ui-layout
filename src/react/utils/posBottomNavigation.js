@@ -1,5 +1,5 @@
-export const DEFAULT_BOTTOM_NAVIGATION_HEIGHT = 62;
-export const MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT = 86;
+export const DEFAULT_BOTTOM_NAVIGATION_HEIGHT = 64;
+export const MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT = 64;
 
 export const shouldShowOperationalBottomNavigation = ({
   appType,
@@ -21,7 +21,9 @@ export const shouldShowOperationalBottomNavigation = ({
 export const getBottomNavigationBaseHeight = appType => {
   const normalizedAppType = String(appType || '').trim().toUpperCase();
 
-  return MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT;
+  return normalizedAppType === 'POS'
+    ? DEFAULT_BOTTOM_NAVIGATION_HEIGHT
+    : MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT;
 };
 
 export const getBottomNavigationOffset = ({
@@ -29,7 +31,7 @@ export const getBottomNavigationOffset = ({
   bottomInset = 0,
 } = {}) =>
   getBottomNavigationBaseHeight(appType) +
-  Math.max(Number(bottomInset) || 0, 8);
+  Math.max(Number(bottomInset) || 0, 10);
 
 export const getOwnedBottomBarOffset = ({
   hasBottomNavigation = false,

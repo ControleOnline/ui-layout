@@ -115,7 +115,7 @@ const AppBottomDock = ({ navigation, variant = 'manager' }) => {
 
   return (
     <View pointerEvents="box-none" style={styles.host}>
-      <View style={styles.dock}>
+      <View accessibilityRole="navigation" style={styles.dock} testID="bottom-navigation">
         {navItems.map(item => {
           const isActive = effectiveActiveRoute === item.route;
           const disabled = !isCompanyValid;

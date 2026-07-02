@@ -7,7 +7,7 @@ import BottomToolbar from '@controleonline/ui-crm/src/react/components/BottomToo
 import BottomCart from '@controleonline/ui-orders/src/react/components/cart/BottomCart';
 import CompanyFilter from '@controleonline/ui-manager/src/react/components/CompanyFilter';
 import ManagerToolbar from '@controleonline/ui-manager/src/react/components/ManagerToolbar';
-import PPCToolbar from '@controleonline/ui-ppc/src/react/components/PPCToolbar';
+import PPCToolbar from '../../../../ui-ppc/src/react/components/PPCToolbar.js';
 import ShopBottomCart from '@controleonline/ui-shop/src/react/components/storefront/ShopBottomCart';
 import PDVToolbar from '@controleonline/ui-orders/src/react/components/PDVToolbar';
 import PosKioskBarcodeListener from '@controleonline/ui-orders/src/react/components/PosKioskBarcodeListener';
@@ -26,6 +26,7 @@ import {
   resolveDeliveryAcceptanceQueueHead,
 } from '@controleonline/ui-logistic/src/react/utils/deliveryAcceptanceQueue';
 import {resolveCurrentPeopleIri} from '@controleonline/ui-logistic/src/react/utils/deliveryIdentity';
+import {getBottomNavigationBaseHeight} from '@controleonline/ui-layout/src/react/utils/posBottomNavigation';
 
 import { env } from '@env';
 import styles from './DefaultLayout.styles';
@@ -179,7 +180,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     );
   const shouldEnablePosScanner =
     isPosApp || isPdvRouteContext(currentRouteParams);
-  const toolbarBaseHeight = isModernDockEnabled ? 86 : 62;
+  const toolbarBaseHeight = getBottomNavigationBaseHeight(appType);
   const deliveryQueueItems = Array.isArray(deliveryOrdersStore?.getters?.items)
     ? deliveryOrdersStore.getters.items
     : [];
@@ -203,12 +204,12 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   // Bottom bars are rendered as overlays, so reserve space in content.
   const bottomInsetCompensation =
     shouldRenderBottomToolBar
-      ? toolbarBaseHeight + Math.max(insets.bottom, 8)
+      ? toolbarBaseHeight + Math.max(insets.bottom, 10)
       : 0;
 
   const cartBottomOffset =
     shouldRenderBottomToolBar
-      ? toolbarBaseHeight + Math.max(insets.bottom, 8)
+      ? toolbarBaseHeight + Math.max(insets.bottom, 10)
       : 0;
 
   useLayoutEffect(() => {
