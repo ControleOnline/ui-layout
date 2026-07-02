@@ -16,9 +16,10 @@ const styles = StyleSheet.create({
   },
   headerRightContainer: {
     flex: 1,
+    minWidth: 0,
     marginLeft: 'auto',
     paddingRight: 16,
-    maxWidth: 240,
+    maxWidth: 360,
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
