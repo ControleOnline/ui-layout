@@ -1,5 +1,5 @@
 import React, {useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useStore} from '@store';
 
@@ -71,6 +71,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const isShopApp = appType === 'SHOP';
   const isPosApp = appType === 'POS';
   const isDeliveryApp = appType === 'DELIVERY';
+  const isDeliveryWorkflowApp = isDeliveryApp || appType === 'MANAGER';
   const currentPeopleIri = useMemo(
     () => resolveCurrentPeopleIri(currentUser),
     [currentUser],
@@ -98,6 +99,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     options?.headerShown !== false;
   const [deliveryQueueLoadedForIri, setDeliveryQueueLoadedForIri] = useState('');
   const deliveryQueueLoadOwnerRef = useRef('');
+  const deliveryQueueWasLockedRef = useRef(false);
   const navigationState = navigation?.getState?.();
   const currentRouteName =
     route?.name || navigationState?.routes?.[navigationState?.index]?.name;
@@ -212,22 +214,28 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const deliveryQueueItems = Array.isArray(deliveryOrdersStore?.getters?.items)
     ? deliveryOrdersStore.getters.items
     : [];
-  const deliveryQueueHead = useMemo(
-    () =>
-      deliveryQueueLoadedForIri === currentPeopleIri
-        ? resolveDeliveryWorkflowHead(deliveryQueueItems)
-        : null,
-    [currentPeopleIri, deliveryQueueItems, deliveryQueueLoadedForIri],
-  );
+  const deliveryQueueHead = resolveDeliveryWorkflowHead(deliveryQueueItems);
   const deliveryQueueHeadId = normalizeDeliveryOrderId(deliveryQueueHead?.id);
   const shouldLockToDeliveryQueue = Boolean(
-    isDeliveryApp &&
+    isDeliveryWorkflowApp &&
       deliveryQueueHeadId &&
       (
         currentRouteName !== 'OrderDetails' ||
         currentRouteOrderId !== deliveryQueueHeadId
       ),
   );
+  const replaceWebLocation = href => {
+    if (
+      Platform.OS === 'web' &&
+      typeof window !== 'undefined' &&
+      typeof window.location?.replace === 'function'
+    ) {
+      window.location.replace(href);
+      return true;
+    }
+
+    return false;
+  };
 
   // Reserve the dock plus the runtime footer that now lives under it.
   const bottomChromeBaseHeight = 44;
@@ -256,7 +264,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
 
   useEffect(() => {
     if (
-      !isDeliveryApp ||
+      !isDeliveryWorkflowApp ||
       !currentPeopleIri ||
       typeof deliveryOrdersStore?.actions?.getItems !== 'function'
     ) {
@@ -302,7 +310,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     currentPeopleIri,
     deliveryOrdersStore?.actions?.getItems,
     deliveryQueueLoadedForIri,
-    isDeliveryApp,
+    isDeliveryWorkflowApp,
   ]);
 
   useEffect(() => {
@@ -311,10 +319,10 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     }
 
     lastProcessedWebsocketMessageCountRef.current = websocketMessages.length;
-  }, [currentPeopleIri, websocketMessages.length]);
+  }, [currentPeopleIri, isDeliveryWorkflowApp, websocketMessages.length]);
 
   useEffect(() => {
-    if (!isDeliveryApp || !currentPeopleIri) {
+    if (!isDeliveryWorkflowApp || !currentPeopleIri) {
       return undefined;
     }
 
@@ -358,10 +366,25 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     }
 
     return undefined;
-  }, [currentPeopleIri, deliveryOrdersStore?.actions?.getItems, isDeliveryApp, websocketMessages]);
+  }, [currentPeopleIri, deliveryOrdersStore?.actions?.getItems, isDeliveryWorkflowApp, websocketMessages]);
 
   useEffect(() => {
     if (!shouldLockToDeliveryQueue) {
+      return;
+    }
+
+    deliveryQueueWasLockedRef.current = true;
+    const nextParams = buildOrderDetailsRouteParams(deliveryQueueHeadId, {
+      store: 'orders',
+    });
+    const nextHref = `/order-details?${new URLSearchParams(nextParams).toString()}`;
+
+    if (replaceWebLocation(nextHref)) {
+      return;
+    }
+
+    if (typeof navigation.replace === 'function') {
+      navigation.replace('OrderDetails', nextParams);
       return;
     }
 
@@ -370,9 +393,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       routes: [
         {
           name: 'OrderDetails',
-          params: buildOrderDetailsRouteParams(deliveryQueueHeadId, {
-            store: 'orders',
-          }),
+          params: nextParams,
         },
       ],
     });
@@ -382,6 +403,43 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     currentRouteOrderId,
     navigation,
     shouldLockToDeliveryQueue,
+  ]);
+
+  useEffect(() => {
+    if (!isDeliveryWorkflowApp || deliveryQueueHeadId) {
+      if (deliveryQueueHeadId) {
+        deliveryQueueWasLockedRef.current = true;
+      }
+
+      return;
+    }
+
+    if (!deliveryQueueWasLockedRef.current) {
+      return;
+    }
+
+    deliveryQueueWasLockedRef.current = false;
+    if (replaceWebLocation('/delivery/orders')) {
+      return;
+    }
+
+    if (typeof navigation.replace === 'function') {
+      navigation.replace('DeliveryOrdersPage');
+      return;
+    }
+
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'DeliveryOrdersPage',
+        },
+      ],
+    });
+  }, [
+    deliveryQueueHeadId,
+    isDeliveryWorkflowApp,
+    navigation,
   ]);
 
   useEffect(() => {
