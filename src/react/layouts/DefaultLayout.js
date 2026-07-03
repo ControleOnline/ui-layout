@@ -19,7 +19,7 @@ import {
 } from '@controleonline/ui-orders/src/react/utils/orderRoute';
 import {
   normalizeDeliveryOrderId,
-  resolveDeliveryAcceptanceQueueHead,
+  resolveDeliveryWorkflowHead,
 } from '@controleonline/ui-logistic/src/react/utils/deliveryAcceptanceQueue';
 import {resolveCurrentPeopleIri} from '@controleonline/ui-logistic/src/react/utils/deliveryIdentity';
 import {getBottomNavigationBaseHeight} from '@controleonline/ui-layout/src/react/utils/posBottomNavigation';
@@ -63,6 +63,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const insets = useSafeAreaInsets();
   const authStore = useStore('auth');
   const deliveryOrdersStore = useStore('delivery_orders');
+  const websocketStore = useStore('websocket');
   const deviceConfigStore = useStore('device_config');
   const {item: device} = deviceConfigStore.getters;
   const currentUser = authStore?.getters?.user || null;
@@ -204,13 +205,17 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const shouldEnablePosScanner =
     isPosApp || isPdvRouteContext(currentRouteParams);
   const toolbarBaseHeight = getBottomNavigationBaseHeight(appType);
+  const websocketMessages = Array.isArray(websocketStore?.getters?.messages)
+    ? websocketStore.getters.messages
+    : [];
+  const lastProcessedWebsocketMessageCountRef = useRef(websocketMessages.length);
   const deliveryQueueItems = Array.isArray(deliveryOrdersStore?.getters?.items)
     ? deliveryOrdersStore.getters.items
     : [];
   const deliveryQueueHead = useMemo(
     () =>
       deliveryQueueLoadedForIri === currentPeopleIri
-        ? resolveDeliveryAcceptanceQueueHead(deliveryQueueItems)
+        ? resolveDeliveryWorkflowHead(deliveryQueueItems)
         : null,
     [currentPeopleIri, deliveryQueueItems, deliveryQueueLoadedForIri],
   );
@@ -299,6 +304,61 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     deliveryQueueLoadedForIri,
     isDeliveryApp,
   ]);
+
+  useEffect(() => {
+    if (!currentPeopleIri) {
+      return;
+    }
+
+    lastProcessedWebsocketMessageCountRef.current = websocketMessages.length;
+  }, [currentPeopleIri, websocketMessages.length]);
+
+  useEffect(() => {
+    if (!isDeliveryApp || !currentPeopleIri) {
+      return undefined;
+    }
+
+    if (websocketMessages.length <= lastProcessedWebsocketMessageCountRef.current) {
+      return undefined;
+    }
+
+    const newMessages = websocketMessages.slice(lastProcessedWebsocketMessageCountRef.current);
+    lastProcessedWebsocketMessageCountRef.current = websocketMessages.length;
+
+    if (
+      newMessages.some(message => {
+        const storeName = String(message?.store || '').trim().toLowerCase();
+        return storeName === 'orders' || storeName === 'delivery_orders';
+      })
+    ) {
+      if (
+        typeof deliveryOrdersStore?.actions?.getItems === 'function' &&
+        deliveryQueueLoadOwnerRef.current !== currentPeopleIri
+      ) {
+        let cancelled = false;
+        deliveryQueueLoadOwnerRef.current = currentPeopleIri;
+
+        Promise.resolve(
+          deliveryOrdersStore.actions.getItems({
+            orderType: 'delivery',
+            provider: currentPeopleIri,
+          }),
+        )
+          .catch(() => {})
+          .finally(() => {
+            if (!cancelled && deliveryQueueLoadOwnerRef.current === currentPeopleIri) {
+              deliveryQueueLoadOwnerRef.current = '';
+            }
+          });
+
+        return () => {
+          cancelled = true;
+        };
+      }
+    }
+
+    return undefined;
+  }, [currentPeopleIri, deliveryOrdersStore?.actions?.getItems, isDeliveryApp, websocketMessages]);
 
   useEffect(() => {
     if (!shouldLockToDeliveryQueue) {
