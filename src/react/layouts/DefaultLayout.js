@@ -7,7 +7,6 @@ import BottomCart from '@controleonline/ui-orders/src/react/components/cart/Bott
 import CompanyFilter from '@controleonline/ui-manager/src/react/components/CompanyFilter';
 import RuntimeBottomNavigationBar from '@controleonline/ui-common/src/react/components/RuntimeBottomNavigationBar';
 import ShopBottomCart from '@controleonline/ui-shop/src/react/components/storefront/ShopBottomCart';
-import PDVToolbar from '@controleonline/ui-orders/src/react/components/PDVToolbar';
 import PosKioskBarcodeListener from '@controleonline/ui-orders/src/react/components/PosKioskBarcodeListener';
 import {
   isPosCashRegisterClosed,
@@ -115,11 +114,31 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     !isTotemMode &&
     POS_TOOLBAR_ROUTE_NAMES.has(currentRouteName);
   const shouldForceAppToolbar = isDeliveryApp || shouldForcePosToolbar;
-  const renderBottomNavigationBar = presetKey => (
+  const hasPosDeviceConfig = !!(device?.configs && Object.keys(device.configs).length > 0);
+  const posToolbarItemMapper = item => {
+    if (item?.menuKey === 'home' && !hasPosDeviceConfig) {
+      return null;
+    }
+
+    if (item?.menuKey === 'cash_register') {
+      if (!requiresCashRegisterLifecycle) {
+        return null;
+      }
+
+      return {
+        ...item,
+        route: isCashRegisterClosed ? 'CloseCashRegister' : 'CashRegisterIndex',
+      };
+    }
+
+    return item;
+  };
+  const renderBottomNavigationBar = (presetKey, itemMapper = null) => (
     <RuntimeBottomNavigationBar
       navigation={navigation}
       menuType="toolbar"
       presetKey={presetKey}
+      itemMapper={itemMapper}
     />
   );
   const effectiveShowBottomToolBar =
@@ -371,9 +390,8 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
             (isModernDockEnabled
               ? renderBottomNavigationBar('managerDock')
               : renderBottomNavigationBar('managerToolbar'))}
-          {appType === 'POS' && !shouldHidePosToolbar && (
-            <PDVToolbar navigation={navigation} />
-          )}
+          {appType === 'POS' && !shouldHidePosToolbar &&
+            renderBottomNavigationBar('posToolbar', posToolbarItemMapper)}
           {appType === 'DELIVERY' && isModernDockEnabled &&
             renderBottomNavigationBar('deliveryDock')}
           {appType === 'PPC' && renderBottomNavigationBar('ppcDock')}
