@@ -20,6 +20,7 @@ import {
 import {
   normalizeDeliveryOrderId,
   resolveDeliveryWorkflowHead,
+  resolveDeliveryWorkflowRouteName,
 } from '@controleonline/ui-logistic/src/react/utils/deliveryAcceptanceQueue';
 import {resolveCurrentPeopleIri} from '@controleonline/ui-logistic/src/react/utils/deliveryIdentity';
 import {getBottomNavigationBaseHeight} from '@controleonline/ui-layout/src/react/utils/posBottomNavigation';
@@ -216,12 +217,14 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     : [];
   const deliveryQueueHead = resolveDeliveryWorkflowHead(deliveryQueueItems);
   const deliveryQueueHeadId = normalizeDeliveryOrderId(deliveryQueueHead?.id);
+  const deliveryQueueRouteName = resolveDeliveryWorkflowRouteName(deliveryQueueHead);
   const shouldLockToDeliveryQueue = Boolean(
     isDeliveryWorkflowApp &&
       deliveryQueueHeadId &&
+      deliveryQueueRouteName &&
       (
-        currentRouteName !== 'OrderDetails' ||
-        currentRouteOrderId !== deliveryQueueHeadId
+        currentRouteName !== deliveryQueueRouteName ||
+        (deliveryQueueRouteName !== 'DeliveryRunPage' && currentRouteOrderId !== deliveryQueueHeadId)
       ),
   );
   const replaceWebLocation = href => {
@@ -374,17 +377,26 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     }
 
     deliveryQueueWasLockedRef.current = true;
-    const nextParams = buildOrderDetailsRouteParams(deliveryQueueHeadId, {
-      store: 'orders',
-    });
-    const nextHref = `/order-details?${new URLSearchParams(nextParams).toString()}`;
+    const nextParams =
+      deliveryQueueRouteName === 'DeliveryRunPage'
+        ? {
+            store: 'orders',
+            showBottomToolBar: false,
+          }
+        : buildOrderDetailsRouteParams(deliveryQueueHeadId, {
+            store: 'orders',
+          });
+    const nextHref =
+      deliveryQueueRouteName === 'DeliveryRunPage'
+        ? `/delivery/run?${new URLSearchParams(nextParams).toString()}`
+        : `/order-details?${new URLSearchParams(nextParams).toString()}`;
 
     if (replaceWebLocation(nextHref)) {
       return;
     }
 
     if (typeof navigation.replace === 'function') {
-      navigation.replace('OrderDetails', nextParams);
+      navigation.replace(deliveryQueueRouteName, nextParams);
       return;
     }
 
@@ -392,13 +404,14 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       index: 0,
       routes: [
         {
-          name: 'OrderDetails',
+          name: deliveryQueueRouteName,
           params: nextParams,
         },
       ],
     });
   }, [
     deliveryQueueHeadId,
+    deliveryQueueRouteName,
     currentRouteName,
     currentRouteOrderId,
     navigation,
