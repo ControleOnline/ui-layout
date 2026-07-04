@@ -432,6 +432,9 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     }
 
     deliveryQueueWasLockedRef.current = false;
+    if (currentRouteName === 'DeliveryRunPage') {
+      return;
+    }
     if (replaceWebLocation('/delivery/orders')) {
       return;
     }
