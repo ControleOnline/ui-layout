@@ -46,22 +46,24 @@ const StateStore = ({
     ...(Array.isArray(store) ? store : store ? [store] : []),
     ...(Array.isArray(stores) ? stores : []),
   ].filter(Boolean);
-  const isOrdersMode = mode === 'orders';
-  const containerBaseStyle = compact
+  const isCompactMode = mode === 'compact';
+  const isDisplayMode = mode === 'display';
+  const isCompactLayout = compact || isCompactMode;
+  const containerBaseStyle = isCompactLayout
     ? styles.state.compactContainer
-    : isOrdersMode
-      ? styles.state.ordersContainer || styles.state.container
+    : isDisplayMode
+      ? styles.state.displayContainer || styles.state.container
       : styles.state.container;
-  const contentBaseStyle = compact
+  const contentBaseStyle = isCompactLayout
     ? styles.state.compactContent
     : [
         styles.state.content,
         styles.state.loadingContainer,
-        isOrdersMode ? styles.state.ordersContent : null,
+        isDisplayMode ? styles.state.displayContent : null,
       ].filter(Boolean);
   const textAlign = align === 'left' ? 'left' : 'center';
   const alignItems = align === 'left' ? 'flex-start' : 'center';
-  const shouldShowSpinner = showSpinner || isOrdersMode;
+  const shouldShowSpinner = showSpinner || isCompactLayout || isDisplayMode;
 
   if (!allStores) {
     const runtimeLoadingText = resolveStateMessage(loading, loadingText);

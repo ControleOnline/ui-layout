@@ -44,7 +44,7 @@ const css = () => {
         alignItems: 'center',
         padding: 20,
       },
-      ordersContainer: {
+      displayContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -67,7 +67,7 @@ const css = () => {
         borderRadius: 10,
         elevation: 5,
       },
-      ordersContent: {
+      displayContent: {
         width: '100%',
         maxWidth: 640,
         gap: 10,

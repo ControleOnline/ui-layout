@@ -42,10 +42,10 @@ describe('StateStore', () => {
     };
   });
 
-  it('renders the orders mode loading shell from store state', () => {
+  it('renders the display mode loading shell from store state', () => {
     const markup = ReactDOMServer.renderToStaticMarkup(
       React.createElement(StateStore, {
-        mode: 'orders',
+        mode: 'display',
         store: 'orders',
       }),
     );
@@ -55,12 +55,12 @@ describe('StateStore', () => {
     expect(markup).not.toContain('Erro ignorado');
   });
 
-  it('renders the orders preset with runtime loading text', () => {
+  it('renders the compact preset with runtime loading text', () => {
     mockStores.orders.getters.isLoading = false;
 
     const markup = ReactDOMServer.renderToStaticMarkup(
       React.createElement(StateStore, {
-        mode: 'orders',
+        mode: 'compact',
         loading: 'Carregando pedido...',
       }),
     );
