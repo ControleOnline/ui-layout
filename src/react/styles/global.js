@@ -44,6 +44,13 @@ const css = () => {
         alignItems: 'center',
         padding: 20,
       },
+      ordersContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 24,
+        paddingHorizontal: 20,
+      },
       compactContainer: {
         width: '100%',
         justifyContent: 'center',
@@ -59,6 +66,18 @@ const css = () => {
         backgroundColor: '#fff',
         borderRadius: 10,
         elevation: 5,
+      },
+      ordersContent: {
+        width: '100%',
+        maxWidth: 640,
+        gap: 10,
+        paddingVertical: 24,
+        paddingHorizontal: 22,
+        backgroundColor: '#fff',
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+        elevation: 8,
       },
       compactContent: {
         width: '100%',

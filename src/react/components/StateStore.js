@@ -2,7 +2,6 @@ import React from 'react';
 import {ActivityIndicator, View, Text} from 'react-native';
 import globalStyles from '@controleonline/ui-layout/src/react/styles/global';
 import {useStores} from '@store';
-import resolveSystemErrorMessage from '@controleonline/ui-common/src/react/utils/systemErrorMessage';
 
 const resolveStateMessage = (value, fallback) => {
   if (value === null || value === undefined || value === false) {
@@ -17,26 +16,13 @@ const resolveStateMessage = (value, fallback) => {
     return value.trim() || fallback;
   }
 
-  return resolveSystemErrorMessage(value) || fallback;
-};
-
-const resolveStoreStateLabel = (kind, storeNames, message) => {
-  const label = Array.isArray(storeNames) ? storeNames.filter(Boolean).join(', ') : '';
-
-  if (kind === 'error') {
-    return `Erro${label ? `: ${label}` : ''}${message ? ` - ${message}` : ''}`;
-  }
-
-  if (kind === 'saving') {
-    return `Salvando${label ? `: ${label}` : ''}`;
-  }
-
-  return `Carregando${label ? `: ${label}` : ''}`;
+  return fallback;
 };
 
 const StateStore = ({
   store,
   stores = [],
+  mode = 'default',
   loading = false,
   saving = false,
   loadingText = 'Carregando...',
@@ -60,12 +46,22 @@ const StateStore = ({
     ...(Array.isArray(store) ? store : store ? [store] : []),
     ...(Array.isArray(stores) ? stores : []),
   ].filter(Boolean);
-  const containerBaseStyle = compact ? styles.state.compactContainer : styles.state.container;
+  const isOrdersMode = mode === 'orders';
+  const containerBaseStyle = compact
+    ? styles.state.compactContainer
+    : isOrdersMode
+      ? styles.state.ordersContainer || styles.state.container
+      : styles.state.container;
   const contentBaseStyle = compact
     ? styles.state.compactContent
-    : [styles.state.content, styles.state.loadingContainer];
+    : [
+        styles.state.content,
+        styles.state.loadingContainer,
+        isOrdersMode ? styles.state.ordersContent : null,
+      ].filter(Boolean);
   const textAlign = align === 'left' ? 'left' : 'center';
   const alignItems = align === 'left' ? 'flex-start' : 'center';
+  const shouldShowSpinner = showSpinner || isOrdersMode;
 
   if (!allStores) {
     const runtimeLoadingText = resolveStateMessage(loading, loadingText);
@@ -153,26 +149,18 @@ const StateStore = ({
     .map(storeName => {
       const currentStore = allStores?.[storeName] || {};
       const getters = currentStore?.getters || {};
-      const storeError = resolveSystemErrorMessage(getters.error);
 
       if (getters.isLoading === true) {
         return {
           kind: 'loading',
-          label: resolveStoreStateLabel('loading', [storeName]),
+          label: `Carregando${storeName ? `: ${storeName}` : ''}`,
         };
       }
 
       if (getters.isSaving === true) {
         return {
           kind: 'saving',
-          label: resolveStoreStateLabel('saving', [storeName]),
-        };
-      }
-
-      if (storeError) {
-        return {
-          kind: 'error',
-          label: resolveStoreStateLabel('error', [storeName], storeError),
+          label: `Salvando${storeName ? `: ${storeName}` : ''}`,
         };
       }
 
@@ -198,7 +186,7 @@ const StateStore = ({
   return (
     <View style={[containerBaseStyle, containerStyle]}>
       <View style={[contentBaseStyle, {alignItems}, contentStyle]}>
-        {(showSpinner || title || subtitle) ? (
+        {(shouldShowSpinner || title || subtitle) ? (
           <View
             style={{
               alignItems: alignItems === 'flex-start' ? 'flex-start' : 'center',
@@ -209,7 +197,7 @@ const StateStore = ({
               width: '100%',
             }}
           >
-            {showSpinner ? (
+            {shouldShowSpinner ? (
               <ActivityIndicator size={spinnerSize} color={spinnerColor} />
             ) : null}
             {(title || subtitle) ? (
