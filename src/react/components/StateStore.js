@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {ActivityIndicator, View, Text} from 'react-native';
 import globalStyles from '@controleonline/ui-layout/src/react/styles/global';
 import {useStores} from '@store';
 import resolveSystemErrorMessage from '@controleonline/ui-common/src/react/utils/systemErrorMessage';
@@ -39,13 +39,20 @@ const StateStore = ({
   stores = [],
   loading = false,
   saving = false,
-  error = null,
   loadingText = 'Carregando...',
   savingText = 'Salvando...',
-  errorText = 'Nao foi possivel concluir a solicitacao.',
+  title = '',
+  subtitle = '',
+  showSpinner = false,
+  spinnerColor = '#0EA5E9',
+  spinnerSize = 'small',
+  align = 'center',
   compact = false,
   containerStyle = null,
   contentStyle = null,
+  messageStyle = null,
+  titleStyle = null,
+  subtitleStyle = null,
 }) => {
   const styles = globalStyles();
   const allStores = typeof useStores === 'function' ? useStores(state => state) : null;
@@ -57,15 +64,15 @@ const StateStore = ({
   const contentBaseStyle = compact
     ? styles.state.compactContent
     : [styles.state.content, styles.state.loadingContainer];
+  const textAlign = align === 'left' ? 'left' : 'center';
+  const alignItems = align === 'left' ? 'flex-start' : 'center';
 
   if (!allStores) {
     const runtimeLoadingText = resolveStateMessage(loading, loadingText);
     const runtimeSavingText = resolveStateMessage(saving, savingText);
-    const runtimeErrorText = resolveStateMessage(error, errorText);
     const runtimeEntries = [
       runtimeLoadingText ? {kind: 'loading', label: runtimeLoadingText} : null,
       runtimeSavingText ? {kind: 'saving', label: runtimeSavingText} : null,
-      runtimeErrorText ? {kind: 'error', label: runtimeErrorText} : null,
     ].filter(Boolean);
 
     if (runtimeEntries.length === 0) {
@@ -74,15 +81,65 @@ const StateStore = ({
 
     return (
       <View style={[containerBaseStyle, containerStyle]}>
-        <View style={[contentBaseStyle, contentStyle]}>
+        <View style={[contentBaseStyle, {alignItems}, contentStyle]}>
+          {(showSpinner || title || subtitle) ? (
+            <View
+              style={{
+                alignItems: alignItems === 'flex-start' ? 'flex-start' : 'center',
+                flexDirection: 'row',
+                gap: 10,
+                justifyContent: alignItems === 'flex-start' ? 'flex-start' : 'center',
+                marginBottom: 12,
+                width: '100%',
+              }}
+            >
+              {showSpinner ? (
+                <ActivityIndicator size={spinnerSize} color={spinnerColor} />
+              ) : null}
+              {(title || subtitle) ? (
+                <View style={{flex: 1, gap: 2}}>
+                  {title ? (
+                    <Text
+                      style={[
+                        {
+                          color: '#0F172A',
+                          fontSize: 14,
+                          fontWeight: '800',
+                          textAlign,
+                        },
+                        titleStyle,
+                      ]}
+                    >
+                      {title}
+                    </Text>
+                  ) : null}
+                  {subtitle ? (
+                    <Text
+                      style={[
+                        {
+                          color: '#64748B',
+                          fontSize: 12,
+                          lineHeight: 16,
+                          textAlign,
+                        },
+                        subtitleStyle,
+                      ]}
+                    >
+                      {subtitle}
+                    </Text>
+                  ) : null}
+                </View>
+              ) : null}
+            </View>
+          ) : null}
           {runtimeEntries.map(entry => (
             <Text
               key={`${entry.kind}-${entry.label}`}
-              style={
-                entry.kind === 'error'
-                  ? styles.state.errorText
-                  : styles.state.messageText
-              }
+              style={[
+                styles.state.messageText,
+                {textAlign},
+                messageStyle,
+              ]}
             >
               {entry.label}
             </Text>
@@ -130,9 +187,6 @@ const StateStore = ({
     resolveStateMessage(saving, savingText)
       ? {kind: 'saving', label: resolveStateMessage(saving, savingText)}
       : null,
-    resolveStateMessage(error, errorText)
-      ? {kind: 'error', label: resolveStateMessage(error, errorText)}
-      : null,
   ].filter(Boolean);
 
   const entries = [...storeEntries, ...runtimeEntries];
@@ -143,11 +197,65 @@ const StateStore = ({
 
   return (
     <View style={[containerBaseStyle, containerStyle]}>
-      <View style={[contentBaseStyle, contentStyle]}>
+      <View style={[contentBaseStyle, {alignItems}, contentStyle]}>
+        {(showSpinner || title || subtitle) ? (
+          <View
+            style={{
+              alignItems: alignItems === 'flex-start' ? 'flex-start' : 'center',
+              flexDirection: 'row',
+              gap: 10,
+              justifyContent: alignItems === 'flex-start' ? 'flex-start' : 'center',
+              marginBottom: 12,
+              width: '100%',
+            }}
+          >
+            {showSpinner ? (
+              <ActivityIndicator size={spinnerSize} color={spinnerColor} />
+            ) : null}
+            {(title || subtitle) ? (
+              <View style={{flex: 1, gap: 2}}>
+                {title ? (
+                  <Text
+                    style={[
+                      {
+                        color: '#0F172A',
+                        fontSize: 14,
+                        fontWeight: '800',
+                        textAlign,
+                      },
+                      titleStyle,
+                    ]}
+                  >
+                    {title}
+                  </Text>
+                ) : null}
+                {subtitle ? (
+                  <Text
+                    style={[
+                      {
+                        color: '#64748B',
+                        fontSize: 12,
+                        lineHeight: 16,
+                        textAlign,
+                      },
+                      subtitleStyle,
+                    ]}
+                  >
+                    {subtitle}
+                  </Text>
+                ) : null}
+              </View>
+            ) : null}
+          </View>
+        ) : null}
         {entries.map(entry => (
           <Text
             key={`${entry.kind}-${entry.label}`}
-            style={entry.kind === 'error' ? styles.state.errorText : styles.state.messageText}
+            style={[
+              styles.state.messageText,
+              {textAlign},
+              messageStyle,
+            ]}
           >
             {entry.label}
           </Text>
