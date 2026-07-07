@@ -28,8 +28,15 @@ const AppMenuGrid = ({
   const {width} = useWindowDimensions();
   const themeStore = useStore('theme');
   const peopleStore = useStore('people');
+  const translateStore = useStore('translate');
   const {colors = {}} = themeStore.getters;
   const {currentCompany = {}} = peopleStore.getters;
+  const translateMessages = translateStore?.getters?.messages || {};
+  const pendingTranslateMessages = translateStore?.getters?.pendingMessages || {};
+  const translate = useMemo(
+    () => global.t?.t,
+    [translateMessages, pendingTranslateMessages],
+  );
   const modules = useMemo(
     () => filterRuntimeMenuModulesByType(menus, menuType),
     [menuType, menus],
@@ -90,7 +97,7 @@ const AppMenuGrid = ({
               />
             </View>
             <Text style={styles.sectionTitle}>
-              {global.t?.t('menu', 'menu', module.label) || module.label}
+              {translate?.('menu', 'menu', module.label) || module.label}
             </Text>
           </View>
 
@@ -121,7 +128,7 @@ const AppMenuGrid = ({
                     />
                   </View>
                   <Text numberOfLines={2} style={styles.cardLabel}>
-                    {resolveRuntimeMenuLabel(item, global.t?.t)}
+                    {resolveRuntimeMenuLabel(item, translate)}
                   </Text>
                 </View>
               </TouchableOpacity>
