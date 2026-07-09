@@ -8,6 +8,11 @@ const styles = StyleSheet.create({
     minWidth: 0,
     backgroundColor: '#f8f9fa',
   },
+  adminToolsContainer: {
+    alignItems: 'flex-end',
+    paddingHorizontal: 16,
+    paddingTop: 10,
+  },
   content: {
     flex: 1,
     minHeight: 0,

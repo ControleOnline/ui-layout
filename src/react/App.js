@@ -33,7 +33,7 @@ import TouchFeedbackProvider from '@controleonline/ui-common/src/react/component
 import { VideoView, useVideoPlayer } from 'expo-video'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { toast, Toasts } from '@backpackapp-io/react-native-toast'
-import { env } from '@env'
+import {app_type} from '@appType'
 
 import {
   inlineStyle_123_28,
@@ -61,7 +61,7 @@ export default function App() {
   const [videoEnded, setVideoEnded] = useState(!MOSTRAR_VIDEO)
   const navigationRef = useRef(null)
   const shouldShowSplash = !bootstrapReady || !videoEnded
-  const appType = String(env.APP_TYPE || '').toUpperCase()
+  const appType = app_type
   const shouldLockWebViewportToApp =
     Platform.OS === 'web' && appType === 'SHOP'
 

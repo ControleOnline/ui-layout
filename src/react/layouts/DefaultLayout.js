@@ -5,6 +5,7 @@ import {useStore} from '@store';
 
 import BottomCart from '@controleonline/ui-orders/src/react/components/cart/BottomCart';
 import CompanyFilter from '@controleonline/ui-manager/src/react/components/CompanyFilter';
+import AppTypeSwitcher from '@controleonline/ui-common/src/react/components/AppTypeSwitcher';
 import RuntimeBottomNavigationBar from '@controleonline/ui-common/src/react/components/RuntimeBottomNavigationBar';
 import ShopBottomCart from '@controleonline/ui-shop/src/react/components/storefront/ShopBottomCart';
 import PosKioskBarcodeListener from '@controleonline/ui-orders/src/react/components/PosKioskBarcodeListener';
@@ -24,8 +25,7 @@ import {
 } from '@controleonline/ui-logistic/src/react/utils/deliveryAcceptanceQueue';
 import {resolveCurrentPeopleIri} from '@controleonline/ui-logistic/src/react/utils/deliveryIdentity';
 import {getBottomNavigationBaseHeight} from '@controleonline/ui-layout/src/react/utils/posBottomNavigation';
-
-import { env } from '@env';
+import {app_type, app_type_base} from '@appType';
 import styles from './DefaultLayout.styles';
 
 const resolveBooleanOverride = value => {
@@ -68,7 +68,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const deviceConfigStore = useStore('device_config');
   const {item: device} = deviceConfigStore.getters;
   const currentUser = authStore?.getters?.user || null;
-  const appType = String(env.APP_TYPE || '').toUpperCase();
+  const appType = app_type;
   const isShopApp = appType === 'SHOP';
   const isPosApp = appType === 'POS';
   const isDeliveryApp = appType === 'DELIVERY';
@@ -248,6 +248,9 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
 
   const bottomInsetCompensation = bottomChromeOffset;
   const cartBottomOffset = bottomChromeOffset;
+  const showAdminAppTypeSwitcher =
+    Platform.OS === 'web' &&
+    app_type_base === 'ADMIN';
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -495,6 +498,11 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
           navigation={navigation}
           mode={options?.companyFilterMode}
         />
+      )}
+      {showAdminAppTypeSwitcher && (
+        <View style={styles.adminToolsContainer}>
+          <AppTypeSwitcher />
+        </View>
       )}
       <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>
         {children}
