@@ -144,6 +144,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     <RuntimeBottomNavigationBar
       navigation={navigation}
       menuType="toolbar"
+      disableMenuFetch={isHrRoute}
       presetKey={presetKey}
       itemMapper={itemMapper}
       useModernWebChromeProps={useModernWebChromeProps}
