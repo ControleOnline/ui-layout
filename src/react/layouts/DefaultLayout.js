@@ -72,7 +72,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const isShopApp = appType === 'SHOP';
   const isPosApp = appType === 'POS';
   const isDeliveryApp = appType === 'DELIVERY';
-  const isDeliveryWorkflowApp = isDeliveryApp || appType === 'MANAGER';
   const currentPeopleIri = useMemo(
     () => resolveCurrentPeopleIri(currentUser),
     [currentUser],
@@ -107,6 +106,10 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const currentRouteParams =
     route?.params || navigationState?.routes?.[navigationState?.index]?.params || {};
   const currentRouteOrderId = normalizeDeliveryOrderId(currentRouteParams?.id);
+  const normalizedCurrentRouteName = String(currentRouteName || '').trim();
+  const isHrRoute = normalizedCurrentRouteName.startsWith('Rh');
+  const isDeliveryWorkflowApp =
+    (isDeliveryApp || appType === 'MANAGER') && !isHrRoute;
   const shouldUseOwnedBottomCart =
     OWNED_BOTTOM_CART_ROUTE_NAMES.has(currentRouteName);
   const shouldHideBottomToolBar = !!currentRouteParams?.hideBottomToolBar;
