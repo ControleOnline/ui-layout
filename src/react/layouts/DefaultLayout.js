@@ -143,6 +143,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       menuType="toolbar"
       presetKey={presetKey}
       itemMapper={itemMapper}
+      useModernWebChromeProps={useModernWebChromeProps}
     />
   );
   const effectiveShowBottomToolBar =
@@ -251,6 +252,8 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const showAdminAppTypeSwitcher =
     Platform.OS === 'web' &&
     app_type_base === 'ADMIN';
+  const useModernWebChromeProps =
+    Platform.OS === 'web' && showBottomCartOverride === false;
 
   useLayoutEffect(() => {
     navigation.setOptions({
