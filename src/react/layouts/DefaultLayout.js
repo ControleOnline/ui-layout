@@ -106,10 +106,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const currentRouteParams =
     route?.params || navigationState?.routes?.[navigationState?.index]?.params || {};
   const currentRouteOrderId = normalizeDeliveryOrderId(currentRouteParams?.id);
-  const normalizedCurrentRouteName = String(currentRouteName || '').trim();
-  const isHrRoute = normalizedCurrentRouteName.startsWith('Rh');
-  const isDeliveryWorkflowApp =
-    (isDeliveryApp || appType === 'MANAGER') && !isHrRoute;
+  const isDeliveryWorkflowApp = isDeliveryApp;
   const shouldUseOwnedBottomCart =
     OWNED_BOTTOM_CART_ROUTE_NAMES.has(currentRouteName);
   const shouldHideBottomToolBar = !!currentRouteParams?.hideBottomToolBar;
@@ -144,7 +141,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     <RuntimeBottomNavigationBar
       navigation={navigation}
       menuType="toolbar"
-      disableMenuFetch={isHrRoute}
       presetKey={presetKey}
       itemMapper={itemMapper}
       useModernWebChromeProps={useModernWebChromeProps}
