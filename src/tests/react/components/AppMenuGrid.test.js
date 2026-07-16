@@ -10,7 +10,7 @@ const appMenuGridSource = fs.readFileSync(
 describe('AppMenuGrid', () => {
   it('keeps the runtime menu label fallback in the rendered card text', () => {
     expect(appMenuGridSource).toContain(
-      "global.t?.t('menu', 'menu', item.menuKey) || item.label || item.menuKey",
+      "resolveRuntimeMenuLabel(item, translate)",
     );
   });
 });
