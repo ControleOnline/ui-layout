@@ -27,10 +27,10 @@ export default function createStyles({colors = {}, width = 1024}) {
     foreground: actionText,
   };
   palette.segmentTones = [
-    {background: actionText, foreground: actionBackground},
-    {background: actionText, foreground: actionBackground},
-    {background: actionText, foreground: actionBackground},
-    {background: actionText, foreground: actionBackground},
+    {background: withAlpha(actionText, 'B3'), foreground: actionBackground},
+    {background: withAlpha(actionText, 'B3'), foreground: actionBackground},
+    {background: withAlpha(actionText, 'B3'), foreground: actionBackground},
+    {background: withAlpha(actionText, 'B3'), foreground: actionBackground},
   ];
 
   const isCompact = width < 700;
