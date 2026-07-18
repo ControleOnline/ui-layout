@@ -19,6 +19,7 @@ const resolveIconColor = (color, fallback) => {
 };
 
 const AppMenuGrid = ({
+  colorTokens = {},
   emptyMessage = 'Nenhum menu disponivel.',
   menus,
   navigation,
@@ -48,10 +49,11 @@ const AppMenuGrid = ({
         colors: {
           ...colors,
           ...(currentCompany?.theme?.colors || {}),
+          ...colorTokens,
         },
         width,
       }),
-    [colors, currentCompany?.id, width],
+    [colorTokens, colors, currentCompany?.id, width],
   );
 
   const handlePress = item => {
@@ -86,56 +88,71 @@ const AppMenuGrid = ({
 
   return (
     <View style={styles.wrapper}>
-      {modules.map(module => (
-        <View key={module.id || module.label} style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionIcon}>
-              <Icon
-                name={module.icon || 'grid'}
-                size={15}
-                color={styles.palette.primary}
-              />
-            </View>
-            <Text style={styles.sectionTitle}>
-              {translate?.('menu', 'menu', module.label) || module.label}
-            </Text>
-          </View>
+      {modules.map((module, moduleIndex) => {
+        const fallbackColor = resolveIconColor(
+          module.color,
+          styles.palette.primary,
+        );
+        const themeTone = styles.palette.segmentTones[
+          moduleIndex % styles.palette.segmentTones.length
+        ];
+        const segmentTone = styles.palette.hasCompanySegmentTheme
+          ? themeTone
+          : {
+              background: withAlpha(fallbackColor, '1F'),
+              foreground: fallbackColor,
+            };
 
-          <View style={styles.grid}>
-            {module.menus.map(item => (
-              <TouchableOpacity
-                key={item.id || item.menuKey || item.route}
-                activeOpacity={0.82}
-                style={styles.cardOuter}
-                onPress={() => handlePress(item)}
-              >
-                <View style={styles.card}>
-                  <View
-                    style={[
-                      styles.cardIcon,
-                      {
-                        backgroundColor: withAlpha(
-                          resolveIconColor(item.color, styles.palette.primary),
-                          '1F',
-                        ),
-                      },
-                    ]}
-                  >
-                    <Icon
-                      name={item.icon || 'circle'}
-                      size={20}
-                      color={resolveIconColor(item.color, styles.palette.primary)}
-                    />
+        return (
+          <View key={module.id || module.label} style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <View
+                style={[
+                  styles.sectionIcon,
+                  {backgroundColor: styles.palette.sectionTone.background},
+                ]}>
+                <Icon
+                  name={module.icon || 'grid'}
+                  size={15}
+                  color={styles.palette.sectionTone.foreground}
+                />
+              </View>
+              <Text style={styles.sectionTitle}>
+                {translate?.('menu', 'menu', module.label) || module.label}
+              </Text>
+            </View>
+
+            <View style={styles.grid}>
+              {module.menus.map(item => (
+                <TouchableOpacity
+                  key={item.id || item.menuKey || item.route}
+                  activeOpacity={0.82}
+                  style={styles.cardOuter}
+                  onPress={() => handlePress(item)}
+                >
+                  <View style={styles.card}>
+                    <View
+                      style={[
+                        styles.cardIcon,
+                        {backgroundColor: segmentTone.background},
+                      ]}
+                    >
+                      <Icon
+                        name={item.icon || 'circle'}
+                        size={20}
+                        color={segmentTone.foreground}
+                      />
+                    </View>
+                    <Text numberOfLines={2} style={styles.cardLabel}>
+                      {resolveRuntimeMenuLabel(item, translate)}
+                    </Text>
                   </View>
-                  <Text numberOfLines={2} style={styles.cardLabel}>
-                    {resolveRuntimeMenuLabel(item, translate)}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 };

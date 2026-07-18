@@ -9,12 +9,29 @@ export const withAlpha = (color, alphaHex) => {
 export default function createStyles({colors = {}, width = 1024}) {
   const palette = {
     primary: colors.primary || '#2563EB',
-    surface: colors.surface || colors.background || '#FFFFFF',
-    background: colors.background || '#F8FAFC',
-    border: colors.border || '#D8E0EA',
-    text: colors.text || '#0F172A',
+    surface: colors.cardBackground || colors.surface || colors.background || '#FFFFFF',
+    background: colors.pageBackground || colors.background || '#F8FAFC',
+    border: colors.cardBorder || colors.border || '#D8E0EA',
+    text: colors.textPrimary || colors.text || '#0F172A',
     muted: colors['text-muted'] || '#64748B',
   };
+  const hasCompanySegmentTheme = Boolean(
+    colors.buttonBackground && colors.buttonText,
+  );
+  const actionBackground = colors.buttonBackground || palette.primary;
+  const actionText = colors.buttonText || palette.surface;
+
+  palette.hasCompanySegmentTheme = hasCompanySegmentTheme;
+  palette.sectionTone = {
+    background: actionBackground,
+    foreground: actionText,
+  };
+  palette.segmentTones = [
+    {background: actionText, foreground: actionBackground},
+    {background: actionText, foreground: actionBackground},
+    {background: actionText, foreground: actionBackground},
+    {background: actionText, foreground: actionBackground},
+  ];
 
   const isCompact = width < 700;
   const gap = isCompact ? 10 : 12;
@@ -71,7 +88,7 @@ export default function createStyles({colors = {}, width = 1024}) {
         justifyContent: 'flex-start',
         minHeight: 80,
         padding: 12,
-        shadowColor: '#0F172A',
+        shadowColor: palette.text,
         shadowOffset: {height: 1, width: 0},
         shadowOpacity: 0.06,
         shadowRadius: 4,
