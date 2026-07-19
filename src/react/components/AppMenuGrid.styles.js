@@ -1,37 +1,27 @@
 import {StyleSheet} from 'react-native';
 
-export const withAlpha = (color, alphaHex) => {
-  const raw = String(color || '').replace('#', '').trim();
-  if (/^[0-9a-fA-F]{6}$/.test(raw)) return `#${raw}${alphaHex}`;
-  return color || '#2563EB';
-};
-
 export default function createStyles({colors = {}, width = 1024}) {
   const palette = {
-    primary: colors.primary || '#2563EB',
-    surface: colors.cardBackground || colors.surface || colors.background || '#FFFFFF',
-    background: colors.pageBackground || colors.background || '#F8FAFC',
-    border: colors.cardBorder || colors.border || '#D8E0EA',
-    text: colors.textPrimary || colors.text || '#0F172A',
-    muted: colors['text-muted'] || '#64748B',
+    primary: colors.primary,
+    surface: colors.cardBackground,
+    background: colors.pageBackground,
+    border: colors.cardBorder,
+    text: colors.textPrimary,
+    muted: colors.textMuted,
   };
-  const hasCompanySegmentTheme = Boolean(
-    colors.buttonBackground && colors.buttonText,
-  );
-  const actionBackground = colors.buttonBackground || palette.primary;
-  const actionText = colors.buttonText || palette.surface;
+  const cardIconBackground = colors.cardIconBackground;
+  const cardIconColor = colors.cardIconColor;
+  const iconBackground = colors.iconBackground;
+  const iconColor = colors.iconColor;
 
-  palette.hasCompanySegmentTheme = hasCompanySegmentTheme;
   palette.sectionTone = {
-    background: actionBackground,
-    foreground: actionText,
+    background: iconBackground,
+    foreground: iconColor,
   };
-  palette.segmentTones = [
-    {background: withAlpha(actionText, 'B3'), foreground: actionBackground},
-    {background: withAlpha(actionText, 'B3'), foreground: actionBackground},
-    {background: withAlpha(actionText, 'B3'), foreground: actionBackground},
-    {background: withAlpha(actionText, 'B3'), foreground: actionBackground},
-  ];
+  palette.segmentTone = {
+    background: cardIconBackground,
+    foreground: cardIconColor,
+  };
 
   const isCompact = width < 700;
   const gap = isCompact ? 10 : 12;
@@ -54,7 +44,7 @@ export default function createStyles({colors = {}, width = 1024}) {
       },
       sectionIcon: {
         alignItems: 'center',
-        backgroundColor: withAlpha(palette.primary, '14'),
+        backgroundColor: palette.sectionTone.background,
         borderRadius: 6,
         height: 28,
         justifyContent: 'center',

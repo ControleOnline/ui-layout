@@ -10,13 +10,7 @@ import {
   resolveMenuRouteName,
   resolveMenuRouteParams,
 } from '@controleonline/ui-layout/src/react/utils/menuNavigation';
-import createStyles, {withAlpha} from './AppMenuGrid.styles';
-
-const resolveIconColor = (color, fallback) => {
-  const tokenColor = String(color || '').trim();
-  if (/^#[0-9a-f]{6}$/i.test(tokenColor)) return tokenColor;
-  return fallback;
-};
+import createStyles from './AppMenuGrid.styles';
 
 const AppMenuGrid = ({
   colorTokens = {},
@@ -88,21 +82,7 @@ const AppMenuGrid = ({
 
   return (
     <View style={styles.wrapper}>
-      {modules.map((module, moduleIndex) => {
-        const fallbackColor = resolveIconColor(
-          module.color,
-          styles.palette.primary,
-        );
-        const themeTone = styles.palette.segmentTones[
-          moduleIndex % styles.palette.segmentTones.length
-        ];
-        const segmentTone = styles.palette.hasCompanySegmentTheme
-          ? themeTone
-          : {
-              background: withAlpha(fallbackColor, '1F'),
-              foreground: fallbackColor,
-            };
-
+      {modules.map(module => {
         return (
           <View key={module.id || module.label} style={styles.section}>
             <View style={styles.sectionHeader}>
@@ -134,13 +114,13 @@ const AppMenuGrid = ({
                     <View
                       style={[
                         styles.cardIcon,
-                        {backgroundColor: segmentTone.background},
+                        {backgroundColor: styles.palette.segmentTone.background},
                       ]}
                     >
                       <Icon
                         name={item.icon || 'circle'}
                         size={20}
-                        color={segmentTone.foreground}
+                        color={styles.palette.segmentTone.foreground}
                       />
                     </View>
                     <Text numberOfLines={2} style={styles.cardLabel}>
