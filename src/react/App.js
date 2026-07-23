@@ -58,6 +58,7 @@ if (MOSTRAR_VIDEO) {
 export default function App() {
   const [navigationReady, setNavigationReady] = useState(false)
   const [bootstrapReady, setBootstrapReady] = useState(false)
+  const [currentRouteName, setCurrentRouteName] = useState('')
   const [videoEnded, setVideoEnded] = useState(!MOSTRAR_VIDEO)
   const navigationRef = useRef(null)
   const shouldShowSplash = !bootstrapReady || !videoEnded
@@ -145,10 +146,14 @@ export default function App() {
   }, [shouldLockWebViewportToApp])
 
   const syncRuntimeRouteName = useCallback(() => {
-    const currentRouteName =
+    const nextRouteName =
       navigationRef.current?.getCurrentRoute?.()?.name || ''
 
-    global.setRuntimeRouteName?.(currentRouteName)
+    setCurrentRouteName(previousRouteName =>
+      previousRouteName === nextRouteName
+        ? previousRouteName
+        : nextRouteName
+    )
   }, [])
 
   const handleNotificationNavigation = useCallback((routeName, params = {}) => {
@@ -181,7 +186,10 @@ export default function App() {
       <PaperProvider>
         <TouchFeedbackProvider>
           <MessageProvider>
-            <DefaultProvider onBootstrapReady={() => setBootstrapReady(true)}>
+            <DefaultProvider
+              currentRouteName={currentRouteName}
+              onBootstrapReady={() => setBootstrapReady(true)}
+            >
               <NavigationContainer
                 ref={navigationRef}
                 linking={linking}
