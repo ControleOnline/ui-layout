@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import { Image, Platform, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useStore} from '@store';
@@ -126,13 +126,13 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     [currentCompany],
   );
   const shouldRenderDesktopCompanyLogo = isDesktopWeb && !!companyLogoSource;
-  const goToHome = () => {
+  const goToHome = useCallback(() => {
     if (currentRouteName === 'HomePage') {
       return;
     }
 
     navigation?.navigate?.('HomePage');
-  };
+  }, [currentRouteName, navigation]);
   const shouldForcePosToolbar =
     isPosApp &&
     !isTotemMode &&
@@ -278,6 +278,25 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerBackground: shouldRenderDesktopCompanyLogo
+        ? () => (
+          <View style={styles.headerCompanyLogoLayer} pointerEvents="box-none">
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={currentCompany?.alias || currentCompany?.name || 'HomePage'}
+              activeOpacity={0.82}
+              style={styles.headerCompanyLogoButton}
+              onPress={goToHome}
+            >
+              <Image
+                source={companyLogoSource}
+                style={styles.headerCompanyLogo}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
+        )
+        : undefined,
       headerRightContainerStyle: showHeaderCompanyFilter
         ? styles.headerRightContainer
         : undefined,
@@ -290,7 +309,16 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
         )
         : undefined,
     });
-  }, [navigation, options?.companyFilterMode, showHeaderCompanyFilter]);
+  }, [
+    companyLogoSource,
+    currentCompany?.alias,
+    currentCompany?.name,
+    goToHome,
+    navigation,
+    options?.companyFilterMode,
+    shouldRenderDesktopCompanyLogo,
+    showHeaderCompanyFilter,
+  ]);
 
   useEffect(() => {
     if (
@@ -526,23 +554,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       {showAdminAppTypeSwitcher && (
         <View style={styles.adminToolsContainer}>
           <AppTypeSwitcher />
-        </View>
-      )}
-      {shouldRenderDesktopCompanyLogo && (
-        <View style={styles.desktopCompanyLogoBar}>
-          <TouchableOpacity
-            accessibilityRole="button"
-            accessibilityLabel={currentCompany?.alias || currentCompany?.name || 'HomePage'}
-            activeOpacity={0.82}
-            style={styles.desktopCompanyLogoButton}
-            onPress={goToHome}
-          >
-            <Image
-              source={companyLogoSource}
-              style={styles.desktopCompanyLogo}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
         </View>
       )}
       <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>

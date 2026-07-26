@@ -13,23 +13,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 10,
   },
-  desktopCompanyLogoBar: {
-    width: '100%',
-    minHeight: 56,
+  headerCompanyLogoLayer: {
+    ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
   },
-  desktopCompanyLogoButton: {
+  headerCompanyLogoButton: {
     minWidth: 96,
     minHeight: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  desktopCompanyLogo: {
-    width: 160,
-    height: 44,
+  headerCompanyLogo: {
+    width: 132,
+    height: 36,
   },
   content: {
     flex: 1,
