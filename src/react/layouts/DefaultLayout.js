@@ -1,5 +1,5 @@
 import React, {useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
-import { Platform, View } from 'react-native';
+import { Image, Platform, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useStore} from '@store';
 
@@ -25,6 +25,7 @@ import {
 } from '@controleonline/ui-logistic/src/react/utils/deliveryAcceptanceQueue';
 import {resolveCurrentPeopleIri} from '@controleonline/ui-logistic/src/react/utils/deliveryIdentity';
 import {getBottomNavigationBaseHeight} from '@controleonline/ui-layout/src/react/utils/posBottomNavigation';
+import {resolveDefaultFileSource} from '@controleonline/ui-common/src/react/utils/fileUrl';
 import {app_type, app_type_base} from '@appType';
 import styles from './DefaultLayout.styles';
 
@@ -62,11 +63,14 @@ const OWNED_BOTTOM_CART_ROUTE_NAMES = new Set([
 
 const DefaultLayout = ({ children, navigation, route, options }) => {
   const insets = useSafeAreaInsets();
+  const {width} = useWindowDimensions();
   const authStore = useStore('auth');
+  const peopleStore = useStore('people');
   const deliveryOrdersStore = useStore('delivery_orders');
   const websocketStore = useStore('websocket');
   const deviceConfigStore = useStore('device_config');
   const {item: device} = deviceConfigStore.getters;
+  const currentCompany = peopleStore?.getters?.currentCompany || null;
   const currentUser = authStore?.getters?.user || null;
   const appType = app_type;
   const isShopApp = appType === 'SHOP';
@@ -113,6 +117,22 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const showBottomToolBarOverride = resolveBooleanOverride(
     currentRouteParams?.showBottomToolBar,
   );
+  const isDesktopWeb = Platform.OS === 'web' && width >= 768;
+  const companyLogoSource = useMemo(
+    () =>
+      resolveDefaultFileSource(currentCompany?.logo || currentCompany?.icon, {
+        company: currentCompany,
+      }),
+    [currentCompany],
+  );
+  const shouldRenderDesktopCompanyLogo = isDesktopWeb && !!companyLogoSource;
+  const goToHome = () => {
+    if (currentRouteName === 'HomePage') {
+      return;
+    }
+
+    navigation?.navigate?.('HomePage');
+  };
   const shouldForcePosToolbar =
     isPosApp &&
     !isTotemMode &&
@@ -198,6 +218,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     );
   const shouldHidePosToolbar = isPosApp && isTotemMode;
   const shouldRenderBottomToolBar =
+    !isDesktopWeb &&
     effectiveShowBottomToolBar &&
     (
       appType === 'CRM' ||
@@ -505,6 +526,23 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       {showAdminAppTypeSwitcher && (
         <View style={styles.adminToolsContainer}>
           <AppTypeSwitcher />
+        </View>
+      )}
+      {shouldRenderDesktopCompanyLogo && (
+        <View style={styles.desktopCompanyLogoBar}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel={currentCompany?.alias || currentCompany?.name || 'HomePage'}
+            activeOpacity={0.82}
+            style={styles.desktopCompanyLogoButton}
+            onPress={goToHome}
+          >
+            <Image
+              source={companyLogoSource}
+              style={styles.desktopCompanyLogo}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
         </View>
       )}
       <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>
