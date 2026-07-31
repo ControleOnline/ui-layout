@@ -694,6 +694,41 @@ const styles = StyleSheet.create({
     color: '#777777',
   },
   formField: { gap: 8 },
+  jsonEditorField: {
+    flex: 1,
+    minHeight: 260,
+    gap: 8,
+  },
+  jsonQuickActions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  jsonEditorInput: {
+    flex: 1,
+    minHeight: 260,
+    maxHeight: 420,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    backgroundColor: '#FFFFFF',
+    fontFamily: Platform.select({
+      ios: 'Menlo',
+      android: 'monospace',
+      web: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+      default: undefined,
+    }),
+    ...Platform.select({
+      web: {
+        outlineWidth: 0,
+      },
+    }),
+  },
   formLabel: {
     fontSize: 12,
     fontWeight: '800',

@@ -997,6 +997,24 @@ const buildThemePayload = ({
   ...buildThemeMediaPayload(themeItem, mediaOverrides),
 });
 
+const buildThemeJsonEditorContent = ({
+  themeItem = null,
+  themeName = '',
+  background = null,
+  colors = {},
+  mediaOverrides = {},
+}) => {
+  const payload = buildThemePayload({
+    themeItem,
+    themeName,
+    background,
+    colors,
+    mediaOverrides,
+  });
+
+  return JSON.stringify(payload, null, 2);
+};
+
 const buildThemeColumns = themeColors => {
   const rawEntries = Object.entries(normalizeThemeColors(themeColors))
     .map(([key, value]) => [key, typeof value === 'string' ? value.trim() : value])
@@ -3313,6 +3331,8 @@ export default function ThemeManagerPage() {
   const [objectEditorVisible, setObjectEditorVisible] = useState(false);
   const [themeEditorVisible, setThemeEditorVisible] = useState(false);
   const [duplicateEditorVisible, setDuplicateEditorVisible] = useState(false);
+  const [themeJsonValue, setThemeJsonValue] = useState('');
+  const [themeJsonEdited, setThemeJsonEdited] = useState(false);
   const [editingTheme, setEditingTheme] = useState(null);
   const [editingFieldKey, setEditingFieldKey] = useState(null);
   const [duplicateSourceTheme, setDuplicateSourceTheme] = useState(null);
@@ -3410,6 +3430,19 @@ export default function ThemeManagerPage() {
     }
   }, [activeThemeEditorColor, selectedThemeEditorColor, themeEditorVisible]);
 
+  useEffect(() => {
+    if (!themeEditorVisible || themeJsonEdited) return;
+
+    const nextThemeJson = buildThemeJsonEditorContent({
+      themeItem: editingTheme,
+      themeName: String(themeName || '').trim(),
+      background: editingTheme?.background,
+      colors: themeDraft,
+    });
+
+    setThemeJsonValue(nextThemeJson);
+  }, [editingTheme, themeDraft, themeEditorVisible, themeJsonEdited, themeName]);
+
   const refreshCurrentThemeIfNeeded = useCallback(async () => {
     if (!currentCompany?.id || String(currentCompany.id) !== String(defaultCompany?.id)) {
       return;
@@ -3464,18 +3497,33 @@ export default function ThemeManagerPage() {
     setDuplicateEditorVisible(false);
     setThemeName('');
     setThemeDraft(nextDraft);
+    setThemeJsonEdited(false);
+    setThemeJsonValue(buildThemeJsonEditorContent({
+      themeItem: null,
+      themeName: '',
+      background: null,
+      colors: nextDraft,
+    }));
     setSelectedThemeEditorColor(buildThemeEditorPaletteColors(nextDraft)[0]?.value || '');
   }, [palette]);
 
   const openEditTheme = useCallback(themeItem => {
     const nextDraft = buildEditableDraft(themeItem?.colors || {}, palette);
-    setEditingTheme(normalizeThemeEntity(themeItem));
+    const normalizedTheme = normalizeThemeEntity(themeItem);
+    setEditingTheme(normalizedTheme);
     setEditingFieldKey(null);
     setObjectEditorVisible(false);
     setThemeEditorVisible(true);
     setDuplicateEditorVisible(false);
     setThemeName(String(themeItem?.theme || '').trim());
     setThemeDraft(nextDraft);
+    setThemeJsonEdited(false);
+    setThemeJsonValue(buildThemeJsonEditorContent({
+      themeItem: normalizedTheme,
+      themeName: String(themeItem?.theme || '').trim(),
+      background: normalizedTheme?.background,
+      colors: nextDraft,
+    }));
     setSelectedThemeEditorColor(buildThemeEditorPaletteColors(nextDraft)[0]?.value || '');
   }, [palette]);
 
@@ -3499,6 +3547,8 @@ export default function ThemeManagerPage() {
     setThemeEditorVisible(false);
     setObjectEditorVisible(true);
     setThemeName(String(themeItem?.theme || '').trim());
+    setThemeJsonEdited(false);
+    setThemeJsonValue('');
     setThemeDraft({
       ...buildEditableDraft(themeItem?.colors || {}, palette),
       [fieldKey]: themeItem?.colors?.[fieldKey] || '',
@@ -3509,6 +3559,8 @@ export default function ThemeManagerPage() {
     setObjectEditorVisible(false);
     setThemeEditorVisible(false);
     setEditingFieldKey(null);
+    setThemeJsonEdited(false);
+    setThemeJsonValue('');
     setSelectedThemeEditorColor('');
   }, []);
   const closeDuplicateEditor = useCallback(() => {
@@ -3519,7 +3571,6 @@ export default function ThemeManagerPage() {
     setDuplicateTargetThemeId('');
     setDuplicateTargetDropdownOpen(false);
   }, []);
-
   const registerNewEntryLayout = useCallback((themeId, itemKey, layoutY) => {
     newEntryLayouts.current[`${themeId}:${itemKey}`] = layoutY;
   }, []);
@@ -4006,29 +4057,86 @@ export default function ThemeManagerPage() {
       return;
     }
 
-    const invalidField = editorFields.find(field => {
-      const fieldValue = themeDraft[field.key];
-      if (fieldValue == null) return false;
+    const shouldUseThemeJson = themeEditorVisible && themeJsonEdited;
+    let payload = null;
 
-      const normalizedValue = typeof fieldValue === 'string' ? fieldValue.trim() : fieldValue;
-      if (normalizedValue === '') return false;
+    if (shouldUseThemeJson) {
+      const rawInput = String(themeJsonValue || '').trim();
+      if (!rawInput) {
+        showError('Informe o JSON completo antes de salvar.');
+        return;
+      }
 
-      return !normalizeHex(normalizedValue) && !isTransparentColor(normalizedValue);
-    });
-    if (invalidField) {
-      showError(`A cor "${invalidField.label}" precisa estar em HEX, por exemplo #0EA5E9, ou usar "transparent".`);
-      return;
-    }
+      let parsedJson;
+      try {
+        parsedJson = JSON.parse(rawInput);
+      } catch (error) {
+        showError('JSON invalido. Revise a formatacao.');
+        return;
+      }
 
-    setIsSaving(true);
-    try {
-      const payload = buildThemePayload({
+      if (!parsedJson || typeof parsedJson !== 'object' || Array.isArray(parsedJson)) {
+        showError('O JSON precisa ser um objeto.');
+        return;
+      }
+
+      const parsedColors = (
+        parsedJson.colors
+        && typeof parsedJson.colors === 'object'
+        && !Array.isArray(parsedJson.colors)
+      )
+        ? parsedJson.colors
+        : parsedJson;
+
+      const payloadThemeName = String(parsedJson?.theme || normalizedName).trim();
+      if (!payloadThemeName) {
+        showError('Informe um nome para o tema no JSON.');
+        return;
+      }
+
+      const payloadBackground = Object.prototype.hasOwnProperty.call(parsedJson, 'background')
+        ? parsedJson.background
+        : editingTheme?.background;
+      const payloadMediaOverrides = THEME_MEDIA_FIELDS.reduce((accumulator, field) => {
+        if (Object.prototype.hasOwnProperty.call(parsedJson, field.key)) {
+          accumulator[field.key] = parsedJson[field.key];
+        }
+
+        return accumulator;
+      }, {});
+
+      payload = buildThemePayload({
+        themeItem: editingTheme,
+        themeName: payloadThemeName,
+        background: payloadBackground,
+        colors: normalizeThemeColors(parsedColors),
+        mediaOverrides: payloadMediaOverrides,
+      });
+    } else {
+      const invalidField = editorFields.find(field => {
+        const fieldValue = themeDraft[field.key];
+        if (fieldValue == null) return false;
+
+        const normalizedValue = typeof fieldValue === 'string' ? fieldValue.trim() : fieldValue;
+        if (normalizedValue === '') return false;
+
+        return !normalizeHex(normalizedValue) && !isTransparentColor(normalizedValue);
+      });
+      if (invalidField) {
+        showError(`A cor "${invalidField.label}" precisa estar em HEX, por exemplo #0EA5E9, ou usar "transparent".`);
+        return;
+      }
+
+      payload = buildThemePayload({
         themeItem: editingTheme,
         themeName: normalizedName,
         background: editingTheme?.background,
         colors: themeDraft,
       });
+    }
 
+    setIsSaving(true);
+    try {
       if (editingTheme?.id) {
         const updatedThemeResponse = await api.fetch(getIri(editingTheme, 'themes'), {
           method: 'PUT',
@@ -4057,6 +4165,15 @@ export default function ThemeManagerPage() {
             : item
         )));
         setEditingTheme(nextTheme);
+        setThemeName(String(nextTheme?.theme || '').trim());
+        setThemeDraft(buildEditableDraft(nextTheme?.colors || {}, palette));
+        setThemeJsonEdited(false);
+        setThemeJsonValue(buildThemeJsonEditorContent({
+          themeItem: nextTheme,
+          themeName: String(nextTheme?.theme || '').trim(),
+          background: nextTheme?.background,
+          colors: normalizeThemeColors(nextTheme?.colors || {}),
+        }));
 
         showSuccess('Tema atualizado.');
       } else {
@@ -4074,6 +4191,15 @@ export default function ThemeManagerPage() {
             nextTheme,
           ]));
           setEditingTheme(nextTheme);
+          setThemeName(String(nextTheme?.theme || '').trim());
+          setThemeDraft(buildEditableDraft(nextTheme?.colors || {}, palette));
+          setThemeJsonEdited(false);
+          setThemeJsonValue(buildThemeJsonEditorContent({
+            themeItem: nextTheme,
+            themeName: String(nextTheme?.theme || '').trim(),
+            background: nextTheme?.background,
+            colors: normalizeThemeColors(nextTheme?.colors || {}),
+          }));
         } else {
           const refreshedThemes = await loadData();
           const persistedTheme = [...refreshedThemes]
@@ -4094,7 +4220,20 @@ export default function ThemeManagerPage() {
     } finally {
       setIsSaving(false);
     }
-  }, [closeEditor, editingTheme, editorFields, loadData, refreshCurrentThemeIfNeeded, showError, showSuccess, themeDraft, themeName]);
+  }, [
+    editingTheme,
+    editorFields,
+    loadData,
+    palette,
+    refreshCurrentThemeIfNeeded,
+    showError,
+    showSuccess,
+    themeDraft,
+    themeEditorVisible,
+    themeJsonEdited,
+    themeJsonValue,
+    themeName,
+  ]);
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: palette.background }]} edges={['bottom']}>
@@ -4821,6 +4960,23 @@ export default function ThemeManagerPage() {
                       placeholder="Ex.: Verde institucional"
                       placeholderTextColor="#94A3B8"
                       style={styles.textInput}
+                    />
+                  </View>
+
+                  <View style={styles.formField}>
+                    <Text style={styles.formLabel}>JSON completo</Text>
+                    <TextInput
+                      value={themeJsonValue}
+                      onChangeText={value => {
+                        setThemeJsonEdited(true);
+                        setThemeJsonValue(value);
+                      }}
+                      multiline
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      spellCheck={false}
+                      textAlignVertical="top"
+                      style={styles.jsonEditorInput}
                     />
                   </View>
 
