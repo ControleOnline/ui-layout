@@ -8,6 +8,26 @@ const styles = StyleSheet.create({
     minWidth: 0,
     backgroundColor: '#f8f9fa',
   },
+  adminToolsContainer: {
+    alignItems: 'flex-end',
+    paddingHorizontal: 16,
+    paddingTop: 10,
+  },
+  headerCompanyLogoLayer: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerCompanyLogoButton: {
+    minWidth: 96,
+    minHeight: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerCompanyLogo: {
+    width: 132,
+    height: 36,
+  },
   content: {
     flex: 1,
     minHeight: 0,
@@ -16,9 +36,10 @@ const styles = StyleSheet.create({
   },
   headerRightContainer: {
     flex: 1,
+    minWidth: 0,
     marginLeft: 'auto',
     paddingRight: 16,
-    maxWidth: 240,
+    maxWidth: 360,
     alignItems: 'flex-end',
     justifyContent: 'center',
   },

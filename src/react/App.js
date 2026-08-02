@@ -1,4 +1,16 @@
-import React, { useState, useEffect } from 'react'
+/*
+ * Contract imported from AGENTS.md
+ * ## Escopo
+ * - Este arquivo e o bootstrap React do app.
+ * - Aqui ficam providers, navegacao e wiring global da interface.
+ *
+ * ## Estado
+ *
+ * ## Limites
+ * - Nao colocar regra de negocio de modulo neste arquivo.
+ * - Cada regra funcional deve viver no modulo dono da tela ou do fluxo.
+ */
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { StatusBar, View, Platform } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import Routes, { linking } from '@controleonline/../../src/routers'
@@ -7,6 +19,10 @@ import { DefaultProvider } from '@controleonline/ui-common/src/react/components/
 import CheckLogin from '@controleonline/ui-login/src/react/components/CheckLogin'
 import { PaperProvider } from 'react-native-paper'
 import { MessageProvider } from '@controleonline/ui-common/src/react/components/MessageService'
+import {
+  flushNotificationNavigationQueue,
+  setNotificationNavigationHandler,
+} from '@controleonline/ui-common/src/react/utils/notificationNavigation'
 
 import {
   TOAST_EXTRA_INSETS,
@@ -17,7 +33,7 @@ import TouchFeedbackProvider from '@controleonline/ui-common/src/react/component
 import { VideoView, useVideoPlayer } from 'expo-video'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { toast, Toasts } from '@backpackapp-io/react-native-toast'
-import { env } from '@env'
+import {app_type} from '@appType'
 
 import {
   inlineStyle_123_28,
@@ -42,9 +58,11 @@ if (MOSTRAR_VIDEO) {
 export default function App() {
   const [navigationReady, setNavigationReady] = useState(false)
   const [bootstrapReady, setBootstrapReady] = useState(false)
+  const [currentRouteName, setCurrentRouteName] = useState('')
   const [videoEnded, setVideoEnded] = useState(!MOSTRAR_VIDEO)
+  const navigationRef = useRef(null)
   const shouldShowSplash = !bootstrapReady || !videoEnded
-  const appType = String(env.APP_TYPE || '').toUpperCase()
+  const appType = app_type
   const shouldLockWebViewportToApp =
     Platform.OS === 'web' && appType === 'SHOP'
 
@@ -127,15 +145,59 @@ export default function App() {
     }
   }, [shouldLockWebViewportToApp])
 
+  const syncRuntimeRouteName = useCallback(() => {
+    const nextRouteName =
+      navigationRef.current?.getCurrentRoute?.()?.name || ''
+
+    setCurrentRouteName(previousRouteName =>
+      previousRouteName === nextRouteName
+        ? previousRouteName
+        : nextRouteName
+    )
+  }, [])
+
+  const handleNotificationNavigation = useCallback((routeName, params = {}) => {
+    if (!navigationReady || !navigationRef.current) {
+      return false
+    }
+
+    navigationRef.current.navigate(routeName, params)
+    return true
+  }, [navigationReady])
+
+  useEffect(() => {
+    const cleanup = setNotificationNavigationHandler(handleNotificationNavigation)
+
+    return () => {
+      cleanup?.()
+    }
+  }, [handleNotificationNavigation])
+
+  useEffect(() => {
+    if (!navigationReady) {
+      return
+    }
+
+    flushNotificationNavigationQueue()
+  }, [navigationReady])
+
   return (
     <GestureHandlerRootView style={inlineStyle_123_28}>
       <PaperProvider>
         <TouchFeedbackProvider>
           <MessageProvider>
-            <DefaultProvider onBootstrapReady={() => setBootstrapReady(true)}>
+            <DefaultProvider
+              currentRouteName={currentRouteName}
+              onBootstrapReady={() => setBootstrapReady(true)}
+            >
               <NavigationContainer
+                ref={navigationRef}
                 linking={linking}
-                onReady={() => setNavigationReady(true)}
+                onReady={() => {
+                  setNavigationReady(true)
+                  syncRuntimeRouteName()
+                }}
+                onStateChange={syncRuntimeRouteName}
               >
                 <StatusBar
                   barStyle="light-content"

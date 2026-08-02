@@ -1,0 +1,98 @@
+const {describe, expect, it} = global
+
+const {
+  DEFAULT_BOTTOM_NAVIGATION_HEIGHT,
+  MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT,
+  getBottomNavigationBaseHeight,
+  getBottomNavigationOffset,
+  getOwnedBottomBarOffset,
+  shouldShowOperationalBottomNavigation,
+} = require('../../../react/utils/posBottomNavigation')
+
+describe('posBottomNavigation', () => {
+  it('keeps the operational dock visible for POS cashier, waiter and counter flows', () => {
+    expect(
+      shouldShowOperationalBottomNavigation({
+        appType: 'POS',
+        interactionMode: 'pdv',
+        isTotemMode: false,
+      }),
+    ).toBe(true)
+
+    expect(
+      shouldShowOperationalBottomNavigation({
+        appType: 'POS',
+        interactionMode: 'waiter',
+        isTotemMode: false,
+      }),
+    ).toBe(true)
+  })
+
+  it('also keeps the dock when the manager hosts the PDV flow', () => {
+    expect(
+      shouldShowOperationalBottomNavigation({
+        appType: 'MANAGER',
+        interactionMode: 'pdv',
+        isTotemMode: false,
+      }),
+    ).toBe(true)
+  })
+
+  it('hides the operational dock in totem mode or non-pdv manager flows', () => {
+    expect(
+      shouldShowOperationalBottomNavigation({
+        appType: 'POS',
+        interactionMode: 'pdv',
+        isTotemMode: true,
+      }),
+    ).toBe(false)
+
+    expect(
+      shouldShowOperationalBottomNavigation({
+        appType: 'MANAGER',
+        interactionMode: 'manager',
+        isTotemMode: false,
+      }),
+    ).toBe(false)
+  })
+
+  it('uses the shared dock height across app shells', () => {
+    expect(getBottomNavigationBaseHeight('POS')).toBe(
+      DEFAULT_BOTTOM_NAVIGATION_HEIGHT,
+    )
+    expect(getBottomNavigationBaseHeight('MANAGER')).toBe(
+      MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT,
+    )
+    expect(getBottomNavigationBaseHeight('DELIVERY')).toBe(
+      MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT,
+    )
+    expect(getBottomNavigationBaseHeight('PPC')).toBe(
+      MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT,
+    )
+  })
+
+  it('keeps a minimum bottom inset when offsetting floating bars', () => {
+    expect(getBottomNavigationOffset({appType: 'POS', bottomInset: 0})).toBe(
+      DEFAULT_BOTTOM_NAVIGATION_HEIGHT + 10,
+    )
+    expect(
+      getBottomNavigationOffset({appType: 'MANAGER', bottomInset: 24}),
+    ).toBe(MODERN_DOCK_BOTTOM_NAVIGATION_HEIGHT + 24)
+  })
+
+  it('does not add dock height again for bottom bars owned by the current screen', () => {
+    expect(
+      getOwnedBottomBarOffset({
+        hasBottomNavigation: true,
+        bottomInset: 0,
+      }),
+    ).toBe(0)
+
+    expect(
+      getOwnedBottomBarOffset({
+        hasBottomNavigation: false,
+        bottomInset: 24,
+      }),
+    ).toBe(24)
+  })
+})

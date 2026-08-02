@@ -1,19 +1,26 @@
 import {StyleSheet} from 'react-native';
 
-export const withAlpha = (color, alphaHex) => {
-  const raw = String(color || '').replace('#', '').trim();
-  if (/^[0-9a-fA-F]{6}$/.test(raw)) return `#${raw}${alphaHex}`;
-  return color || '#2563EB';
-};
-
 export default function createStyles({colors = {}, width = 1024}) {
   const palette = {
-    primary: colors.primary || '#2563EB',
-    surface: colors.surface || colors.background || '#FFFFFF',
-    background: colors.background || '#F8FAFC',
-    border: colors.border || '#D8E0EA',
-    text: colors.text || '#0F172A',
-    muted: colors['text-muted'] || '#64748B',
+    primary: colors.primary,
+    surface: colors.cardBackground,
+    background: colors.pageBackground,
+    border: colors.cardBorder,
+    text: colors.textPrimary,
+    muted: colors.textMuted,
+  };
+  const cardIconBackground = colors.cardIconBackground;
+  const cardIconColor = colors.cardIconColor;
+  const iconBackground = colors.iconBackground;
+  const iconColor = colors.iconColor;
+
+  palette.sectionTone = {
+    background: iconBackground,
+    foreground: iconColor,
+  };
+  palette.segmentTone = {
+    background: cardIconBackground,
+    foreground: cardIconColor,
   };
 
   const isCompact = width < 700;
@@ -37,7 +44,7 @@ export default function createStyles({colors = {}, width = 1024}) {
       },
       sectionIcon: {
         alignItems: 'center',
-        backgroundColor: withAlpha(palette.primary, '14'),
+        backgroundColor: palette.sectionTone.background,
         borderRadius: 6,
         height: 28,
         justifyContent: 'center',
@@ -61,31 +68,35 @@ export default function createStyles({colors = {}, width = 1024}) {
         paddingHorizontal: gap / 2,
       },
       card: {
+        alignItems: 'center',
         backgroundColor: palette.surface,
         borderColor: palette.border,
         borderRadius: 8,
         borderWidth: 1,
-        minHeight: isCompact ? 100 : 108,
+        flexDirection: 'row',
+        gap: 14,
+        justifyContent: 'flex-start',
+        minHeight: 80,
         padding: 12,
-        shadowColor: '#0F172A',
+        shadowColor: palette.text,
         shadowOffset: {height: 1, width: 0},
         shadowOpacity: 0.06,
         shadowRadius: 4,
       },
       cardIcon: {
         alignItems: 'center',
-        alignSelf: 'flex-start',
         borderRadius: 8,
         height: 38,
         justifyContent: 'center',
-        marginBottom: 9,
         width: 38,
       },
       cardLabel: {
         color: palette.text,
+        flex: 1,
         fontSize: isCompact ? 13 : 14,
         fontWeight: '700',
         lineHeight: isCompact ? 17 : 18,
+        textAlign: 'left',
       },
       emptyBox: {
         alignItems: 'center',

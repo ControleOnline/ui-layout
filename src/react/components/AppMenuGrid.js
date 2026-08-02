@@ -2,34 +2,40 @@ import React, {useMemo} from 'react';
 import {Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {useStore} from '@store';
-import createStyles, {withAlpha} from './AppMenuGrid.styles';
-
-const normalizeMenus = menus =>
-  (Array.isArray(menus) ? menus : [])
-    .map(module => ({
-      ...module,
-      menus: Array.isArray(module?.menus) ? module.menus : [],
-    }))
-    .filter(module => module.menus.length > 0);
-
-const resolveIconColor = (color, fallback) => {
-  const tokenColor = String(color || '').trim();
-  if (/^#[0-9a-f]{6}$/i.test(tokenColor)) return tokenColor;
-  return fallback;
-};
+import {
+  filterRuntimeMenuModulesByType,
+  resolveRuntimeMenuLabel,
+} from '@controleonline/ui-common/src/react/utils/runtimeMenu';
+import {
+  resolveMenuRouteName,
+  resolveMenuRouteParams,
+} from '@controleonline/ui-layout/src/react/utils/menuNavigation';
+import createStyles from './AppMenuGrid.styles';
 
 const AppMenuGrid = ({
+  colorTokens = {},
   emptyMessage = 'Nenhum menu disponivel.',
   menus,
   navigation,
+  menuType = 'home',
   onMenuPress,
 }) => {
   const {width} = useWindowDimensions();
   const themeStore = useStore('theme');
   const peopleStore = useStore('people');
+  const translateStore = useStore('translate');
   const {colors = {}} = themeStore.getters;
   const {currentCompany = {}} = peopleStore.getters;
-  const modules = normalizeMenus(menus);
+  const translateMessages = translateStore?.getters?.messages || {};
+  const pendingTranslateMessages = translateStore?.getters?.pendingMessages || {};
+  const translate = useMemo(
+    () => global.t?.t,
+    [translateMessages, pendingTranslateMessages],
+  );
+  const modules = useMemo(
+    () => filterRuntimeMenuModulesByType(menus, menuType),
+    [menuType, menus],
+  );
 
   const styles = useMemo(
     () =>
@@ -37,10 +43,11 @@ const AppMenuGrid = ({
         colors: {
           ...colors,
           ...(currentCompany?.theme?.colors || {}),
+          ...colorTokens,
         },
         width,
       }),
-    [colors, currentCompany?.id, width],
+    [colorTokens, colors, currentCompany?.id, width],
   );
 
   const handlePress = item => {
@@ -49,8 +56,17 @@ const AppMenuGrid = ({
       return;
     }
 
+    const routeName = resolveMenuRouteName(item?.route);
+
+    if (!routeName) {
+      return;
+    }
+
     try {
-      navigation?.navigate?.(item.route, item.routeParams || {});
+      navigation?.navigate?.(
+        routeName,
+        resolveMenuRouteParams(item?.routeParams),
+      );
     } catch {
       // The route can be absent in a specific app flavor.
     }
@@ -66,56 +82,57 @@ const AppMenuGrid = ({
 
   return (
     <View style={styles.wrapper}>
-      {modules.map(module => (
-        <View key={module.id || module.label} style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionIcon}>
-              <Icon
-                name={module.icon || 'grid'}
-                size={15}
-                color={styles.palette.primary}
-              />
+      {modules.map(module => {
+        return (
+          <View key={module.id || module.label} style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <View
+                style={[
+                  styles.sectionIcon,
+                  {backgroundColor: styles.palette.sectionTone.background},
+                ]}>
+                <Icon
+                  name={module.icon || 'grid'}
+                  size={15}
+                  color={styles.palette.sectionTone.foreground}
+                />
+              </View>
+              <Text style={styles.sectionTitle}>
+                {translate?.('menu', 'menu', module.label) || module.label}
+              </Text>
             </View>
-            <Text style={styles.sectionTitle}>
-              {global.t?.t('menu', 'menu', module.label) || module.label}
-            </Text>
-          </View>
 
-          <View style={styles.grid}>
-            {module.menus.map(item => (
-              <TouchableOpacity
-                key={item.id || item.menuKey || item.route}
-                activeOpacity={0.82}
-                style={styles.cardOuter}
-                onPress={() => handlePress(item)}
-              >
-                <View style={styles.card}>
-                  <View
-                    style={[
-                      styles.cardIcon,
-                      {
-                        backgroundColor: withAlpha(
-                          resolveIconColor(item.color, styles.palette.primary),
-                          '1F',
-                        ),
-                      },
-                    ]}
-                  >
-                    <Icon
-                      name={item.icon || 'circle'}
-                      size={20}
-                      color={resolveIconColor(item.color, styles.palette.primary)}
-                    />
+            <View style={styles.grid}>
+              {module.menus.map(item => (
+                <TouchableOpacity
+                  key={item.id || item.menuKey || item.route}
+                  activeOpacity={0.82}
+                  style={styles.cardOuter}
+                  onPress={() => handlePress(item)}
+                >
+                  <View style={styles.card}>
+                    <View
+                      style={[
+                        styles.cardIcon,
+                        {backgroundColor: styles.palette.segmentTone.background},
+                      ]}
+                    >
+                      <Icon
+                        name={item.icon || 'circle'}
+                        size={20}
+                        color={styles.palette.segmentTone.foreground}
+                      />
+                    </View>
+                    <Text numberOfLines={2} style={styles.cardLabel}>
+                      {resolveRuntimeMenuLabel(item, translate)}
+                    </Text>
                   </View>
-                  <Text numberOfLines={2} style={styles.cardLabel}>
-                    {global.t?.t('menu', 'menu', item.label) || item.label}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 };
