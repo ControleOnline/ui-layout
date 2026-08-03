@@ -2991,7 +2991,9 @@ const ColorEditor = ({
           <Text style={[styles.colorEditorLabel, emphasizeLabel && styles.colorEditorLabelLarge]}>
             {field.label}
           </Text>
-          <Text style={styles.helperText}>{field.helper}</Text>
+          {field.helper ? (
+            <Text style={styles.helperText}>{field.helper}</Text>
+          ) : null}
         </View>
         {showCloseButton && onClose ? (
           <TouchableOpacity style={styles.editorCloseButton} onPress={onClose}>
@@ -3157,50 +3159,50 @@ const ColorEditor = ({
         <View
           style={[
             styles.editorControlCard,
-            styles.editorControlCardFixed,
+            styles.editorControlCardTextInput,
           ]}
         >
-          <View style={styles.colorInputsStack}>
-            <View style={styles.colorInputPair}>
-              <Text style={styles.colorInputLabel}>HEX</Text>
-              <View style={styles.colorInputRow}>
-                <View style={styles.colorInputShell}>
-                  <TextInput
-                    value={draftHexInputValue}
-                    onChangeText={setDraftHexInputValue}
-                    onBlur={() => applyHexInputValue(draftHexInputValue)}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    placeholder="000000"
-                    placeholderTextColor="#94A3B8"
-                    style={styles.colorInput}
-                  />
-                </View>
-              </View>
-            </View>
-            <View style={styles.colorInputPair}>
-              <Text style={styles.colorInputLabel}>RGBa</Text>
-              <View style={styles.colorInputRow}>
-                <View style={styles.colorInputShell}>
-                  <TextInput
-                    value={draftRgbaInputValue}
-                    onChangeText={setDraftRgbaInputValue}
-                    onBlur={() => applyRgbaInputValue(draftRgbaInputValue)}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    placeholder="0, 0, 0, 1"
-                    placeholderTextColor="#94A3B8"
-                    style={styles.colorInput}
-                  />
-                </View>
+          <View style={styles.colorInputPair}>
+            <Text style={styles.colorInputLabel}>HEX</Text>
+            <View style={styles.colorInputRow}>
+              <View style={styles.colorInputShell}>
+                <TextInput
+                  value={draftHexInputValue}
+                  onChangeText={setDraftHexInputValue}
+                  onBlur={() => applyHexInputValue(draftHexInputValue)}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  placeholder="000000"
+                  placeholderTextColor="#94A3B8"
+                  style={styles.colorInput}
+                />
               </View>
             </View>
           </View>
+        </View>
 
-          <View style={styles.editorControlCardFooter}>
-            <Text style={[styles.editorControlCardFooterText, { opacity: 0 }]}>
-              000%
-            </Text>
+        <View
+          style={[
+            styles.editorControlCard,
+            styles.editorControlCardTextInput,
+          ]}
+        >
+          <View style={styles.colorInputPair}>
+            <Text style={styles.colorInputLabel}>RGBa</Text>
+            <View style={styles.colorInputRow}>
+              <View style={styles.colorInputShell}>
+                <TextInput
+                  value={draftRgbaInputValue}
+                  onChangeText={setDraftRgbaInputValue}
+                  onBlur={() => applyRgbaInputValue(draftRgbaInputValue)}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  placeholder="0, 0, 0, 1"
+                  placeholderTextColor="#94A3B8"
+                  style={styles.colorInput}
+                />
+              </View>
+            </View>
           </View>
         </View>
 
@@ -3221,14 +3223,15 @@ const ColorEditor = ({
             />
           </View>
 
-          <View style={styles.editorControlCardFooter}>
-            <Text style={[styles.editorControlCardFooterText, { opacity: 0 }]}>
-              000%
-            </Text>
-          </View>
         </View>
 
-        <View style={[styles.editorControlCard, styles.editorControlCardFlexible]}>
+        <View
+          style={[
+            styles.editorControlCard,
+            styles.editorControlCardFlexible,
+            styles.editorControlCardSliderCompact,
+          ]}
+        >
           <View style={[styles.editorControlCardHeader, styles.editorControlCardHeaderSplit]}>
             <Text style={styles.editorControlCardTitle}>Brilho</Text>
             <View style={styles.editorControlCardHeaderPreviewValue}>
@@ -3252,14 +3255,26 @@ const ColorEditor = ({
             }}
           />
 
-          <View style={[styles.editorControlCardFooter, styles.editorControlCardFooterSliderAligned]}>
+          <View
+            style={[
+              styles.editorControlCardFooter,
+              styles.editorControlCardFooterSliderAligned,
+              styles.editorControlCardFooterCollapsed,
+            ]}
+          >
             <Text style={[styles.editorControlCardFooterText, { opacity: 0 }]}>
               +100%
             </Text>
           </View>
         </View>
 
-        <View style={[styles.editorControlCard, styles.editorControlCardFlexible]}>
+        <View
+          style={[
+            styles.editorControlCard,
+            styles.editorControlCardFlexible,
+            styles.editorControlCardSliderCompact,
+          ]}
+        >
           <View style={[styles.editorControlCardHeader, styles.editorControlCardHeaderSplit]}>
             <Text style={styles.editorControlCardTitle}>Opacidade</Text>
             <View style={styles.editorControlCardHeaderPreviewValue}>
@@ -3291,7 +3306,13 @@ const ColorEditor = ({
             }}
           />
 
-          <View style={[styles.editorControlCardFooter, styles.editorControlCardFooterSliderAligned]}>
+          <View
+            style={[
+              styles.editorControlCardFooter,
+              styles.editorControlCardFooterSliderAligned,
+              styles.editorControlCardFooterCollapsed,
+            ]}
+          >
             <Text style={[styles.editorControlCardFooterText, { opacity: 0 }]}>
               100%
             </Text>
@@ -4871,15 +4892,11 @@ export default function ThemeManagerPage() {
         <TouchableWithoutFeedback onPress={closeEditor}>
           <View style={styles.backdrop}>
             <TouchableWithoutFeedback>
-              <View style={styles.modalSheet}>
-                <View style={styles.modalHeader}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={styles.modalTitle}>Editor de objetos</Text>
-                    <Text style={styles.modalSubtitle}>Mostra as cores do objeto selecionado para edição.</Text>
-                  </View>
-                </View>
-
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 14, paddingBottom: 8 }}>
+              <View style={[styles.modalSheet, styles.objectEditorModalSheet]}>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={styles.objectEditorScrollContent}
+                >
                   {!editingFieldKey ? (
                     <View style={styles.formField}>
                       <Text style={styles.formLabel}>Nome do tema</Text>
@@ -4904,14 +4921,13 @@ export default function ThemeManagerPage() {
                       swatchDropTargetRowIds={objectEditorHighlightedRowId ? [objectEditorHighlightedRowId] : []}
                       highlightedSwatchRowId={objectEditorHighlightedRowId}
                       onApplySwatchDrop={applyDraftPaletteDrop}
-                      showCloseButton={Boolean(editingFieldKey)}
-                      onClose={editingFieldKey ? closeEditor : undefined}
+                      showCloseButton={false}
                       emphasizeLabel={Boolean(editingFieldKey)}
                     />
                   ))}
                 </ScrollView>
 
-                <View style={styles.modalActions}>
+                <View style={[styles.modalActions, styles.objectEditorModalActions]}>
                   <TouchableOpacity style={styles.secondaryButton} onPress={closeEditor}>
                     <Text style={styles.secondaryButtonText}>Cancelar</Text>
                   </TouchableOpacity>
@@ -4928,7 +4944,7 @@ export default function ThemeManagerPage() {
                       <ActivityIndicator size="small" color="#FFFFFF" />
                     ) : (
                       <Text style={styles.primaryButtonText}>
-                        {editingTheme?.id ? 'Salvar tema' : 'Criar tema'}
+                        {editingFieldKey ? 'Gravar' : editingTheme?.id ? 'Salvar tema' : 'Criar tema'}
                       </Text>
                     )}
                   </TouchableOpacity>

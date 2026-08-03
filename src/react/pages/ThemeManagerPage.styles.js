@@ -676,6 +676,13 @@ const styles = StyleSheet.create({
     gap: 14,
     ...cardShadow,
   },
+  objectEditorModalSheet: {
+    gap: 10,
+  },
+  objectEditorScrollContent: {
+    gap: 14,
+    paddingBottom: 0,
+  },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -851,6 +858,7 @@ const styles = StyleSheet.create({
   colorEditor: {
     gap: 10,
     padding: 14,
+    paddingBottom: 10,
     borderRadius: 16,
     backgroundColor: '#F8FAFC',
     borderWidth: 1,
@@ -860,8 +868,10 @@ const styles = StyleSheet.create({
   colorEditorHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: 10,
+    marginBottom: 4,
+    position: 'relative',
   },
   colorEditorLabel: {
     fontSize: 14,
@@ -869,9 +879,12 @@ const styles = StyleSheet.create({
     color: '#1a1a1a',
   },
   colorEditorLabelLarge: {
-    fontSize: 18,
+    fontSize: 14,
   },
   editorCloseButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
     width: 38,
     height: 38,
     borderRadius: 12,
@@ -882,13 +895,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
   swatchPicker: {
+    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 6,
   },
   swatchPickerCard: {
-    gap: 8,
-    padding: 12,
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     borderRadius: 14,
     borderWidth: 1,
     borderColor: '#D7E1EC',
@@ -901,9 +918,11 @@ const styles = StyleSheet.create({
     borderColor: '#10B981',
   },
   swatchPickerSection: {
-    gap: 8,
+    flex: 1,
+    minWidth: 0,
   },
   swatchPickerLabel: {
+    width: 64,
     fontSize: 11,
     fontWeight: '800',
     color: '#475569',
@@ -911,6 +930,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
   swatchPickerEmpty: {
+    flex: 1,
     fontSize: 12,
     fontWeight: '700',
     color: '#94A3B8',
@@ -983,10 +1003,6 @@ const styles = StyleSheet.create({
   pickerTooltipSpacer: {
     height: 4,
   },
-  colorInputsStack: {
-    width: '100%',
-    gap: 8,
-  },
   colorInputPair: {
     width: '100%',
     flexDirection: 'row',
@@ -1013,7 +1029,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    paddingHorizontal: 12,
+    paddingLeft: 12,
+    paddingRight: 0,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#cccccc',
@@ -1058,7 +1075,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 8,
     overflow: 'visible',
     zIndex: 10,
   },
@@ -1086,15 +1103,40 @@ const styles = StyleSheet.create({
     minWidth: 224,
     maxWidth: 224,
   },
+  editorControlCardTextInput: {
+    width: 215,
+    minWidth: 215,
+    maxWidth: 215,
+    height: 60,
+    minHeight: 60,
+    paddingHorizontal: 12,
+    paddingTop: 10,
+    paddingBottom: 10,
+    justifyContent: 'center',
+  },
   editorControlCardFlexible: {
     flexGrow: 1,
     flexBasis: 220,
     minWidth: 220,
   },
+  editorControlCardSliderCompact: {
+    flexGrow: 1,
+    flexBasis: 0,
+    minWidth: 160,
+    height: 60,
+    minHeight: 60,
+    paddingTop: 6,
+    paddingBottom: 6,
+    gap: 2,
+  },
   editorControlCardPreviewFixed: {
-    width: 220,
-    minWidth: 220,
-    maxWidth: 220,
+    width: 215,
+    minWidth: 215,
+    maxWidth: 215,
+    height: 60,
+    minHeight: 60,
+    paddingTop: 6,
+    paddingBottom: 6,
   },
   editorControlCardHeader: {
     alignItems: 'flex-start',
@@ -1128,6 +1170,11 @@ const styles = StyleSheet.create({
     height: 16,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  editorControlCardFooterCollapsed: {
+    height: 0,
+    minHeight: 0,
+    overflow: 'hidden',
   },
   editorControlCardFooterText: {
     fontSize: 11,
@@ -1278,6 +1325,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     paddingTop: 8,
+  },
+  objectEditorModalActions: {
+    paddingTop: 0,
   },
   secondaryButton: {
     flex: 1,
