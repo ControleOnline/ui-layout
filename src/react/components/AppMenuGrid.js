@@ -12,6 +12,21 @@ import {
 } from '@controleonline/ui-layout/src/react/utils/menuNavigation';
 import createStyles from './AppMenuGrid.styles';
 
+const COMPACT_MENU_LABELS = new Set(['viewProspects', 'financialReport']);
+
+const shouldUseCompactCardLabel = item => {
+  const candidates = [
+    item?.menuKey,
+    item?.menu_key,
+    item?.id,
+    item?.label,
+    item?.route,
+  ];
+  return candidates.some(value =>
+    COMPACT_MENU_LABELS.has(String(value || '').trim()),
+  );
+};
+
 const AppMenuGrid = ({
   colorTokens = {},
   emptyMessage = 'Nenhum menu disponivel.',
@@ -123,7 +138,13 @@ const AppMenuGrid = ({
                         color={styles.palette.segmentTone.foreground}
                       />
                     </View>
-                    <Text numberOfLines={2} style={styles.cardLabel}>
+                    <Text
+                      numberOfLines={2}
+                      style={[
+                        styles.cardLabel,
+                        shouldUseCompactCardLabel(item) && styles.cardLabelCompact,
+                      ]}
+                    >
                       {resolveRuntimeMenuLabel(item, translate)}
                     </Text>
                   </View>
