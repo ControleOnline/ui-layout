@@ -204,19 +204,20 @@
 
   <q-drawer v-if="$appType == 'ERP'" v-model="leftDrawerOpen" :width="270">
     <q-scroll-area class="fit">
-      <q-toolbar class="q-pa-md">
-        <q-toolbar-title class="text-center">
-          <q-avatar size="100px" class="vertical-middle menu-avatar">
-            <router-link v-bind:to="'/'" tag="a" class="primary">
-              <img
-                v-if="defaultCompany.logo"
-                :src="
-                  '//' + defaultCompany.logo.domain + defaultCompany.logo.url
-                "
-                class="q-pa-sm main-logo"
-              />
-            </router-link>
-          </q-avatar>
+      <q-toolbar class="drawer-logo-toolbar">
+        <q-toolbar-title class="text-center drawer-logo-title">
+          <router-link
+            v-if="defaultCompany && defaultCompany.logo"
+            v-bind:to="'/'"
+            tag="a"
+            class="drawer-logo-link"
+          >
+            <img
+              :src="'//' + defaultCompany.logo.domain + defaultCompany.logo.url"
+              class="drawer-logo"
+              alt=""
+            />
+          </router-link>
         </q-toolbar-title>
       </q-toolbar>
 
@@ -406,8 +407,30 @@ export default {
   display: block
   margin-top: 3px
 .current-logo-container
-  width: 100vw
-  position: absolute
+  display: flex
+  align-items: center
+  justify-content: flex-end
+  min-width: 140px
+  margin-left: auto
+.drawer-logo-toolbar
+  min-height: 64px
+  padding: 8px 16px
+  justify-content: center
+.drawer-logo-title
+  padding: 0
+.drawer-logo-link
+  display: flex
+  align-items: center
+  justify-content: center
+  width: 100%
+.drawer-logo
+  display: block
+  margin: 0 auto
+  max-height: 40px
+  max-width: 200px
+  width: auto
+  height: auto
+  object-fit: contain
 .search
   position: absolute
   width: 400px
