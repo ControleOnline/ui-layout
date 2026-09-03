@@ -234,7 +234,7 @@
               <q-icon name="home" />
             </q-item-section>
             <q-item-section>
-              {{ $t("menu.dashboard") }}
+              {{ $te("menu.dashboard") ? $t("menu.dashboard") : "Painel" }}
             </q-item-section>
           </q-item>
           <q-separator inset class="q-my-sm" />
