@@ -103,7 +103,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     options?.headerShown !== false;
   const [deliveryQueueLoadedForIri, setDeliveryQueueLoadedForIri] = useState('');
   const deliveryQueueLoadOwnerRef = useRef('');
-  const deliveryQueueWasLockedRef = useRef(false);
   const navigationState = navigation?.getState?.();
   const currentRouteName =
     route?.name || navigationState?.routes?.[navigationState?.index]?.name;
@@ -242,6 +241,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const deliveryQueueRouteName = resolveDeliveryWorkflowRouteName(deliveryQueueHead);
   const shouldLockToDeliveryQueue = Boolean(
     isDeliveryWorkflowApp &&
+      currentRouteName === 'DeliveryOrdersPage' &&
       deliveryQueueHeadId &&
       deliveryQueueRouteName &&
       (
@@ -442,7 +442,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       return;
     }
 
-    deliveryQueueWasLockedRef.current = true;
     const nextParams =
       deliveryQueueRouteName === 'DeliveryRunPage'
         ? {
@@ -482,46 +481,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     currentRouteOrderId,
     navigation,
     shouldLockToDeliveryQueue,
-  ]);
-
-  useEffect(() => {
-    if (!isDeliveryWorkflowApp || deliveryQueueHeadId) {
-      if (deliveryQueueHeadId) {
-        deliveryQueueWasLockedRef.current = true;
-      }
-
-      return;
-    }
-
-    if (!deliveryQueueWasLockedRef.current) {
-      return;
-    }
-
-    deliveryQueueWasLockedRef.current = false;
-    if (currentRouteName === 'DeliveryRunPage') {
-      return;
-    }
-    if (replaceWebLocation('/delivery/orders')) {
-      return;
-    }
-
-    if (typeof navigation.replace === 'function') {
-      navigation.replace('DeliveryOrdersPage');
-      return;
-    }
-
-    navigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: 'DeliveryOrdersPage',
-        },
-      ],
-    });
-  }, [
-    deliveryQueueHeadId,
-    isDeliveryWorkflowApp,
-    navigation,
   ]);
 
   useEffect(() => {
