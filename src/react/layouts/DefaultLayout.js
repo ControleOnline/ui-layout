@@ -323,6 +323,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   useEffect(() => {
     if (
       !isDeliveryWorkflowApp ||
+      currentRouteName === 'DeliveryOrdersPage' ||
       !currentPeopleIri ||
       typeof deliveryOrdersStore?.actions?.getItems !== 'function'
     ) {
@@ -356,7 +357,10 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
         }
       })
       .finally(() => {
-        if (deliveryQueueLoadOwnerRef.current === currentPeopleIri) {
+        if (
+          deliveryQueueLoadOwnerRef.current === currentPeopleIri &&
+          deliveryQueueLoadedForIri !== currentPeopleIri
+        ) {
           deliveryQueueLoadOwnerRef.current = '';
         }
       });
@@ -366,10 +370,17 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     };
   }, [
     currentPeopleIri,
+    currentRouteName,
     deliveryOrdersStore?.actions?.getItems,
     deliveryQueueLoadedForIri,
     isDeliveryWorkflowApp,
   ]);
+
+  useEffect(() => {
+    if (deliveryQueueLoadedForIri === currentPeopleIri) {
+      deliveryQueueLoadOwnerRef.current = '';
+    }
+  }, [currentPeopleIri, deliveryQueueLoadedForIri]);
 
   useEffect(() => {
     if (!currentPeopleIri) {
@@ -446,12 +457,12 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
         ? `/delivery/run?${new URLSearchParams(nextParams).toString()}`
         : `/order-details?${new URLSearchParams(nextParams).toString()}`;
 
-    if (replaceWebLocation(nextHref)) {
+    if (typeof navigation.replace === 'function') {
+      navigation.replace(deliveryQueueRouteName, nextParams);
       return;
     }
 
-    if (typeof navigation.replace === 'function') {
-      navigation.replace(deliveryQueueRouteName, nextParams);
+    if (replaceWebLocation(nextHref)) {
       return;
     }
 
