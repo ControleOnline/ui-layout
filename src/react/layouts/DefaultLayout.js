@@ -126,9 +126,22 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       }),
     [currentCompany],
   );
+  // Only treat logo as present when a real URI exists (empty relation objects
+  // must not block the initials fallback).
+  const companyLogoUri = String(companyLogoSource?.uri || '').trim();
+  const hasCompanyLogoUri = !!companyLogoUri;
+  const [companyLogoFailed, setCompanyLogoFailed] = useState(false);
+  useEffect(() => {
+    setCompanyLogoFailed(false);
+  }, [companyLogoUri, currentCompany?.id]);
+  const showCompanyLogoImage = hasCompanyLogoUri && !companyLogoFailed;
   // Desktop center control is the HOME affordance: logo image when available,
   // otherwise company initials (never leave the center empty / unclickable).
-  const shouldRenderDesktopCompanyLogo = isDesktopWeb && !!currentCompany?.id;
+  const companyKey =
+    currentCompany?.id ||
+    String(currentCompany?.['@id'] || '').match(/\d+/)?.[0] ||
+    null;
+  const shouldRenderDesktopCompanyLogo = isDesktopWeb && !!companyKey;
   const companyInitials = useMemo(
     () =>
       getUserInitials({
@@ -136,6 +149,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
           currentCompany?.alias ||
           currentCompany?.name ||
           currentCompany?.companyName ||
+          currentCompany?.people ||
           '',
       }),
     [currentCompany],
@@ -302,15 +316,16 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
               style={styles.headerCompanyLogoButton}
               onPress={goToHome}
             >
-              {companyLogoSource ? (
+              {showCompanyLogoImage ? (
                 <Image
                   source={companyLogoSource}
                   style={styles.headerCompanyLogo}
                   resizeMode="contain"
+                  onError={() => setCompanyLogoFailed(true)}
                 />
               ) : (
-                <View style={styles.headerCompanyLogoFallback}>
-                  <Text style={styles.headerCompanyLogoInitials}>{companyInitials}</Text>
+                <View style={styles.headerCompanyLogoFallback} testID="desktop-company-logo-fallback">
+                  <Text style={styles.headerCompanyLogoInitials}>{companyInitials || '?'}</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -331,6 +346,8 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     });
   }, [
     companyLogoSource,
+    companyLogoUri,
+    showCompanyLogoImage,
     currentCompany?.alias,
     currentCompany?.name,
     goToHome,
@@ -338,7 +355,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     options?.companyFilterMode,
     shouldRenderDesktopCompanyLogo,
     companyInitials,
-    companyLogoSource,
     showHeaderCompanyFilter,
   ]);
 
