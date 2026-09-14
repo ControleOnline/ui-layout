@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
+import {Modal, Pressable, Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {useStore} from '@store';
 import {
@@ -19,7 +19,9 @@ const AppMenuGrid = ({
   navigation,
   menuType = 'home',
   onMenuPress,
+  operationInfo = null,
 }) => {
+  const [isInfoVisible, setIsInfoVisible] = React.useState(false);
   const {width} = useWindowDimensions();
   const themeStore = useStore('theme');
   const peopleStore = useStore('people');
@@ -100,6 +102,15 @@ const AppMenuGrid = ({
               <Text style={styles.sectionTitle}>
                 {translate?.('menu', 'menu', module.label) || module.label}
               </Text>
+              {module.label === 'Operação' && operationInfo ? (
+                <Pressable
+                  accessibilityLabel="Ver configuração da operação"
+                  accessibilityRole="button"
+                  onPress={() => setIsInfoVisible(true)}
+                  style={styles.infoButton}>
+                  <Text style={styles.infoButtonText}>i</Text>
+                </Pressable>
+              ) : null}
             </View>
 
             <View style={styles.grid}>
@@ -133,6 +144,26 @@ const AppMenuGrid = ({
           </View>
         );
       })}
+      {operationInfo ? (
+        <Modal animationType="fade" transparent visible={isInfoVisible} onRequestClose={() => setIsInfoVisible(false)}>
+          <Pressable style={styles.modalBackdrop} onPress={() => setIsInfoVisible(false)}>
+            <Pressable style={styles.infoModal} onPress={event => event.stopPropagation()}>
+              <View style={styles.infoModalHeader}>
+                <Text style={styles.infoModalTitle}>Configuração do PDV</Text>
+                <Pressable accessibilityLabel="Fechar" onPress={() => setIsInfoVisible(false)}>
+                  <Text style={styles.infoModalClose}>×</Text>
+                </Pressable>
+              </View>
+              {Object.entries(operationInfo).map(([label, value]) => (
+                <View key={label} style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>{label}</Text>
+                  <Text style={styles.infoValue}>{String(value || 'Não configurado')}</Text>
+                </View>
+              ))}
+            </Pressable>
+          </Pressable>
+        </Modal>
+      ) : null}
     </View>
   );
 };
