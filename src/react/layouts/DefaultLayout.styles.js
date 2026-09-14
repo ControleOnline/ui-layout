@@ -28,6 +28,21 @@ const styles = StyleSheet.create({
     width: 132,
     height: 36,
   },
+  headerCompanyLogoFallback: {
+    minWidth: 48,
+    height: 36,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(15, 23, 42, 0.08)',
+  },
+  headerCompanyLogoInitials: {
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 0.6,
+    color: '#0F172A',
+  },
   content: {
     flex: 1,
     minHeight: 0,

@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
-import { Image, Platform, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { Image, Platform, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useStore} from '@store';
 
@@ -26,6 +26,7 @@ import {
 import {resolveCurrentPeopleIri} from '@controleonline/ui-logistic/src/react/utils/deliveryIdentity';
 import {getBottomNavigationBaseHeight} from '@controleonline/ui-layout/src/react/utils/posBottomNavigation';
 import {resolveDefaultFileSource} from '@controleonline/ui-common/src/react/utils/fileUrl';
+import {getUserInitials} from '@controleonline/ui-common/src/react/utils/userAvatar';
 import {app_type, app_type_base} from '@appType';
 import styles from './DefaultLayout.styles';
 
@@ -125,7 +126,20 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       }),
     [currentCompany],
   );
-  const shouldRenderDesktopCompanyLogo = isDesktopWeb && !!companyLogoSource;
+  // Desktop center control is the HOME affordance: logo image when available,
+  // otherwise company initials (never leave the center empty / unclickable).
+  const shouldRenderDesktopCompanyLogo = isDesktopWeb && !!currentCompany?.id;
+  const companyInitials = useMemo(
+    () =>
+      getUserInitials({
+        name:
+          currentCompany?.alias ||
+          currentCompany?.name ||
+          currentCompany?.companyName ||
+          '',
+      }),
+    [currentCompany],
+  );
   const goToHome = useCallback(() => {
     if (currentRouteName === 'HomePage') {
       return;
@@ -288,11 +302,17 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
               style={styles.headerCompanyLogoButton}
               onPress={goToHome}
             >
-              <Image
-                source={companyLogoSource}
-                style={styles.headerCompanyLogo}
-                resizeMode="contain"
-              />
+              {companyLogoSource ? (
+                <Image
+                  source={companyLogoSource}
+                  style={styles.headerCompanyLogo}
+                  resizeMode="contain"
+                />
+              ) : (
+                <View style={styles.headerCompanyLogoFallback}>
+                  <Text style={styles.headerCompanyLogoInitials}>{companyInitials}</Text>
+                </View>
+              )}
             </TouchableOpacity>
           </View>
         )
@@ -317,6 +337,8 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     navigation,
     options?.companyFilterMode,
     shouldRenderDesktopCompanyLogo,
+    companyInitials,
+    companyLogoSource,
     showHeaderCompanyFilter,
   ]);
 
