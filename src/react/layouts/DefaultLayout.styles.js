@@ -13,6 +13,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 10,
   },
+  desktopHomeLogoOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 200,
+    elevation: 200,
+  },
   headerCompanyLogoLayer: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',

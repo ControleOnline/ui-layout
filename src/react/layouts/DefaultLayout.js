@@ -306,32 +306,9 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerBackground: shouldRenderDesktopCompanyLogo
-        ? () => (
-          <View style={styles.headerCompanyLogoLayer} pointerEvents="box-none">
-            <TouchableOpacity
-              accessibilityRole="button"
-              accessibilityLabel={currentCompany?.alias || currentCompany?.name || 'HomePage'}
-              activeOpacity={0.82}
-              style={styles.headerCompanyLogoButton}
-              onPress={goToHome}
-            >
-              {showCompanyLogoImage ? (
-                <Image
-                  source={companyLogoSource}
-                  style={styles.headerCompanyLogo}
-                  resizeMode="contain"
-                  onError={() => setCompanyLogoFailed(true)}
-                />
-              ) : (
-                <View style={styles.headerCompanyLogoFallback} testID="desktop-company-logo-fallback">
-                  <Text style={styles.headerCompanyLogoInitials}>{companyInitials || '?'}</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
-        )
-        : undefined,
+      // Logo/HOME center control is rendered as layout overlay (desktopHomeLogoOverlay)
+      // — headerBackground on RN-web is unreliable when company has no image.
+      headerBackground: undefined,
       headerRightContainerStyle: showHeaderCompanyFilter
         ? styles.headerRightContainer
         : undefined,
@@ -581,8 +558,37 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     totemBlockedRouteNames,
   ]);
 
+  const desktopHomeControl =
+    shouldRenderDesktopCompanyLogo ? (
+      <View style={styles.desktopHomeLogoOverlay} pointerEvents="box-none">
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={currentCompany?.alias || currentCompany?.name || 'HomePage'}
+          accessibilityHint="Ir para a HOME"
+          activeOpacity={0.82}
+          style={styles.headerCompanyLogoButton}
+          onPress={goToHome}
+          testID="desktop-company-home-control"
+        >
+          {showCompanyLogoImage ? (
+            <Image
+              source={companyLogoSource}
+              style={styles.headerCompanyLogo}
+              resizeMode="contain"
+              onError={() => setCompanyLogoFailed(true)}
+            />
+          ) : (
+            <View style={styles.headerCompanyLogoFallback} testID="desktop-company-logo-fallback">
+              <Text style={styles.headerCompanyLogoInitials}>{companyInitials || '?'}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
+    ) : null;
+
   return (
     <View style={[styles.container, { paddingTop: options?.headerShown === false ? insets.top : 0 }]}>
+      {desktopHomeControl}
       {showInlineCompanyFilter && (
         <CompanyFilter
           navigation={navigation}
