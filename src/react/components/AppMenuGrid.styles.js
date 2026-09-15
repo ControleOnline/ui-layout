@@ -65,11 +65,6 @@ export default function createStyles({colors = {}, width = 1024}) {
         marginLeft: 2,
         width: 20,
       },
-      infoButtonText: {
-        color: palette.muted,
-        fontSize: 13,
-        fontWeight: '800',
-      },
       modalBackdrop: {
         alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.45)',

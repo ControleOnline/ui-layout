@@ -20,15 +20,8 @@ const AppMenuGrid = ({
   menuType = 'home',
   onMenuPress,
   operationInfo = null,
+  operationModuleId = null,
 }) => {
-  const isOperationModule = label =>
-    String(label || '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .trim()
-      .toLowerCase()
-      .replace(/s$/, '') === 'operacao';
-
   const [isInfoVisible, setIsInfoVisible] = React.useState(false);
   const {width} = useWindowDimensions();
   const themeStore = useStore('theme');
@@ -45,6 +38,17 @@ const AppMenuGrid = ({
   const modules = useMemo(
     () => filterRuntimeMenuModulesByType(menus, menuType),
     [menuType, menus],
+  );
+  const operationRows = useMemo(
+    () =>
+      Array.isArray(operationInfo)
+        ? operationInfo
+        : Object.entries(operationInfo || {}).map(([label, value]) => ({
+            key: label,
+            label,
+            value,
+          })),
+    [operationInfo],
   );
 
   const styles = useMemo(
@@ -110,13 +114,22 @@ const AppMenuGrid = ({
               <Text style={styles.sectionTitle}>
                 {translate?.('menu', 'menu', module.label) || module.label}
               </Text>
-              {isOperationModule(module.label) && operationInfo ? (
+              {operationModuleId !== null &&
+              operationModuleId !== undefined &&
+              String(module.id) === String(operationModuleId) &&
+              operationRows.length > 0 ? (
                 <Pressable
                   accessibilityLabel="Ver configuração da operação"
                   accessibilityRole="button"
+                  hitSlop={8}
                   onPress={() => setIsInfoVisible(true)}
-                  style={styles.infoButton}>
-                  <Text style={styles.infoButtonText}>i</Text>
+                  style={styles.infoButton}
+                  testID={`operation-info-button:${module.id}`}>
+                  <Icon
+                    name="info"
+                    size={14}
+                    color={styles.palette.sectionTone.foreground}
+                  />
                 </Pressable>
               ) : null}
             </View>
@@ -152,20 +165,38 @@ const AppMenuGrid = ({
           </View>
         );
       })}
-      {operationInfo ? (
-        <Modal animationType="fade" transparent visible={isInfoVisible} onRequestClose={() => setIsInfoVisible(false)}>
-          <Pressable style={styles.modalBackdrop} onPress={() => setIsInfoVisible(false)}>
-            <Pressable style={styles.infoModal} onPress={event => event.stopPropagation()}>
+      {operationRows.length > 0 ? (
+        <Modal
+          animationType="fade"
+          onRequestClose={() => setIsInfoVisible(false)}
+          transparent
+          visible={isInfoVisible}>
+          <Pressable
+            onPress={() => setIsInfoVisible(false)}
+            style={styles.modalBackdrop}
+            testID="operation-info-backdrop">
+            <Pressable
+              accessibilityLabel="Configuração do PDV"
+              accessibilityRole="summary"
+              onPress={event => event.stopPropagation()}
+              style={styles.infoModal}
+              testID="operation-info-dialog">
               <View style={styles.infoModalHeader}>
                 <Text style={styles.infoModalTitle}>Configuração do PDV</Text>
-                <Pressable accessibilityLabel="Fechar" onPress={() => setIsInfoVisible(false)}>
+                <Pressable
+                  accessibilityLabel="Fechar configuração do PDV"
+                  accessibilityRole="button"
+                  hitSlop={8}
+                  onPress={() => setIsInfoVisible(false)}>
                   <Text style={styles.infoModalClose}>×</Text>
                 </Pressable>
               </View>
-              {Object.entries(operationInfo).map(([label, value]) => (
-                <View key={label} style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>{label}</Text>
-                  <Text style={styles.infoValue}>{String(value || 'Não configurado')}</Text>
+              {operationRows.map(row => (
+                <View key={row.key || row.label} style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>{row.label}</Text>
+                  <Text style={styles.infoValue}>
+                    {String(row.value ?? 'Não configurado')}
+                  </Text>
                 </View>
               ))}
             </Pressable>
