@@ -1,5 +1,5 @@
 import React, {useMemo} from 'react';
-import {Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
+import {Modal, Pressable, Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {useStore} from '@store';
 import {
@@ -34,7 +34,10 @@ const AppMenuGrid = ({
   navigation,
   menuType = 'home',
   onMenuPress,
+  operationInfo = null,
+  operationModuleId = null,
 }) => {
+  const [isInfoVisible, setIsInfoVisible] = React.useState(false);
   const {width} = useWindowDimensions();
   const themeStore = useStore('theme');
   const peopleStore = useStore('people');
@@ -50,6 +53,17 @@ const AppMenuGrid = ({
   const modules = useMemo(
     () => filterRuntimeMenuModulesByType(menus, menuType),
     [menuType, menus],
+  );
+  const operationRows = useMemo(
+    () =>
+      Array.isArray(operationInfo)
+        ? operationInfo
+        : Object.entries(operationInfo || {}).map(([label, value]) => ({
+            key: label,
+            label,
+            value,
+          })),
+    [operationInfo],
   );
 
   const styles = useMemo(
@@ -115,6 +129,24 @@ const AppMenuGrid = ({
               <Text style={styles.sectionTitle}>
                 {translate?.('menu', 'menu', module.label) || module.label}
               </Text>
+              {operationModuleId !== null &&
+              operationModuleId !== undefined &&
+              String(module.id) === String(operationModuleId) &&
+              operationRows.length > 0 ? (
+                <Pressable
+                  accessibilityLabel="Ver configuração da operação"
+                  accessibilityRole="button"
+                  hitSlop={8}
+                  onPress={() => setIsInfoVisible(true)}
+                  style={styles.infoButton}
+                  testID={`operation-info-button:${module.id}`}>
+                  <Icon
+                    name="info"
+                    size={14}
+                    color={styles.palette.sectionTone.foreground}
+                  />
+                </Pressable>
+              ) : null}
             </View>
 
             <View style={styles.grid}>
@@ -154,6 +186,44 @@ const AppMenuGrid = ({
           </View>
         );
       })}
+      {operationRows.length > 0 ? (
+        <Modal
+          animationType="fade"
+          onRequestClose={() => setIsInfoVisible(false)}
+          transparent
+          visible={isInfoVisible}>
+          <Pressable
+            onPress={() => setIsInfoVisible(false)}
+            style={styles.modalBackdrop}
+            testID="operation-info-backdrop">
+            <Pressable
+              accessibilityLabel="Configuração do PDV"
+              accessibilityRole="summary"
+              onPress={event => event.stopPropagation()}
+              style={styles.infoModal}
+              testID="operation-info-dialog">
+              <View style={styles.infoModalHeader}>
+                <Text style={styles.infoModalTitle}>Configuração do PDV</Text>
+                <Pressable
+                  accessibilityLabel="Fechar configuração do PDV"
+                  accessibilityRole="button"
+                  hitSlop={8}
+                  onPress={() => setIsInfoVisible(false)}>
+                  <Text style={styles.infoModalClose}>×</Text>
+                </Pressable>
+              </View>
+              {operationRows.map(row => (
+                <View key={row.key || row.label} style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>{row.label}</Text>
+                  <Text style={styles.infoValue}>
+                    {String(row.value ?? 'Não configurado')}
+                  </Text>
+                </View>
+              ))}
+            </Pressable>
+          </Pressable>
+        </Modal>
+      ) : null}
     </View>
   );
 };
