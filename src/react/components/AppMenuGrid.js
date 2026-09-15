@@ -26,7 +26,8 @@ const AppMenuGrid = ({
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .trim()
-      .toLowerCase() === 'operacao';
+      .toLowerCase()
+      .replace(/s$/, '') === 'operacao';
 
   const [isInfoVisible, setIsInfoVisible] = React.useState(false);
   const {width} = useWindowDimensions();
