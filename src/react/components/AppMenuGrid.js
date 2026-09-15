@@ -21,6 +21,13 @@ const AppMenuGrid = ({
   onMenuPress,
   operationInfo = null,
 }) => {
+  const isOperationModule = label =>
+    String(label || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase() === 'operacao';
+
   const [isInfoVisible, setIsInfoVisible] = React.useState(false);
   const {width} = useWindowDimensions();
   const themeStore = useStore('theme');
@@ -102,7 +109,7 @@ const AppMenuGrid = ({
               <Text style={styles.sectionTitle}>
                 {translate?.('menu', 'menu', module.label) || module.label}
               </Text>
-              {module.label === 'Operação' && operationInfo ? (
+              {isOperationModule(module.label) && operationInfo ? (
                 <Pressable
                   accessibilityLabel="Ver configuração da operação"
                   accessibilityRole="button"
