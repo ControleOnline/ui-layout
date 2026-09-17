@@ -59,7 +59,9 @@ describe('AppMenuGrid operation information', () => {
     });
 
     expect(renderer.root.findAllByProps({testID: 'operation-info-button:222'})).toHaveLength(0);
-    const infoButton = renderer.root.findByProps({testID: 'operation-info-button:333'});
+    const infoButton = renderer.root
+      .findAllByType('touchable-opacity')
+      .find(node => node.props.testID === 'operation-info-button:333');
     expect(renderer.root.findAllByProps({testID: 'operation-info-dialog'})).toHaveLength(0);
 
     act(() => infoButton.props.onPress());
