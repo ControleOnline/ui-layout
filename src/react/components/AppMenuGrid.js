@@ -2,6 +2,7 @@ import React, {useMemo} from 'react';
 import {Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {useStore} from '@store';
+import DefaultTooltip from '@controleonline/ui-default/src/react/components/help/DefaultTooltip';
 import {
   filterRuntimeMenuModulesByType,
   resolveRuntimeMenuLabel,
@@ -19,6 +20,8 @@ const AppMenuGrid = ({
   navigation,
   menuType = 'home',
   onMenuPress,
+  operationInfo = null,
+  operationModuleId = null,
 }) => {
   const {width} = useWindowDimensions();
   const themeStore = useStore('theme');
@@ -35,6 +38,17 @@ const AppMenuGrid = ({
   const modules = useMemo(
     () => filterRuntimeMenuModulesByType(menus, menuType),
     [menuType, menus],
+  );
+  const operationRows = useMemo(
+    () =>
+      Array.isArray(operationInfo)
+        ? operationInfo
+        : Object.entries(operationInfo || {}).map(([label, value]) => ({
+            key: label,
+            label,
+            value,
+          })),
+    [operationInfo],
   );
 
   const styles = useMemo(
@@ -100,6 +114,31 @@ const AppMenuGrid = ({
               <Text style={styles.sectionTitle}>
                 {translate?.('menu', 'menu', module.label) || module.label}
               </Text>
+              {operationModuleId !== null &&
+              operationModuleId !== undefined &&
+              String(module.id) === String(operationModuleId) &&
+              operationRows.length > 0 ? (
+                <DefaultTooltip
+                  accessibilityLabel="Ver configuração da operação"
+                  accentColor={styles.palette.sectionTone.foreground}
+                  backdropTestID="operation-info-backdrop"
+                  closeAccessibilityLabel="Fechar configuração do PDV"
+                  closeLabel="×"
+                  dialogTestID="operation-info-dialog"
+                  hitSlop={8}
+                  label={
+                    <Icon
+                      name="info"
+                      size={14}
+                      color={styles.palette.sectionTone.foreground}
+                    />
+                  }
+                  rows={operationRows}
+                  style={styles.infoButton}
+                  testID={`operation-info-button:${module.id}`}
+                  title="Configuração do PDV"
+                />
+              ) : null}
             </View>
 
             <View style={styles.grid}>

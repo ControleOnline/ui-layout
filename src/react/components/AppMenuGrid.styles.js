@@ -55,6 +55,11 @@ export default function createStyles({colors = {}, width = 1024}) {
         fontSize: isCompact ? 15 : 16,
         fontWeight: '800',
       },
+      infoButton: {
+        height: 20,
+        marginLeft: 2,
+        width: 20,
+      },
       grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
