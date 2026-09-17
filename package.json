@@ -25,6 +25,7 @@
   ],
   "dependencies": {
     "@controleonline/ui-common": "*",
+    "@controleonline/ui-default": "*",
     "@controleonline/ui-login": "*",
     "@controleonline/ui-logistic": "*",
     "@controleonline/ui-manager": "*",
