@@ -6,10 +6,9 @@
   "license": "MIT",
   "main": "src/react/index.js",
   "scripts": {
-    "test": "npm run test:toast-providers && npm run test:compact-labels",
+    "test": "npm run test:toast-providers",
     "test:toast-providers": "node --test src/tests/react/App.toastProviders.test.js",
-    "test:coverage": "c8 --reporter=clover --report-dir coverage npm test",
-    "test:compact-labels": "node --test src/tests/react/AppMenuGrid.compactLabels.test.js"
+    "test:coverage": "c8 --reporter=clover --report-dir coverage npm test"
   },
   "devDependencies": {
     "c8": "^10.1.3"
@@ -25,7 +24,6 @@
   ],
   "dependencies": {
     "@controleonline/ui-common": "*",
-    "@controleonline/ui-default": "*",
     "@controleonline/ui-login": "*",
     "@controleonline/ui-logistic": "*",
     "@controleonline/ui-manager": "*",

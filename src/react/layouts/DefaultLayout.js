@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import { Image, Platform, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import {useStore} from '@store';
 
 import BottomCart from '@controleonline/ui-orders/src/react/components/cart/BottomCart';
@@ -62,9 +61,6 @@ const OWNED_BOTTOM_CART_ROUTE_NAMES = new Set([
   'OrderDetails',
 ]);
 
-/** FontAwesome name aligned with PeopleAvatar company fallback (my-companies-page). */
-const DEFAULT_COMPANY_HEADER_ICON = 'building';
-
 const DefaultLayout = ({ children, navigation, route, options }) => {
   const insets = useSafeAreaInsets();
   const {width} = useWindowDimensions();
@@ -73,11 +69,9 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const deliveryOrdersStore = useStore('delivery_orders');
   const websocketStore = useStore('websocket');
   const deviceConfigStore = useStore('device_config');
-  const themeStore = useStore('theme');
   const {item: device} = deviceConfigStore.getters;
   const currentCompany = peopleStore?.getters?.currentCompany || null;
   const currentUser = authStore?.getters?.user || null;
-  const themeColors = themeStore?.getters?.colors || {};
   const appType = app_type;
   const isShopApp = appType === 'SHOP';
   const isPosApp = appType === 'POS';
@@ -131,13 +125,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       }),
     [currentCompany],
   );
-  // Desktop header always shows company mark: real logo when available, else building icon.
-  const shouldRenderDesktopCompanyMark = isDesktopWeb;
-  const headerMarkIconColor =
-    themeColors.listItemIcon ||
-    themeColors.cardIcon ||
-    themeColors.icon ||
-    '#5c6bc0';
+  const shouldRenderDesktopCompanyLogo = isDesktopWeb && !!companyLogoSource;
   const goToHome = useCallback(() => {
     if (currentRouteName === 'HomePage') {
       return;
@@ -290,7 +278,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerBackground: shouldRenderDesktopCompanyMark
+      headerBackground: shouldRenderDesktopCompanyLogo
         ? () => (
           <View style={styles.headerCompanyLogoLayer} pointerEvents="box-none">
             <TouchableOpacity
@@ -300,21 +288,11 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
               style={styles.headerCompanyLogoButton}
               onPress={goToHome}
             >
-              {companyLogoSource ? (
-                <Image
-                  source={companyLogoSource}
-                  style={styles.headerCompanyLogo}
-                  resizeMode="contain"
-                />
-              ) : (
-                <View style={styles.headerCompanyFallbackIconWrap}>
-                  <Icon
-                    name={DEFAULT_COMPANY_HEADER_ICON}
-                    size={22}
-                    color={headerMarkIconColor}
-                  />
-                </View>
-              )}
+              <Image
+                source={companyLogoSource}
+                style={styles.headerCompanyLogo}
+                resizeMode="contain"
+              />
             </TouchableOpacity>
           </View>
         )
@@ -336,10 +314,9 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     currentCompany?.alias,
     currentCompany?.name,
     goToHome,
-    headerMarkIconColor,
     navigation,
     options?.companyFilterMode,
-    shouldRenderDesktopCompanyMark,
+    shouldRenderDesktopCompanyLogo,
     showHeaderCompanyFilter,
   ]);
 

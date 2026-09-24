@@ -824,40 +824,6 @@ const getIri = (value, resourceName = '') => {
   return id && resourceName ? `/${resourceName}/${id}` : '';
 };
 
-const getThemeName = value => String(value?.theme || value?.themeLabel || '').trim().toUpperCase();
-
-const pickPreferredPeopleDomain = (domains = [], currentCompany = null) => {
-  if (!Array.isArray(domains) || domains.length === 0) return null;
-
-  const companyThemeName = getThemeName(currentCompany?.theme);
-  if (companyThemeName) {
-    const matchedByName = domains.find(domain => getThemeName(domain) === companyThemeName);
-    if (matchedByName) return matchedByName;
-  }
-
-  return domains.find(domain => Boolean(getId(domain?.theme))) || domains[0];
-};
-
-const resolveCompanyThemeId = (currentCompany = null, domains = []) => {
-  const fromCompanyTheme = getId(currentCompany?.theme);
-  if (fromCompanyTheme) return fromCompanyTheme;
-
-  return getId(pickPreferredPeopleDomain(domains, currentCompany)?.theme);
-};
-
-const buildCompanyThemeFallback = currentCompany => {
-  const companyTheme = currentCompany?.theme;
-  if (!companyTheme || typeof companyTheme !== 'object') return null;
-  if (!companyTheme.theme && !companyTheme.colors && !companyTheme.background) return null;
-
-  return {
-    id: getId(companyTheme) || null,
-    theme: companyTheme.theme,
-    colors: companyTheme.colors,
-    background: companyTheme.background,
-  };
-};
-
 const formatApiError = error => {
   if (typeof error === 'string') return error;
   if (Array.isArray(error?.message)) {
@@ -3367,7 +3333,7 @@ export default function ThemeManagerPage() {
   const peopleGetters = peopleStore.getters;
   const themeGetters = themeStore.getters;
 
-  const { currentCompany, mainCompany } = peopleGetters;
+  const { currentCompany, defaultCompany } = peopleGetters;
   const { colors: themeColors } = themeGetters;
 
   const palette = useMemo(
@@ -3499,58 +3465,34 @@ export default function ThemeManagerPage() {
   }, [editingTheme, themeDraft, themeEditorVisible, themeJsonEdited, themeName]);
 
   const refreshCurrentThemeIfNeeded = useCallback(async () => {
-    if (!currentCompany?.id || String(currentCompany.id) !== String(mainCompany?.id)) {
+    if (!currentCompany?.id || String(currentCompany.id) !== String(defaultCompany?.id)) {
       return;
     }
 
     try {
-      const refreshedMainCompany = await peopleActions.mainCompany();
+      const refreshedDefaultCompany = await peopleActions.defaultCompany();
       peopleActions.setCurrentCompany({
         ...currentCompany,
-        theme: refreshedMainCompany?.theme || currentCompany?.theme,
-        logo: currentCompany?.logo || refreshedMainCompany?.logo,
-        alias: currentCompany?.alias || refreshedMainCompany?.alias,
-        name: currentCompany?.name || refreshedMainCompany?.name,
-        configs: currentCompany?.configs || refreshedMainCompany?.configs,
+        theme: refreshedDefaultCompany?.theme || currentCompany?.theme,
+        logo: currentCompany?.logo || refreshedDefaultCompany?.logo,
+        alias: currentCompany?.alias || refreshedDefaultCompany?.alias,
+        name: currentCompany?.name || refreshedDefaultCompany?.name,
+        configs: currentCompany?.configs || refreshedDefaultCompany?.configs,
       });
     } catch (error) {
       // The manager page still works even if the active brand preview refresh fails.
     }
-  }, [currentCompany, mainCompany?.id, peopleActions]);
+  }, [currentCompany, defaultCompany?.id, peopleActions]);
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const companyId = getId(currentCompany);
-      if (!companyId) {
-        setThemes([]);
-        return [];
-      }
+      const themesResponse = await api.fetch('/themes', { params: { page: 1 } });
 
-      let themeId = resolveCompanyThemeId(currentCompany);
+      const nextThemes = normalizeCollection(themesResponse)
+        .map(item => normalizeThemeEntity(item))
+        .sort((a, b) => Number(a?.id || 0) - Number(b?.id || 0));
 
-      if (!themeId) {
-        const domainsResponse = await api.fetch('/people_domains', {
-          params: {
-            people: companyId,
-            itemsPerPage: 50,
-          },
-        });
-        themeId = resolveCompanyThemeId(
-          currentCompany,
-          normalizeCollection(domainsResponse),
-        );
-      }
-
-      if (themeId) {
-        const themeResponse = await api.fetch(`/themes/${themeId}`);
-        const nextThemes = [normalizeThemeEntity(themeResponse)];
-        setThemes(nextThemes);
-        return nextThemes;
-      }
-
-      const fallbackTheme = buildCompanyThemeFallback(currentCompany);
-      const nextThemes = fallbackTheme ? [normalizeThemeEntity(fallbackTheme)] : [];
       setThemes(nextThemes);
       return nextThemes;
     } catch (error) {
@@ -3559,17 +3501,13 @@ export default function ThemeManagerPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentCompany, showError]);
+  }, [showError]);
 
   useFocusEffect(
     useCallback(() => {
       loadData();
     }, [loadData]),
   );
-
-  useEffect(() => {
-    loadData();
-  }, [currentCompany?.id, loadData]);
 
   const openCreateTheme = useCallback(() => {
     const nextDraft = buildNewThemeDraft(palette);
@@ -4323,9 +4261,9 @@ export default function ThemeManagerPage() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         <View style={styles.toolbar}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.sectionTitle}>Tema da empresa</Text>
+            <Text style={styles.sectionTitle}>Temas</Text>
             <Text style={styles.sectionText}>
-              Somente o tema vinculado à empresa selecionada, com as cores reais do banco.
+              Um tema por linha, com as cores reais do banco logo abaixo.
             </Text>
           </View>
           <TouchableOpacity
@@ -4344,9 +4282,9 @@ export default function ThemeManagerPage() {
         ) : themes.length === 0 ? (
           <View style={styles.emptyCard}>
             <Icon name="droplet" size={20} color={palette.primary} />
-            <Text style={styles.emptyTitle}>Nenhum tema vinculado à empresa selecionada.</Text>
+            <Text style={styles.emptyTitle}>Nenhum tema cadastrado.</Text>
             <Text style={styles.emptyText}>
-              Selecione outra empresa ou crie um tema para esta identidade visual.
+              Crie o primeiro tema para começar a configurar a identidade visual da empresa.
             </Text>
           </View>
         ) : (

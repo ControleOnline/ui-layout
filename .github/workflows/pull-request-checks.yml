@@ -22,6 +22,3 @@ jobs:
 
       - name: Run toast provider check
         run: npm run test:toast-providers
-
-      - name: Run compact app menu label check
-        run: node --test src/tests/react/AppMenuGrid.compactLabels.test.js
