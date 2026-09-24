@@ -2,7 +2,6 @@ import React, {useMemo} from 'react';
 import {Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import {useStore} from '@store';
-import DefaultTooltip from '@controleonline/ui-default/src/react/components/help/DefaultTooltip';
 import {
   filterRuntimeMenuModulesByType,
   resolveRuntimeMenuLabel,
@@ -13,21 +12,6 @@ import {
 } from '@controleonline/ui-layout/src/react/utils/menuNavigation';
 import createStyles from './AppMenuGrid.styles';
 
-const COMPACT_MENU_LABELS = new Set(['viewProspects', 'financialReport']);
-
-const shouldUseCompactCardLabel = item => {
-  const candidates = [
-    item?.menuKey,
-    item?.menu_key,
-    item?.id,
-    item?.label,
-    item?.route,
-  ];
-  return candidates.some(value =>
-    COMPACT_MENU_LABELS.has(String(value || '').trim()),
-  );
-};
-
 const AppMenuGrid = ({
   colorTokens = {},
   emptyMessage = 'Nenhum menu disponivel.',
@@ -35,8 +19,6 @@ const AppMenuGrid = ({
   navigation,
   menuType = 'home',
   onMenuPress,
-  operationInfo = null,
-  operationModuleId = null,
 }) => {
   const {width} = useWindowDimensions();
   const themeStore = useStore('theme');
@@ -53,17 +35,6 @@ const AppMenuGrid = ({
   const modules = useMemo(
     () => filterRuntimeMenuModulesByType(menus, menuType),
     [menuType, menus],
-  );
-  const operationRows = useMemo(
-    () =>
-      Array.isArray(operationInfo)
-        ? operationInfo
-        : Object.entries(operationInfo || {}).map(([label, value]) => ({
-            key: label,
-            label,
-            value,
-          })),
-    [operationInfo],
   );
 
   const styles = useMemo(
@@ -129,31 +100,6 @@ const AppMenuGrid = ({
               <Text style={styles.sectionTitle}>
                 {translate?.('menu', 'menu', module.label) || module.label}
               </Text>
-              {operationModuleId !== null &&
-              operationModuleId !== undefined &&
-              String(module.id) === String(operationModuleId) &&
-              operationRows.length > 0 ? (
-                <DefaultTooltip
-                  accessibilityLabel="Ver configuração da operação"
-                  accentColor={styles.palette.sectionTone.foreground}
-                  backdropTestID="operation-info-backdrop"
-                  closeAccessibilityLabel="Fechar configuração do PDV"
-                  closeLabel="×"
-                  dialogTestID="operation-info-dialog"
-                  hitSlop={8}
-                  label={
-                    <Icon
-                      name="info"
-                      size={14}
-                      color={styles.palette.sectionTone.foreground}
-                    />
-                  }
-                  rows={operationRows}
-                  style={styles.infoButton}
-                  testID={`operation-info-button:${module.id}`}
-                  title="Configuração do PDV"
-                />
-              ) : null}
             </View>
 
             <View style={styles.grid}>
@@ -177,12 +123,7 @@ const AppMenuGrid = ({
                         color={styles.palette.segmentTone.foreground}
                       />
                     </View>
-                    <Text
-                      numberOfLines={2}
-                      style={[
-                        styles.cardLabel,
-                        shouldUseCompactCardLabel(item) && styles.cardLabelCompact,
-                      ]}>
+                    <Text numberOfLines={2} style={styles.cardLabel}>
                       {resolveRuntimeMenuLabel(item, translate)}
                     </Text>
                   </View>
