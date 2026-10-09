@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
-import { Image, Platform, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import { Platform, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useStore} from '@store';
 
@@ -25,41 +25,10 @@ import {
 } from '@controleonline/ui-logistic/src/react/utils/deliveryAcceptanceQueue';
 import {resolveCurrentPeopleIri} from '@controleonline/ui-logistic/src/react/utils/deliveryIdentity';
 import {getBottomNavigationBaseHeight} from '@controleonline/ui-layout/src/react/utils/posBottomNavigation';
-import {resolveDefaultFileSource} from '@controleonline/ui-common/src/react/utils/fileUrl';
 import {app_type, app_type_base} from '@appType';
 import styles from './DefaultLayout.styles';
-
-const resolveBooleanOverride = value => {
-  if (typeof value === 'boolean') {
-    return value;
-  }
-
-  const normalized = String(value || '').trim().toLowerCase();
-  if (normalized === 'true') {
-    return true;
-  }
-
-  if (normalized === 'false') {
-    return false;
-  }
-
-  return null;
-};
-
-const POS_TOOLBAR_ROUTE_NAMES = new Set([
-  'HomePage',
-  'AddProductScreen',
-  'OrderHistoryPage',
-  'CashRegisterIndex',
-  'CloseCashRegister',
-  'Withdrawal',
-  'PrintQueuePage',
-  'ProfilePage',
-]);
-
-const OWNED_BOTTOM_CART_ROUTE_NAMES = new Set([
-  'OrderDetails',
-]);
+import useDefaultLayoutHeader, {resolveBooleanOverride} from './useDefaultLayoutHeader';
+import {POS_TOOLBAR_ROUTE_NAMES, OWNED_BOTTOM_CART_ROUTE_NAMES, resolveDefaultLayoutRoute} from './defaultLayoutRoutes';
 
 const DefaultLayout = ({ children, navigation, route, options }) => {
   const insets = useSafeAreaInsets();
@@ -73,9 +42,9 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const currentCompany = peopleStore?.getters?.currentCompany || null;
   const currentUser = authStore?.getters?.user || null;
   const appType = app_type;
-  const isShopApp = appType === 'SHOP';
-  const isPosApp = appType === 'POS';
-  const isDeliveryApp = appType === 'DELIVERY';
+  const isShopApp = app_type === 'SHOP';
+  const isPosApp = app_type === 'POS';
+  const isDeliveryApp = app_type === 'DELIVERY';
   const currentPeopleIri = useMemo(
     () => resolveCurrentPeopleIri(currentUser),
     [currentUser],
@@ -97,20 +66,11 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const showBottomCart = options?.showBottomCart;
   const showInlineCompanyFilter =
     allowCompanyFilter && options?.companyFilterMode !== 'icon';
-  const showHeaderCompanyFilter =
-    allowCompanyFilter &&
-    options?.companyFilterMode === 'icon' &&
-    options?.headerShown !== false;
   const [deliveryQueueLoadedForIri, setDeliveryQueueLoadedForIri] = useState('');
   const deliveryQueueLoadOwnerRef = useRef('');
   const deliveryQueueWasLockedRef = useRef(false);
-  const navigationState = navigation?.getState?.();
-  const currentRouteName =
-    route?.name || navigationState?.routes?.[navigationState?.index]?.name;
-  const currentRouteParams =
-    route?.params || navigationState?.routes?.[navigationState?.index]?.params || {};
+  const {currentRouteName, currentRouteParams} = resolveDefaultLayoutRoute(navigation, route);
   const currentRouteOrderId = normalizeDeliveryOrderId(currentRouteParams?.id);
-  const isDeliveryWorkflowApp = isDeliveryApp;
   const shouldUseOwnedBottomCart =
     OWNED_BOTTOM_CART_ROUTE_NAMES.has(currentRouteName);
   const shouldHideBottomToolBar = !!currentRouteParams?.hideBottomToolBar;
@@ -118,21 +78,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     currentRouteParams?.showBottomToolBar,
   );
   const isDesktopWeb = Platform.OS === 'web' && width >= 768;
-  const companyLogoSource = useMemo(
-    () =>
-      resolveDefaultFileSource(currentCompany?.logo || currentCompany?.icon, {
-        company: currentCompany,
-      }),
-    [currentCompany],
-  );
-  const shouldRenderDesktopCompanyLogo = isDesktopWeb && !!companyLogoSource;
-  const goToHome = useCallback(() => {
-    if (currentRouteName === 'HomePage') {
-      return;
-    }
-
-    navigation?.navigate?.('HomePage');
-  }, [currentRouteName, navigation]);
   const shouldForcePosToolbar =
     isPosApp &&
     !isTotemMode &&
@@ -241,7 +186,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const deliveryQueueHeadId = normalizeDeliveryOrderId(deliveryQueueHead?.id);
   const deliveryQueueRouteName = resolveDeliveryWorkflowRouteName(deliveryQueueHead);
   const shouldLockToDeliveryQueue = Boolean(
-    isDeliveryWorkflowApp &&
+    isDeliveryApp &&
       deliveryQueueHeadId &&
       deliveryQueueRouteName &&
       (
@@ -270,59 +215,16 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
 
   const bottomInsetCompensation = bottomChromeOffset;
   const cartBottomOffset = bottomChromeOffset;
-  const showAdminAppTypeSwitcher =
-    Platform.OS === 'web' &&
-    app_type_base === 'ADMIN';
+  const showAdminAppTypeSwitcher = Platform.OS === 'web' && app_type_base === 'ADMIN';
   const useModernWebChromeProps =
     Platform.OS === 'web' && showBottomCartOverride === false;
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerBackground: shouldRenderDesktopCompanyLogo
-        ? () => (
-          <View style={styles.headerCompanyLogoLayer} pointerEvents="box-none">
-            <TouchableOpacity
-              accessibilityRole="button"
-              accessibilityLabel={currentCompany?.alias || currentCompany?.name || 'HomePage'}
-              activeOpacity={0.82}
-              style={styles.headerCompanyLogoButton}
-              onPress={goToHome}
-            >
-              <Image
-                source={companyLogoSource}
-                style={styles.headerCompanyLogo}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          </View>
-        )
-        : undefined,
-      headerRightContainerStyle: showHeaderCompanyFilter
-        ? styles.headerRightContainer
-        : undefined,
-      headerRight: showHeaderCompanyFilter
-        ? () => (
-          <CompanyFilter
-            navigation={navigation}
-            mode={options?.companyFilterMode}
-          />
-        )
-        : undefined,
-    });
-  }, [
-    companyLogoSource,
-    currentCompany?.alias,
-    currentCompany?.name,
-    goToHome,
-    navigation,
-    options?.companyFilterMode,
-    shouldRenderDesktopCompanyLogo,
-    showHeaderCompanyFilter,
-  ]);
+  useDefaultLayoutHeader({navigation, currentRouteName, currentCompany, mainCompany: peopleStore?.getters?.mainCompany,
+    isDesktopWeb, showHeaderCompanyFilter: allowCompanyFilter && options?.companyFilterMode === 'icon' && options?.headerShown !== false, companyFilterMode: options?.companyFilterMode});
 
   useEffect(() => {
     if (
-      !isDeliveryWorkflowApp ||
+      !isDeliveryApp ||
       !currentPeopleIri ||
       typeof deliveryOrdersStore?.actions?.getItems !== 'function'
     ) {
@@ -368,7 +270,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     currentPeopleIri,
     deliveryOrdersStore?.actions?.getItems,
     deliveryQueueLoadedForIri,
-    isDeliveryWorkflowApp,
+    isDeliveryApp,
   ]);
 
   useEffect(() => {
@@ -377,10 +279,10 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     }
 
     lastProcessedWebsocketMessageCountRef.current = websocketMessages.length;
-  }, [currentPeopleIri, isDeliveryWorkflowApp, websocketMessages.length]);
+  }, [currentPeopleIri, isDeliveryApp, websocketMessages.length]);
 
   useEffect(() => {
-    if (!isDeliveryWorkflowApp || !currentPeopleIri) {
+    if (!isDeliveryApp || !currentPeopleIri) {
       return undefined;
     }
 
@@ -424,7 +326,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     }
 
     return undefined;
-  }, [currentPeopleIri, deliveryOrdersStore?.actions?.getItems, isDeliveryWorkflowApp, websocketMessages]);
+  }, [currentPeopleIri, deliveryOrdersStore?.actions?.getItems, isDeliveryApp, websocketMessages]);
 
   useEffect(() => {
     if (!shouldLockToDeliveryQueue) {
@@ -474,7 +376,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   ]);
 
   useEffect(() => {
-    if (!isDeliveryWorkflowApp || deliveryQueueHeadId) {
+    if (!isDeliveryApp || deliveryQueueHeadId) {
       if (deliveryQueueHeadId) {
         deliveryQueueWasLockedRef.current = true;
       }
@@ -509,7 +411,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     });
   }, [
     deliveryQueueHeadId,
-    isDeliveryWorkflowApp,
+    isDeliveryApp,
     navigation,
   ]);
 
