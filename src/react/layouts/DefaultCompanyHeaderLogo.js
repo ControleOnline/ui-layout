@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Image, Text, TouchableOpacity, View} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {env as APP_ENV} from '@env';
 import {useStore} from '@store';
 import DefaultFile from '@controleonline/ui-default/src/react/components/files/DefaultFile';
@@ -46,7 +47,7 @@ export const resolveHeaderLogoSource = (file, company, apiEntryPoint) => {
   return {file: resolvedFile, source: uri ? {uri} : null, authenticated};
 };
 
-export default function DefaultCompanyHeaderLogo({company, mainCompany, onPress}) {
+export default function DefaultCompanyHeaderLogo({company, mainCompany, onPress, fallbackIcon}) {
   const authStore = useStore('auth');
   const themeStore = useStore('theme');
   const colors = themeStore?.getters?.colors || {};
@@ -62,7 +63,7 @@ export default function DefaultCompanyHeaderLogo({company, mainCompany, onPress}
       {brand.file && !failed ? logo.authenticated
         ? <DefaultFile headers={headers} file={logo.file} company={brand.company} style={styles.headerCompanyLogo} resizeMode="contain" onError={() => setFailed(true)} />
         : <Image source={logo.source} style={styles.headerCompanyLogo} resizeMode="contain" onError={() => setFailed(true)} />
-        : name ? <Text numberOfLines={1} style={{fontSize: 18, fontWeight: '600', color: colors.headerText || colors.textPrimary || colors.text, maxWidth: 180}}>{name}</Text> : null}
+        : fallbackIcon ? <View style={[styles.headerCompanyFallbackIconWrap, {backgroundColor: colors.inputBackground || colors.panelBackground}]}><Icon name={fallbackIcon} size={22} color={colors.listItemIcon || colors.cardIcon || colors.icon || colors.headerText || colors.textPrimary || colors.text} /></View> : name ? <Text numberOfLines={1} style={{fontSize: 18, fontWeight: '600', color: colors.headerText || colors.textPrimary || colors.text, maxWidth: 180}}>{name}</Text> : null}
     </TouchableOpacity>
   </View>;
 }
