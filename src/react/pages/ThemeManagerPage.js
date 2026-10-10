@@ -3333,7 +3333,7 @@ export default function ThemeManagerPage() {
   const peopleGetters = peopleStore.getters;
   const themeGetters = themeStore.getters;
 
-  const { currentCompany, defaultCompany } = peopleGetters;
+  const { currentCompany, mainCompany } = peopleGetters;
   const { colors: themeColors } = themeGetters;
 
   const palette = useMemo(
@@ -3465,24 +3465,24 @@ export default function ThemeManagerPage() {
   }, [editingTheme, themeDraft, themeEditorVisible, themeJsonEdited, themeName]);
 
   const refreshCurrentThemeIfNeeded = useCallback(async () => {
-    if (!currentCompany?.id || String(currentCompany.id) !== String(defaultCompany?.id)) {
+    if (!currentCompany?.id || String(currentCompany.id) !== String(mainCompany?.id)) {
       return;
     }
 
     try {
-      const refreshedDefaultCompany = await peopleActions.defaultCompany();
+      const refreshedMainCompany = await peopleActions.mainCompany();
       peopleActions.setCurrentCompany({
         ...currentCompany,
-        theme: refreshedDefaultCompany?.theme || currentCompany?.theme,
-        logo: currentCompany?.logo || refreshedDefaultCompany?.logo,
-        alias: currentCompany?.alias || refreshedDefaultCompany?.alias,
-        name: currentCompany?.name || refreshedDefaultCompany?.name,
-        configs: currentCompany?.configs || refreshedDefaultCompany?.configs,
+        theme: refreshedMainCompany?.theme || currentCompany?.theme,
+        logo: currentCompany?.logo || refreshedMainCompany?.logo,
+        alias: currentCompany?.alias || refreshedMainCompany?.alias,
+        name: currentCompany?.name || refreshedMainCompany?.name,
+        configs: currentCompany?.configs || refreshedMainCompany?.configs,
       });
     } catch (error) {
       // The manager page still works even if the active brand preview refresh fails.
     }
-  }, [currentCompany, defaultCompany?.id, peopleActions]);
+  }, [currentCompany, mainCompany?.id, peopleActions]);
 
   const loadData = useCallback(async () => {
     setIsLoading(true);

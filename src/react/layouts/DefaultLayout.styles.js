@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     paddingRight: 16,
     maxWidth: 360,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
 });
 
