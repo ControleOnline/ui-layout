@@ -1,8 +1,7 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import { Platform, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useStore} from '@store';
-
 import BottomCart from '@controleonline/ui-orders/src/react/components/cart/BottomCart';
 import CompanyFilter from '@controleonline/ui-manager/src/react/components/CompanyFilter';
 import AppTypeSwitcher from '@controleonline/ui-common/src/react/components/AppTypeSwitcher';
@@ -27,9 +26,10 @@ import {resolveCurrentPeopleIri} from '@controleonline/ui-logistic/src/react/uti
 import {getBottomNavigationBaseHeight} from '@controleonline/ui-layout/src/react/utils/posBottomNavigation';
 import {app_type, app_type_base} from '@appType';
 import styles from './DefaultLayout.styles';
+import HomeChrome from '@controleonline/../../src/components/HomeChrome';
+import {usesSoftHomepage} from '@controleonline/../../src/pages/homeAppearance';
 import useDefaultLayoutHeader, {resolveBooleanOverride} from './useDefaultLayoutHeader';
 import {POS_TOOLBAR_ROUTE_NAMES, OWNED_BOTTOM_CART_ROUTE_NAMES, resolveDefaultLayoutRoute} from './defaultLayoutRoutes';
-
 const DefaultLayout = ({ children, navigation, route, options }) => {
   const insets = useSafeAreaInsets();
   const {width} = useWindowDimensions();
@@ -88,24 +88,22 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     if (item?.menuKey === 'home' && !hasPosDeviceConfig) {
       return null;
     }
-
     if (item?.menuKey === 'cash_register') {
       if (!requiresCashRegisterLifecycle) {
         return null;
       }
-
       return {
         ...item,
         route: isCashRegisterClosed ? 'CloseCashRegister' : 'CashRegisterIndex',
       };
     }
-
     return item;
   };
   const renderBottomNavigationBar = (presetKey, itemMapper = null) => (
     <RuntimeBottomNavigationBar
       navigation={navigation}
       menuType="toolbar"
+      appearance={usesSoftHomepage(currentRouteName, appType, options?.homepageAppearance) ? 'soft' : 'legacy'}
       presetKey={presetKey}
       itemMapper={itemMapper}
       useModernWebChromeProps={useModernWebChromeProps}
@@ -151,7 +149,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       ]),
     [requiresCashRegisterLifecycle],
   );
-
   const isModernDockEnabled =
     effectiveShowBottomToolBar &&
     (
@@ -203,7 +200,6 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       window.location.replace(href);
       return true;
     }
-
     return false;
   };
 
@@ -447,6 +443,9 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
 
   return (
     <View style={[styles.container, { paddingTop: options?.headerShown === false ? insets.top : 0 }]}>
+      {usesSoftHomepage(currentRouteName, appType, options?.homepageAppearance) ? (
+        <HomeChrome navigation={navigation} showCompany={showInlineCompanyFilter} showAppType={showAdminAppTypeSwitcher} />
+      ) : <>
       {showInlineCompanyFilter && (
         <CompanyFilter
           navigation={navigation}
@@ -458,6 +457,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
           <AppTypeSwitcher />
         </View>
       )}
+      </>}
       <View style={[styles.content, { paddingBottom: bottomInsetCompensation }]}>
         {children}
       </View>

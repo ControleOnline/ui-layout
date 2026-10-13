@@ -1,6 +1,8 @@
 import {StyleSheet} from 'react-native';
+import createSoftStyles from './AppMenuGrid.soft.styles';
 
-export default function createStyles({colors = {}, width = 1024}) {
+export default function createStyles({colors = {}, width = 1024, appearance = 'legacy'}) {
+  if (appearance === 'soft') return createSoftStyles({colors, width});
   const palette = {
     primary: colors.primary,
     surface: colors.cardBackground,

@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react';
 import {Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import LegacyIcon from 'react-native-vector-icons/Feather';
+import HomeIcon from '@controleonline/../../src/components/HomeIcon';
 import {useStore} from '@store';
 import {
   filterRuntimeMenuModulesByType,
@@ -11,15 +12,18 @@ import {
   resolveMenuRouteParams,
 } from '@controleonline/ui-layout/src/react/utils/menuNavigation';
 import createStyles from './AppMenuGrid.styles';
+import SoftMenuCard from './SoftMenuCard';
 
 const AppMenuGrid = ({
   colorTokens = {},
+  appearance = 'legacy',
   emptyMessage = 'Nenhum menu disponivel.',
   menus,
   navigation,
   menuType = 'home',
   onMenuPress,
 }) => {
+  const Icon = appearance === 'soft' ? HomeIcon : LegacyIcon;
   const {width} = useWindowDimensions();
   const themeStore = useStore('theme');
   const peopleStore = useStore('people');
@@ -46,8 +50,9 @@ const AppMenuGrid = ({
           ...colorTokens,
         },
         width,
+        appearance,
       }),
-    [colorTokens, colors, currentCompany?.id, width],
+    [appearance, colorTokens, colors, currentCompany?.id, currentCompany?.theme?.colors, width],
   );
 
   const handlePress = item => {
@@ -100,13 +105,20 @@ const AppMenuGrid = ({
               <Text style={styles.sectionTitle}>
                 {translate?.('menu', 'menu', module.label) || module.label}
               </Text>
+              {appearance === 'soft' && <View style={styles.sectionDivider} />}
             </View>
 
             <View style={styles.grid}>
               {module.menus.map(item => (
+                appearance === 'soft' ? <SoftMenuCard
+                  key={item.id || item.menuKey || item.route}
+                  styles={styles} label={resolveRuntimeMenuLabel(item, translate)}
+                  icon={item.icon} onPress={() => handlePress(item)} /> :
                 <TouchableOpacity
                   key={item.id || item.menuKey || item.route}
                   activeOpacity={0.82}
+                  accessibilityRole={appearance === 'soft' ? 'button' : undefined}
+                  accessibilityLabel={appearance === 'soft' ? resolveRuntimeMenuLabel(item, translate) : undefined}
                   style={styles.cardOuter}
                   onPress={() => handlePress(item)}
                 >
@@ -119,13 +131,15 @@ const AppMenuGrid = ({
                     >
                       <Icon
                         name={item.icon || 'circle'}
-                        size={20}
+                        size={styles.iconSize || 20}
                         color={styles.palette.segmentTone.foreground}
                       />
                     </View>
-                    <Text numberOfLines={2} style={styles.cardLabel}>
+                    <Text numberOfLines={appearance === 'soft' ? undefined : 2} style={styles.cardLabel}>
                       {resolveRuntimeMenuLabel(item, translate)}
                     </Text>
+                    {styles.showChevron && <Icon name="chevron-right" size={14}
+                      color={styles.palette.muted} style={styles.cardChevron} />}
                   </View>
                 </TouchableOpacity>
               ))}
