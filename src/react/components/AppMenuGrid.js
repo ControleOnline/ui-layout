@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react';
 import {Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import LegacyIcon from 'react-native-vector-icons/Feather';
+import HomeIcon from '@controleonline/../../src/components/HomeIcon';
 import {useStore} from '@store';
 import DefaultTooltip from '@controleonline/ui-default/src/react/components/help/DefaultTooltip';
 import {
@@ -12,6 +13,7 @@ import {
   resolveMenuRouteParams,
 } from '@controleonline/ui-layout/src/react/utils/menuNavigation';
 import createStyles from './AppMenuGrid.styles';
+import SoftMenuCard from './SoftMenuCard';
 
 const COMPACT_MENU_LABELS = new Set(['viewProspects', 'financialReport']);
 
@@ -30,6 +32,7 @@ const shouldUseCompactCardLabel = item => {
 
 const AppMenuGrid = ({
   colorTokens = {},
+  appearance = 'legacy',
   emptyMessage = 'Nenhum menu disponivel.',
   menus,
   navigation,
@@ -38,6 +41,7 @@ const AppMenuGrid = ({
   operationInfo = null,
   operationModuleId = null,
 }) => {
+  const Icon = appearance === 'soft' ? HomeIcon : LegacyIcon;
   const {width} = useWindowDimensions();
   const themeStore = useStore('theme');
   const peopleStore = useStore('people');
@@ -75,8 +79,9 @@ const AppMenuGrid = ({
           ...colorTokens,
         },
         width,
+        appearance,
       }),
-    [colorTokens, colors, currentCompany?.id, width],
+    [appearance, colorTokens, colors, currentCompany?.id, currentCompany?.theme?.colors, width],
   );
 
   const handlePress = item => {
@@ -129,6 +134,7 @@ const AppMenuGrid = ({
               <Text style={styles.sectionTitle}>
                 {translate?.('menu', 'menu', module.label) || module.label}
               </Text>
+              {appearance === 'soft' && <View style={styles.sectionDivider} />}
               {operationModuleId !== null &&
               operationModuleId !== undefined &&
               String(module.id) === String(operationModuleId) &&
@@ -158,6 +164,10 @@ const AppMenuGrid = ({
 
             <View style={styles.grid}>
               {module.menus.map(item => (
+                appearance === 'soft' ? <SoftMenuCard
+                  key={item.id || item.menuKey || item.route}
+                  styles={styles} label={resolveRuntimeMenuLabel(item, translate)}
+                  icon={item.icon} onPress={() => handlePress(item)} /> :
                 <TouchableOpacity
                   key={item.id || item.menuKey || item.route}
                   activeOpacity={0.82}
