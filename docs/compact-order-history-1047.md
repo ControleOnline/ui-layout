@@ -23,3 +23,5 @@ node node_modules/jest/bin/jest.js --config jest.compact.config.cjs --maxWorkers
 ```
 
 For isolated sibling source clones, set CONTROLEONLINE_MODULES_ROOT to their common directory. The committed configuration has no machine-specific absolute path. Published versions planned: ui-default1.0.278, ui-orders1.3.43, ui-layout1.0.16, ui-common1.2.91.
+
+Integration provenance: immutable ui-layout1.0.16 uses approved source403bd9a42213186baf23b86e9b282afd5d5b7fa9. Later dev reconciliation preserves pre-existing AppMenuGrid/ThemeManager/mainCompany823/building824 changes; this integration tip is not the release16 source. The building fallback is composed through the visible custom header and keeps domain theme tokens.

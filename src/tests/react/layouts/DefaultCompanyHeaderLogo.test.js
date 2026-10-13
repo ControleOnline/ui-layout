@@ -1,3 +1,4 @@
+jest.mock('react-native-vector-icons/FontAwesome', () => props => require('react').createElement('BrandIcon', props));
 const React = require('react'); const renderer = require('react-test-renderer');
 global.IS_REACT_ACT_ENVIRONMENT = true;
 jest.mock('@env', () => ({env: {API_ENTRYPOINT: 'http://localhost:8000'}}));
@@ -84,5 +85,14 @@ it('renders external logos through public Image without API credentials', () => 
   expect(tree.root.findAllByType('AuthenticatedFile')).toHaveLength(0);
   expect(tree.root.findByType('PublicImage').props.source).toEqual({uri: 'https://branding.example/logo.png'});
   expect(tree.root.findByType('PublicImage').props.headers).toBeUndefined();
+  renderer.act(() => tree.unmount());
+});
+
+it('preserves the existing desktop building fallback when no logo is configured', () => {
+  const Header = require('../../../react/layouts/DefaultCompanyHeader').default;
+  let tree;
+  renderer.act(() => {tree = renderer.create(React.createElement(Header, {options: {}, route: {name: 'OrderHistoryPage'}, company: {name: 'GYROS'}}));});
+  expect(tree.root.findByType('BrandIcon').props.name).toBe('building');
+  expect(tree.root.findByType('BrandIcon').props.color).toBe(mockThemeColors.headerText);
   renderer.act(() => tree.unmount());
 });

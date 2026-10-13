@@ -57,6 +57,11 @@ export default function createStyles({colors = {}, width = 1024, appearance = 'l
         fontSize: isCompact ? 15 : 16,
         fontWeight: '800',
       },
+      infoButton: {
+        height: 20,
+        marginLeft: 2,
+        width: 20,
+      },
       grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -99,6 +104,10 @@ export default function createStyles({colors = {}, width = 1024, appearance = 'l
         fontWeight: '700',
         lineHeight: isCompact ? 17 : 18,
         textAlign: 'left',
+      },
+      cardLabelCompact: {
+        fontSize: isCompact ? 11 : 12,
+        lineHeight: isCompact ? 15 : 16,
       },
       emptyBox: {
         alignItems: 'center',

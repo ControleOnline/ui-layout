@@ -1,3 +1,4 @@
+jest.mock('react-native-vector-icons/FontAwesome', () => () => null);
 jest.mock('@env', () => ({env: {API_ENTRYPOINT: 'http://localhost:8000', DOMAIN: 'http://localhost:8081'}}));
 jest.mock('@store', () => ({useStore: () => ({getters: {}})}));
 jest.mock('react-native', () => ({StyleSheet: {create: v => v, absoluteFillObject: {}}, View: 'View', Text: 'Text', TouchableOpacity: 'Button'}));

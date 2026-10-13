@@ -9,6 +9,6 @@ export default function DefaultCompanyHeader({options, route, back, company, mai
     <Header {...options} back={back} title={getHeaderTitle(options, route.name)}
       headerBackground={undefined}
       headerLeft={options.headerBackVisible === false ? () => null : options.headerLeft} />
-    <DefaultCompanyHeaderLogo company={company} mainCompany={mainCompany} onPress={onHome} />
+    <DefaultCompanyHeaderLogo company={company} mainCompany={mainCompany} fallbackIcon="building" onPress={onHome} />
   </View>;
 }

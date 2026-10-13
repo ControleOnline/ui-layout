@@ -3,6 +3,7 @@ import {Text, TouchableOpacity, View, useWindowDimensions} from 'react-native';
 import LegacyIcon from 'react-native-vector-icons/Feather';
 import HomeIcon from '@controleonline/../../src/components/HomeIcon';
 import {useStore} from '@store';
+import DefaultTooltip from '@controleonline/ui-default/src/react/components/help/DefaultTooltip';
 import {
   filterRuntimeMenuModulesByType,
   resolveRuntimeMenuLabel,
@@ -14,6 +15,21 @@ import {
 import createStyles from './AppMenuGrid.styles';
 import SoftMenuCard from './SoftMenuCard';
 
+const COMPACT_MENU_LABELS = new Set(['viewProspects', 'financialReport']);
+
+const shouldUseCompactCardLabel = item => {
+  const candidates = [
+    item?.menuKey,
+    item?.menu_key,
+    item?.id,
+    item?.label,
+    item?.route,
+  ];
+  return candidates.some(value =>
+    COMPACT_MENU_LABELS.has(String(value || '').trim()),
+  );
+};
+
 const AppMenuGrid = ({
   colorTokens = {},
   appearance = 'legacy',
@@ -22,6 +38,8 @@ const AppMenuGrid = ({
   navigation,
   menuType = 'home',
   onMenuPress,
+  operationInfo = null,
+  operationModuleId = null,
 }) => {
   const Icon = appearance === 'soft' ? HomeIcon : LegacyIcon;
   const {width} = useWindowDimensions();
@@ -39,6 +57,17 @@ const AppMenuGrid = ({
   const modules = useMemo(
     () => filterRuntimeMenuModulesByType(menus, menuType),
     [menuType, menus],
+  );
+  const operationRows = useMemo(
+    () =>
+      Array.isArray(operationInfo)
+        ? operationInfo
+        : Object.entries(operationInfo || {}).map(([label, value]) => ({
+            key: label,
+            label,
+            value,
+          })),
+    [operationInfo],
   );
 
   const styles = useMemo(
@@ -106,6 +135,31 @@ const AppMenuGrid = ({
                 {translate?.('menu', 'menu', module.label) || module.label}
               </Text>
               {appearance === 'soft' && <View style={styles.sectionDivider} />}
+              {operationModuleId !== null &&
+              operationModuleId !== undefined &&
+              String(module.id) === String(operationModuleId) &&
+              operationRows.length > 0 ? (
+                <DefaultTooltip
+                  accessibilityLabel="Ver configuração da operação"
+                  accentColor={styles.palette.sectionTone.foreground}
+                  backdropTestID="operation-info-backdrop"
+                  closeAccessibilityLabel="Fechar configuração do PDV"
+                  closeLabel="×"
+                  dialogTestID="operation-info-dialog"
+                  hitSlop={8}
+                  label={
+                    <Icon
+                      name="info"
+                      size={14}
+                      color={styles.palette.sectionTone.foreground}
+                    />
+                  }
+                  rows={operationRows}
+                  style={styles.infoButton}
+                  testID={`operation-info-button:${module.id}`}
+                  title="Configuração do PDV"
+                />
+              ) : null}
             </View>
 
             <View style={styles.grid}>
@@ -117,8 +171,6 @@ const AppMenuGrid = ({
                 <TouchableOpacity
                   key={item.id || item.menuKey || item.route}
                   activeOpacity={0.82}
-                  accessibilityRole={appearance === 'soft' ? 'button' : undefined}
-                  accessibilityLabel={appearance === 'soft' ? resolveRuntimeMenuLabel(item, translate) : undefined}
                   style={styles.cardOuter}
                   onPress={() => handlePress(item)}
                 >
@@ -131,15 +183,18 @@ const AppMenuGrid = ({
                     >
                       <Icon
                         name={item.icon || 'circle'}
-                        size={styles.iconSize || 20}
+                        size={20}
                         color={styles.palette.segmentTone.foreground}
                       />
                     </View>
-                    <Text numberOfLines={appearance === 'soft' ? undefined : 2} style={styles.cardLabel}>
+                    <Text
+                      numberOfLines={2}
+                      style={[
+                        styles.cardLabel,
+                        shouldUseCompactCardLabel(item) && styles.cardLabelCompact,
+                      ]}>
                       {resolveRuntimeMenuLabel(item, translate)}
                     </Text>
-                    {styles.showChevron && <Icon name="chevron-right" size={14}
-                      color={styles.palette.muted} style={styles.cardChevron} />}
                   </View>
                 </TouchableOpacity>
               ))}

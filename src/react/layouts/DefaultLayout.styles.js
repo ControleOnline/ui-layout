@@ -28,6 +28,14 @@ const styles = StyleSheet.create({
     width: 132,
     height: 36,
   },
+  headerCompanyFallbackIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#e8eaf6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   content: {
     flex: 1,
     minHeight: 0,
