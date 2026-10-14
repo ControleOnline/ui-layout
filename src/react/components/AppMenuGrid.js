@@ -73,7 +73,7 @@ const AppMenuGrid = ({
   const styles = useMemo(
     () =>
       createStyles({
-        colors: {
+        colors: appearance === 'soft' ? colors : {
           ...colors,
           ...(currentCompany?.theme?.colors || {}),
           ...colorTokens,
