@@ -103,7 +103,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
     <RuntimeBottomNavigationBar
       navigation={navigation}
       menuType="toolbar"
-      appearance={usesSoftHomepage(currentRouteName, appType, options?.homepageAppearance) ? 'soft' : 'legacy'}
+      appearance="soft"
       presetKey={presetKey}
       itemMapper={itemMapper}
       useModernWebChromeProps={useModernWebChromeProps}
