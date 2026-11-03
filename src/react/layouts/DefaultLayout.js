@@ -38,8 +38,15 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const deliveryOrdersStore = useStore('delivery_orders');
   const websocketStore = useStore('websocket');
   const deviceConfigStore = useStore('device_config');
+  const themeStore = useStore('theme');
   const {item: device} = deviceConfigStore.getters;
   const currentCompany = peopleStore?.getters?.currentCompany || null;
+  const themeColors = themeStore?.getters?.colors || {};
+  const pageBackground =
+    themeColors.pageBackground ||
+    themeColors.background ||
+    currentCompany?.theme?.colors?.pageBackground ||
+    currentCompany?.theme?.colors?.background;
   const currentUser = authStore?.getters?.user || null;
   const appType = app_type;
   const isShopApp = app_type === 'SHOP';
@@ -64,8 +71,10 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const allowCompanyFilter = !isShopApp && options?.showCompanyFilter;
   const showBottomToolBar = options?.showBottomToolBar;
   const showBottomCart = options?.showBottomCart;
-  const showInlineCompanyFilter =
-    allowCompanyFilter && options?.companyFilterMode !== 'icon';
+  // Company switcher is the header logo (mode=logo). Hide legacy triggers.
+  const showInlineCompanyFilter = false;
+  const showHeaderLogoCompanySelector =
+    allowCompanyFilter && options?.headerShown !== false;
   const [deliveryQueueLoadedForIri, setDeliveryQueueLoadedForIri] = useState('');
   const deliveryQueueLoadOwnerRef = useRef('');
   const deliveryQueueWasLockedRef = useRef(false);
@@ -215,8 +224,10 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const useModernWebChromeProps =
     Platform.OS === 'web' && showBottomCartOverride === false;
 
-  useDefaultLayoutHeader({navigation, currentRouteName, currentCompany, mainCompany: peopleStore?.getters?.mainCompany,
-    isDesktopWeb, showHeaderCompanyFilter: allowCompanyFilter && options?.companyFilterMode === 'icon' && options?.headerShown !== false, companyFilterMode: options?.companyFilterMode});
+  useDefaultLayoutHeader({
+    navigation,
+    showHeaderLogoCompanySelector,
+  });
 
   useEffect(() => {
     if (
@@ -442,7 +453,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   ]);
 
   return (
-    <View style={[styles.container, { paddingTop: options?.headerShown === false ? insets.top : 0 }]}>
+    <View style={[styles.container, pageBackground ? { backgroundColor: pageBackground } : null, { paddingTop: options?.headerShown === false ? insets.top : 0 }]}>
       {usesSoftHomepage(currentRouteName, appType, options?.homepageAppearance) ? (
         <HomeChrome navigation={navigation} showCompany={showInlineCompanyFilter} showAppType={showAdminAppTypeSwitcher} />
       ) : <>
