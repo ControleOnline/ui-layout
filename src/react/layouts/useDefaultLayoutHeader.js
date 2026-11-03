@@ -1,6 +1,5 @@
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useLayoutEffect} from 'react';
 import CompanyFilter from '@controleonline/ui-manager/src/react/components/CompanyFilter';
-import DefaultCompanyHeader from './DefaultCompanyHeader';
 import styles from './DefaultLayout.styles';
 
 export const resolveBooleanOverride = value => {
@@ -9,16 +8,25 @@ export const resolveBooleanOverride = value => {
   return normalized === 'true' ? true : normalized === 'false' ? false : null;
 };
 
-export default function useDefaultLayoutHeader({navigation, currentRouteName, currentCompany, mainCompany, isDesktopWeb, showHeaderCompanyFilter, companyFilterMode}) {
-  const goToHome = useCallback(() => {
-    if (currentRouteName !== 'HomePage') navigation?.navigate?.('HomePage');
-  }, [currentRouteName, navigation]);
+/**
+ * Header company switcher is the centered logo (CompanyFilter mode=logo).
+ * Legacy header-right / DefaultCompanyHeader desktop-only logo is retired so
+ * mobile and desktop share the same selector surface (app-community#1340).
+ */
+export default function useDefaultLayoutHeader({
+  navigation,
+  showHeaderLogoCompanySelector = false,
+}) {
   useLayoutEffect(() => {
     navigation.setOptions({
-      header: isDesktopWeb && currentCompany ? props => <DefaultCompanyHeader {...props} company={currentCompany} mainCompany={mainCompany} onHome={goToHome} /> : undefined,
+      headerTitleAlign: 'center',
+      headerTitle: showHeaderLogoCompanySelector
+        ? () => <CompanyFilter navigation={navigation} mode="logo" />
+        : undefined,
+      header: undefined,
       headerBackground: undefined,
-      headerRightContainerStyle: showHeaderCompanyFilter ? styles.headerRightContainer : undefined,
-      headerRight: showHeaderCompanyFilter ? () => <CompanyFilter navigation={navigation} mode={companyFilterMode} /> : undefined,
+      headerRightContainerStyle: undefined,
+      headerRight: undefined,
     });
-  }, [currentCompany, mainCompany, goToHome, isDesktopWeb, navigation, companyFilterMode, showHeaderCompanyFilter]);
+  }, [navigation, showHeaderLogoCompanySelector]);
 }

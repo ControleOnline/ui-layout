@@ -15,6 +15,16 @@ import {
 import createStyles from './AppMenuGrid.styles';
 import SoftMenuCard from './SoftMenuCard';
 
+const isInvertedModule = module => {
+  const label = String(module?.label || '').toLowerCase();
+  const key = String(module?.id || module?.menuKey || '').toLowerCase();
+  return (
+    label.includes('opera') ||
+    key.includes('operac') ||
+    key.includes('operations')
+  );
+};
+
 const COMPACT_MENU_LABELS = new Set(['viewProspects', 'financialReport']);
 
 const shouldUseCompactCardLabel = item => {
@@ -117,21 +127,34 @@ const AppMenuGrid = ({
   return (
     <View style={styles.wrapper}>
       {modules.map(module => {
+        const inverted = isInvertedModule(module);
+        const sectionTone = inverted
+          ? (styles.palette.invertedSectionTone || styles.palette.sectionTone)
+          : styles.palette.sectionTone;
+        const segmentTone = inverted
+          ? (styles.palette.invertedSegmentTone || styles.palette.segmentTone)
+          : styles.palette.segmentTone;
         return (
-          <View key={module.id || module.label} style={styles.section}>
+          <View
+            key={module.id || module.label}
+            style={[styles.section, inverted && styles.sectionInverted]}>
             <View style={styles.sectionHeader}>
               <View
                 style={[
                   styles.sectionIcon,
-                  {backgroundColor: styles.palette.sectionTone.background},
+                  {backgroundColor: sectionTone.background},
                 ]}>
                 <Icon
                   name={module.icon || 'grid'}
                   size={15}
-                  color={styles.palette.sectionTone.foreground}
+                  color={sectionTone.foreground}
                 />
               </View>
-              <Text style={styles.sectionTitle}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  inverted && styles.sectionTitleInverted,
+                ]}>
                 {translate?.('menu', 'menu', module.label) || module.label}
               </Text>
               {appearance === 'soft' && <View style={styles.sectionDivider} />}
@@ -166,7 +189,20 @@ const AppMenuGrid = ({
               {module.menus.map(item => (
                 appearance === 'soft' ? <SoftMenuCard
                   key={item.id || item.menuKey || item.route}
-                  styles={styles} label={resolveRuntimeMenuLabel(item, translate)}
+                  styles={
+                    inverted
+                      ? {
+                          ...styles,
+                          palette: {
+                            ...styles.palette,
+                            segmentTone,
+                          },
+                          card: [styles.card, styles.cardInverted],
+                          cardLabel: [styles.cardLabel, styles.cardLabelInverted],
+                        }
+                      : styles
+                  }
+                  label={resolveRuntimeMenuLabel(item, translate)}
                   icon={item.icon} onPress={() => handlePress(item)} /> :
                 <TouchableOpacity
                   key={item.id || item.menuKey || item.route}
@@ -174,23 +210,24 @@ const AppMenuGrid = ({
                   style={styles.cardOuter}
                   onPress={() => handlePress(item)}
                 >
-                  <View style={styles.card}>
+                  <View style={[styles.card, inverted && styles.cardInverted]}>
                     <View
                       style={[
                         styles.cardIcon,
-                        {backgroundColor: styles.palette.segmentTone.background},
+                        {backgroundColor: segmentTone.background},
                       ]}
                     >
                       <Icon
                         name={item.icon || 'circle'}
                         size={20}
-                        color={styles.palette.segmentTone.foreground}
+                        color={segmentTone.foreground}
                       />
                     </View>
                     <Text
                       numberOfLines={2}
                       style={[
                         styles.cardLabel,
+                        inverted && styles.cardLabelInverted,
                         shouldUseCompactCardLabel(item) && styles.cardLabelCompact,
                       ]}>
                       {resolveRuntimeMenuLabel(item, translate)}

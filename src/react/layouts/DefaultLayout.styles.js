@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     minHeight: 0,
     minWidth: 0,
-    backgroundColor: '#f8f9fa',
+    
   },
   adminToolsContainer: {
     alignItems: 'flex-end',
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#e8eaf6',
+    
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 0,
     minWidth: 0,
-    backgroundColor: '#f8f9fa',
+    
   },
   headerRightContainer: {
     flex: 1,
