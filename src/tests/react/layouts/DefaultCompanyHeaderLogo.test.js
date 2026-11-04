@@ -13,10 +13,10 @@ jest.mock('@controleonline/ui-default/src/react/components/files/DefaultFile', (
 jest.mock('@controleonline/ui-common/src/react/utils/fileUrl', () => ({resolveDefaultFileSource: file => file ? {uri: typeof file === 'string' ? file : file.url || `/files/${file.id}/download`, headers: {'API-TOKEN': 'must-not-leak'}} : null}));
 const Logo = require('../../../react/layouts/DefaultCompanyHeaderLogo').default;
 const {resolveHeaderCompanyBrand} = require('../../../react/layouts/DefaultCompanyHeaderLogo');
-it('prefers the unit logo and preserves the file owner for authenticated resolution', () => {
+it('uses only the selected company logo — never mainCompany fallback', () => {
   const company = {id: 14, logo: {id: 3}}, main = {id: 1, logo: {id: 4}};
   expect(resolveHeaderCompanyBrand(company, main)).toEqual({company, file: company.logo});
-  expect(resolveHeaderCompanyBrand({id: 14}, main)).toEqual({company: main, file: main.logo});
+  expect(resolveHeaderCompanyBrand({id: 14}, main)).toEqual({company: {id: 14}, file: null});
 });
 it('uses DefaultFile for the web logo, retains Home action and falls back visibly on errors', () => {
   const onPress = jest.fn(); let tree;
