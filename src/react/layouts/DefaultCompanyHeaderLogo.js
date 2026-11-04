@@ -8,7 +8,9 @@ import {resolveDefaultFileSource} from '@controleonline/ui-common/src/react/util
 import styles from './DefaultLayout.styles';
 
 export const resolveHeaderCompanyBrand = (company, mainCompany) => {
-  for (const [owner, file] of [[company, company?.logo], [company, company?.icon], [mainCompany, mainCompany?.logo], [mainCompany, mainCompany?.icon]]) {
+  // Only the selected company — never fall back to mainCompany branding.
+  void mainCompany;
+  for (const [owner, file] of [[company, company?.logo], [company, company?.icon]]) {
     if (file && resolveDefaultFileSource(file, {company: owner})) return {company: owner, file};
   }
   return {company, file: null};
