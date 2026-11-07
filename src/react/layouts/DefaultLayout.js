@@ -121,7 +121,7 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
   const isDesktopWeb = Platform.OS === 'web' && width >= 768;
   const companyLogoSource = useMemo(
     () =>
-      resolveDefaultFileSource(currentCompany?.logo || currentCompany?.icon, {
+      resolveDefaultFileSource(currentCompany?.logo, {
         company: currentCompany,
       }),
     [currentCompany],
