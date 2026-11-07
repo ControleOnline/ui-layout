@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
-import { Image, Platform, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { Platform, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useStore} from '@store';
 
@@ -28,6 +28,7 @@ import {getBottomNavigationBaseHeight} from '@controleonline/ui-layout/src/react
 import {resolveDefaultFileSource} from '@controleonline/ui-common/src/react/utils/fileUrl';
 import {app_type, app_type_base} from '@appType';
 import styles from './DefaultLayout.styles';
+import HeaderCompanyBrand from '../components/HeaderCompanyBrand';
 
 const resolveBooleanOverride = value => {
   if (typeof value === 'boolean') {
@@ -281,19 +282,11 @@ const DefaultLayout = ({ children, navigation, route, options }) => {
       headerBackground: shouldRenderDesktopCompanyLogo
         ? () => (
           <View style={styles.headerCompanyLogoLayer} pointerEvents="box-none">
-            <TouchableOpacity
-              accessibilityRole="button"
-              accessibilityLabel={currentCompany?.alias || currentCompany?.name || 'HomePage'}
-              activeOpacity={0.82}
-              style={styles.headerCompanyLogoButton}
+            <HeaderCompanyBrand
+              logoSource={companyLogoSource}
+              label={currentCompany?.alias || currentCompany?.name || ''}
               onPress={goToHome}
-            >
-              <Image
-                source={companyLogoSource}
-                style={styles.headerCompanyLogo}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
+            />
           </View>
         )
         : undefined,
