@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     minHeight: 0,
     minWidth: 0,
-    backgroundColor: '#f8f9fa',
+    
   },
   adminToolsContainer: {
     alignItems: 'flex-end',
@@ -28,11 +28,19 @@ const styles = StyleSheet.create({
     width: 132,
     height: 36,
   },
+  headerCompanyFallbackIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   content: {
     flex: 1,
     minHeight: 0,
     minWidth: 0,
-    backgroundColor: '#f8f9fa',
+    
   },
   headerRightContainer: {
     flex: 1,
@@ -40,8 +48,8 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
     paddingRight: 16,
     maxWidth: 360,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
 });
 

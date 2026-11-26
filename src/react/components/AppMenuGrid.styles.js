@@ -1,6 +1,8 @@
 import {StyleSheet} from 'react-native';
+import createSoftStyles from './AppMenuGrid.soft.styles';
 
-export default function createStyles({colors = {}, width = 1024}) {
+export default function createStyles({colors = {}, width = 1024, appearance = 'legacy'}) {
+  if (appearance === 'soft') return createSoftStyles({colors, width});
   const palette = {
     primary: colors.primary,
     surface: colors.cardBackground,
@@ -55,6 +57,11 @@ export default function createStyles({colors = {}, width = 1024}) {
         fontSize: isCompact ? 15 : 16,
         fontWeight: '800',
       },
+      infoButton: {
+        height: 20,
+        marginLeft: 2,
+        width: 20,
+      },
       grid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -97,6 +104,10 @@ export default function createStyles({colors = {}, width = 1024}) {
         fontWeight: '700',
         lineHeight: isCompact ? 17 : 18,
         textAlign: 'left',
+      },
+      cardLabelCompact: {
+        fontSize: isCompact ? 11 : 12,
+        lineHeight: isCompact ? 15 : 16,
       },
       emptyBox: {
         alignItems: 'center',
